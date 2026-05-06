@@ -1,6 +1,9 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Picture from "../../components/Picture.astro";
+import PlaceCard from "../../components/PlaceCard.astro";
 import places from "../../data/places.json";
+import photos from "../../data/photos.json";
 import { getPlaceContent } from "../../content/places-content";
 import { url } from "../../utils/url";
 
@@ -17,6 +20,20 @@ const content = getPlaceContent(place.slug);
 const nearby = (place.nearby ?? [])
   .map((slug) => places.find((p) => p.slug === slug))
   .filter((p): p is (typeof places)[number] => Boolean(p));
+
+interface PhotoMeta {
+  slug: string;
+  author: string;
+  author_url: string;
+  license: string;
+  license_url: string;
+  page: string;
+}
+const photoMeta = (photos as PhotoMeta[]).find((p) => p.slug === place.image);
+
+const ogImageUrl = place.image
+  ? new URL(url(`img/${place.image}-1600.webp`).replace(/^\//, ""), Astro.site).toString()
+  : undefined;
 
 const jsonLd = [
   {
@@ -46,53 +63,88 @@ const jsonLd = [
 ---
 
 <BaseLayout
-  title={`${place.title} в Крыму — история, как добраться, цены 2026`}
+  title={`${place.title} — Крым · издание о полуострове`}
   description={place.metaDescription}
+  ogImage={ogImageUrl}
   jsonLd={jsonLd}
 >
-  <div class="container">
-    <p class="breadcrumbs">
-      <a href={url()}>Главная</a> /
-      <a href={url("mesta/")}>Места</a> /
-      {place.title}
-    </p>
-
-    <h1>{place.title}</h1>
-    <p class="muted" style="font-size:1.05rem">{place.shortDescription}</p>
-
-    <dl class="fact-list">
-      {Object.entries(place.facts).map(([k, v]) => (
-        <>
-          <dt>{k}</dt>
-          <dd>{v}</dd>
-        </>
-      ))}
-    </dl>
-
-    <h2>История и значение</h2>
-    {content.history.map((p) => <p>{p}</p>)}
-
-    <h2>Как добраться</h2>
-    {content.howToGet.map((p) => <p>{p}</p>)}
-
-    <h2>Что посмотреть рядом</h2>
-    <p>{content.nearbyDescription}</p>
-
-    {nearby.length > 0 && (
-      <div class="grid">
-        {nearby.map((n) => (
-          <a href={url(`mesta/${n.slug}/`)} class="card" style="display:block; color: var(--color-text); text-decoration:none;">
-            <div style="font-size:0.85rem; color: var(--color-text-muted); margin-bottom:0.4rem">
-              {n.city}
-            </div>
-            <h3 style="margin: 0 0 0.4rem 0; font-family: var(--font-sans); font-size:1.05rem; color: var(--color-text);">{n.title}</h3>
-            <p class="muted" style="margin-bottom:0">{n.shortDescription}</p>
-          </a>
-        ))}
+  <!-- Hero -->
+  <section class="detail-hero">
+    {place.image && (
+      <Picture
+        slug={place.image}
+        alt={place.title}
+        sizes="100vw"
+        aspect={null}
+        loading="eager"
+      />
+    )}
+    <div class="veil" />
+    <div class="hero-inner">
+      <span class="eyebrow">Место · {place.city}{place.category ? ` · ${place.category}` : ""}</span>
+      <h1>{place.title}</h1>
+      <p class="lede">{place.shortDescription}</p>
+    </div>
+    {photoMeta && (
+      <div class="photo-credit">
+        Фото: <a href={photoMeta.author_url} target="_blank" rel="noopener">{photoMeta.author}</a> · <a href={photoMeta.license_url} target="_blank" rel="noopener">{photoMeta.license}</a>
       </div>
     )}
+  </section>
 
-    <h2>Советы туристу</h2>
+  <div class="container">
+    <p class="breadcrumbs">
+      <a href={url()}>Главная</a><span class="sep">/</span>
+      <a href={url("mesta/")}>Места</a><span class="sep">/</span>
+      <span>{place.title}</span>
+    </p>
+  </div>
+
+  <div class="container-content">
+    <dl class="facts">
+      {Object.entries(place.facts).map(([k, v]) => (
+        <div>
+          <dt>{k}</dt>
+          <dd>{v}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+
+  <article class="prose">
+    <h2 style="font-style: italic;">История и значение</h2>
+    {content.history.map((p, i) => (
+      <p class={i === 0 ? "dropcap" : ""}>{p}</p>
+    ))}
+
+    <h2 style="font-style: italic;">Как добраться</h2>
+    {content.howToGet.map((p) => <p>{p}</p>)}
+
+    <h2 style="font-style: italic;">Что посмотреть рядом</h2>
+    <p>{content.nearbyDescription}</p>
+  </article>
+
+  {nearby.length > 0 && (
+    <div class="container">
+      <section class="section">
+        <div class="card-grid">
+          {nearby.map((n) => (
+            <PlaceCard
+              href={url(`mesta/${n.slug}/`)}
+              title={n.title}
+              description={n.shortDescription}
+              city={n.city}
+              category={n.category}
+              image={n.image}
+            />
+          ))}
+        </div>
+      </section>
+    </div>
+  )}
+
+  <article class="prose">
+    <h2 style="font-style: italic;">Советы туристу</h2>
     <ul>
       {content.tips.map((t) => <li>{t}</li>)}
     </ul>
@@ -101,9 +153,16 @@ const jsonLd = [
       Цены, расписание и условия посещения могут меняться. Перед поездкой проверяйте
       актуальные данные на официальном сайте объекта или в Яндекс.Картах.
     </div>
+  </article>
 
-    <h2>Часто задаваемые вопросы</h2>
-    <div>
+  <div class="container">
+    <header class="section-rule">
+      <div class="num">FAQ</div>
+      <div class="name">Часто задаваемые вопросы</div>
+      <div class="meta">{content.faq.length}</div>
+    </header>
+
+    <div class="faq" style="padding: var(--s-5) 0 var(--s-7);">
       {content.faq.map((q) => (
         <details class="faq-item">
           <summary>{q.q}</summary>

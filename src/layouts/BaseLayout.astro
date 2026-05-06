@@ -11,10 +11,11 @@ interface Props {
 }
 
 const { title, description, canonical, ogImage, jsonLd } = Astro.props;
-const siteName = "Крым: маршруты и AI-гид";
-const fullTitle = title.includes(siteName) ? title : `${title} — ${siteName}`;
+const siteName = "Крым · издание о полуострове";
+const fullTitle = title.includes("Крым") ? title : `${title} — ${siteName}`;
 const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
-const og = ogImage ?? new URL("/crimea/og-default.jpg", Astro.site).toString();
+const og = ogImage ?? new URL(url("img/hero-coast-1600.webp").replace(/^\//, ""), Astro.site).toString();
+const year = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -23,7 +24,15 @@ const og = ogImage ?? new URL("/crimea/og-default.jpg", Astro.site).toString();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#0E1B3A" />
     <link rel="icon" type="image/svg+xml" href={url("favicon.svg")} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -50,7 +59,10 @@ const og = ogImage ?? new URL("/crimea/og-default.jpg", Astro.site).toString();
   <body>
     <header class="site-header">
       <div class="container">
-        <a href={url()} class="logo">Крым</a>
+        <a href={url()} class="logo">
+          Крым
+          <span class="small">издание о полуострове</span>
+        </a>
         <nav class="main-nav">
           <a href={url("marshrut/")}>Маршруты</a>
           <a href={url("mesta/")}>Места</a>
@@ -65,11 +77,32 @@ const og = ogImage ?? new URL("/crimea/og-default.jpg", Astro.site).toString();
 
     <footer class="site-footer">
       <div class="container">
-        <p>
-          © {new Date().getFullYear()} Крым: маршруты и AI-гид. MVP-версия.
-        </p>
-        <p style="margin-top: 0.5rem; opacity: 0.7;">
-          Информация носит справочный характер. Цены, расписание и условия посещения проверяйте на официальных сайтах перед поездкой.
+        <div>
+          <p class="brand">Крым</p>
+          <p style="max-width: 32ch;">
+            Независимое онлайн-издание о маршрутах, местах и людях полуострова.
+            AI помогает собрать ваш собственный план — мы лишь редакция.
+          </p>
+        </div>
+        <div>
+          <h4>Разделы</h4>
+          <ul>
+            <li><a href={url("marshrut/")}>Маршруты</a></li>
+            <li><a href={url("mesta/")}>Места</a></li>
+            <li><a href={url("#planner")}>AI-планировщик</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Авторам и читателям</h4>
+          <ul>
+            <li><a href={url("atribucia/")}>Авторы фотографий</a></li>
+            <li><a href="mailto:hello@crimea.example">Связаться</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="container">
+        <p class="meta">
+          © {year} Крым · издание о полуострове · MVP-версия. Информация носит справочный характер. Цены, расписание и условия посещения проверяйте на официальных сайтах перед поездкой.
         </p>
       </div>
     </footer>

@@ -1,4 +1,6 @@
 ---
+import Picture from "./Picture.astro";
+
 interface Props {
   href: string;
   title: string;
@@ -6,19 +8,41 @@ interface Props {
   days: number;
   city: string;
   tags?: string[];
+  image?: string;
+  /** sizes attr for the inline picture */
+  sizes?: string;
 }
 
-const { href, title, description, days, city, tags = [] } = Astro.props;
+const {
+  href,
+  title,
+  description,
+  days,
+  city,
+  tags = [],
+  image,
+  sizes = "(min-width: 900px) 33vw, 100vw",
+} = Astro.props;
+
+const dayWord = days === 1 ? "день" : days < 5 ? "дня" : "дней";
 ---
 
-<a href={href} class="card" style="display:block; color: var(--color-text); text-decoration:none;">
-  <div style="font-size:0.85rem; color: var(--color-text-muted); margin-bottom:0.4rem">
-    {city} · {days} {days === 1 ? "день" : days < 5 ? "дня" : "дней"}
+<a href={href} class="editorial-card">
+  {image && (
+    <Picture
+      slug={image}
+      alt={title}
+      sizes={sizes}
+      aspect="16/10"
+    />
+  )}
+  <div class="meta-line">
+    {city} · {days} {dayWord}
   </div>
-  <h3 style="margin: 0 0 0.4rem 0; font-family: var(--font-sans); font-size:1.15rem; color: var(--color-text);">{title}</h3>
-  <p class="muted" style="margin-bottom:0.6rem">{description}</p>
+  <h3>{title}</h3>
+  <p class="descr">{description}</p>
   {tags.length > 0 && (
-    <div>
+    <div class="tags">
       {tags.map((t) => <span class="tag">{t}</span>)}
     </div>
   )}

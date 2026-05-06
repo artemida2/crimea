@@ -1,0 +1,64 @@
+---
+import { url } from "../utils/url";
+
+interface Props {
+  /** photo slug, e.g. "lastochkino-gnezdo" → /img/lastochkino-gnezdo-{1600,800,400}.webp */
+  slug: string;
+  alt: string;
+  /** sizes attribute for responsive picture, e.g. "(min-width: 900px) 50vw, 100vw" */
+  sizes?: string;
+  /** css aspect-ratio. Default 16/9. Pass null to disable cropping. */
+  aspect?: string | null;
+  /** loading strategy */
+  loading?: "lazy" | "eager";
+  /** decoding hint */
+  decoding?: "async" | "sync" | "auto";
+  /** css class on the wrapping <picture> (NOT on <img>) */
+  className?: string;
+  /** if true, image will be cover-cropped to fit the wrapper */
+  cover?: boolean;
+}
+
+const {
+  slug,
+  alt,
+  sizes = "(min-width: 900px) 50vw, 100vw",
+  aspect = "16/9",
+  loading = "lazy",
+  decoding = "async",
+  className = "",
+  cover = true,
+} = Astro.props;
+
+const src1600 = url(`img/${slug}-1600.webp`);
+const src800 = url(`img/${slug}-800.webp`);
+const src400 = url(`img/${slug}-400.webp`);
+
+const wrapperStyle = aspect ? `aspect-ratio: ${aspect};` : "";
+const imgStyle = cover
+  ? "width:100%; height:100%; object-fit:cover; display:block;"
+  : "width:100%; height:auto; display:block;";
+---
+
+<picture class={`picture ${className}`} style={wrapperStyle}>
+  <source
+    type="image/webp"
+    srcset={`${src400} 400w, ${src800} 800w, ${src1600} 1600w`}
+    sizes={sizes}
+  />
+  <img
+    src={src800}
+    alt={alt}
+    loading={loading}
+    decoding={decoding}
+    style={imgStyle}
+  />
+</picture>
+
+<style>
+  .picture {
+    display: block;
+    overflow: hidden;
+    background: #1a1a1a;
+  }
+</style>
