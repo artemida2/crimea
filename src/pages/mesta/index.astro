@@ -1,0 +1,37 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PlaceCard from "../../components/PlaceCard.astro";
+import places from "../../data/places.json";
+import { url } from "../../utils/url";
+---
+
+<BaseLayout
+  title="Достопримечательности Крыма: подробный AI-гид"
+  description="Подробные описания достопримечательностей Крыма: история, как добраться, цены 2026, время работы, фото и что посмотреть рядом. Ласточкино гнездо, Чуфут-Кале, Балаклава и другие."
+>
+  <div class="container">
+    <p class="breadcrumbs">
+      <a href={url()}>Главная</a> / Места
+    </p>
+    <h1>Достопримечательности Крыма</h1>
+    <p class="muted">
+      Каждый объект — отдельная страница с историей, картой, тарифами 2026 и
+      советами «как добраться». В каждой странице — AI-помощник, который ответит
+      на конкретные вопросы по объекту.
+    </p>
+
+    <section class="section">
+      <div class="grid">
+        {places.map((p) => (
+          <PlaceCard
+            href={url(`mesta/${p.slug}/`)}
+            title={p.title}
+            description={p.shortDescription}
+            city={p.city}
+            category={p.category}
+          />
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>

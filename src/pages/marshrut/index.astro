@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import RouteCard from "../../components/RouteCard.astro";
+import routes from "../../data/routes.json";
+import { url } from "../../utils/url";
+---
+
+<BaseLayout
+  title="Готовые маршруты по Крыму — на машине, без машины, с детьми"
+  description="Все готовые маршруты по Крыму: 3, 5, 7, 10, 14 дней. Кольцевые автомобильные, без машины на общественном транспорте, с детьми, гастро и винные туры. Карты, тайминг, цены 2026."
+>
+  <div class="container">
+    <p class="breadcrumbs">
+      <a href={url()}>Главная</a> / Маршруты
+    </p>
+    <h1>Готовые маршруты по Крыму</h1>
+    <p class="muted">
+      Каждый маршрут — это шаблонный план дня по дням с тайм-слотами, адресами и
+      картой. Если шаблон не подходит — внизу страницы маршрута есть форма
+      «Адаптировать под себя» — AI пересоберёт план под ваши даты и интересы.
+    </p>
+
+    <section class="section">
+      <div class="grid">
+        {routes.map((r) => (
+          <RouteCard
+            href={url(`marshrut/${r.slug}/`)}
+            title={r.title}
+            description={r.description}
+            days={r.days}
+            city={r.city}
+            tags={r.tags}
+          />
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>

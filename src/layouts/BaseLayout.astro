@@ -1,0 +1,77 @@
+---
+import "../styles/global.css";
+import { url } from "../utils/url";
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const { title, description, canonical, ogImage, jsonLd } = Astro.props;
+const siteName = "Крым: маршруты и AI-гид";
+const fullTitle = title.includes(siteName) ? title : `${title} — ${siteName}`;
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
+const og = ogImage ?? new URL("/crimea/og-default.jpg", Astro.site).toString();
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href={url("favicon.svg")} />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={og} />
+    <meta property="og:locale" content="ru_RU" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+
+    {jsonLd && (
+      <script
+        type="application/ld+json"
+        set:html={JSON.stringify(jsonLd)}
+      />
+    )}
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <a href={url()} class="logo">Крым</a>
+        <nav class="main-nav">
+          <a href={url("marshrut/")}>Маршруты</a>
+          <a href={url("mesta/")}>Места</a>
+          <a href={url("#planner")}>AI-планировщик</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>
+          © {new Date().getFullYear()} Крым: маршруты и AI-гид. MVP-версия.
+        </p>
+        <p style="margin-top: 0.5rem; opacity: 0.7;">
+          Информация носит справочный характер. Цены, расписание и условия посещения проверяйте на официальных сайтах перед поездкой.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
