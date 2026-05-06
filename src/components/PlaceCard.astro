@@ -1,0 +1,19 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  city: string;
+  category?: string;
+}
+
+const { href, title, description, city, category } = Astro.props;
+---
+
+<a href={href} class="card" style="display:block; color: var(--color-text); text-decoration:none;">
+  <div style="font-size:0.85rem; color: var(--color-text-muted); margin-bottom:0.4rem">
+    {city}{category ? ` · ${category}` : ""}
+  </div>
+  <h3 style="margin: 0 0 0.4rem 0; font-family: var(--font-sans); font-size:1.15rem; color: var(--color-text);">{title}</h3>
+  <p class="muted" style="margin-bottom:0">{description}</p>
+</a>

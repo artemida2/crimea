@@ -1,0 +1,219 @@
+{
+  "name": "Crimea Planner — AI route generator",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "crimea-planner",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": false,
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-1",
+      "name": "Webhook (form submit)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "system",
+              "value": "Ты — опытный гид по Крыму. Составляй практичные маршруты с конкретными местами, тайм-слотами и адресами. Используй только реально существующие объекты. Каждый день — это 3-5 точек с временем. Учитывай переезды, обед, отдых для детей. Не выдумывай адреса. Если не уверен в точке — пропусти её. Ответь СТРОГО в формате JSON: { \"plan\": [{\"day\": 1, \"title\": \"...\", \"points\": [\"09:00 ...\", \"12:00 обед в ...\"]}], \"summary\": \"...\", \"total_km\": 0 }"
+            },
+            {
+              "name": "user_prompt",
+              "value": "=Составь маршрут по Крыму со следующими параметрами:\n- Регион: {{ $json.body.city }}\n- Длительность: {{ $json.body.days }} дней\n- Состав: {{ $json.body.composition }}\n- Транспорт: {{ $json.body.transport }}\n- Бюджет на чел/день: {{ $json.body.budget }} ₽\n- Главный интерес: {{ $json.body.topic }}\n- Особые пожелания: {{ $json.body.notes || 'нет' }}\n\nИспользуй ТОЛЬКО эти места из верифицированного списка: {{ $('places').first().json.places_csv }}\n\nВерни строго JSON по схеме."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-prompt",
+      "name": "Build prompt",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": "places",
+        "returnAll": true,
+        "options": {}
+      },
+      "id": "places-fetch",
+      "name": "places",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase Postgres"
+        }
+      },
+      "notes": "Получает whitelist мест из таблицы places. Защита от AI-галлюцинаций."
+    },
+    {
+      "parameters": {
+        "url": "https://gigachat.devices.sberbank.ru/api/v1/chat/completions",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $credentials.gigachatToken }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"GigaChat\",\n  \"messages\": [\n    {\"role\": \"system\", \"content\": \"{{ $('Build prompt').first().json.system }}\"},\n    {\"role\": \"user\", \"content\": \"{{ $('Build prompt').first().json.user_prompt }}\"}\n  ],\n  \"temperature\": 0.4,\n  \"max_tokens\": 2000\n}",
+        "options": {}
+      },
+      "id": "ai-call",
+      "name": "GigaChat (генерация маршрута)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300],
+      "notes": "Замените URL и токен на свои. Альтернативно YandexGPT или OpenAI через прокси."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Извлекаем JSON из ответа AI и валидируем структуру\nconst raw = $input.first().json.choices?.[0]?.message?.content || '';\nlet parsed;\ntry {\n  // Извлекаем JSON-блок если AI обернул в markdown\n  const match = raw.match(/```json\\s*([\\s\\S]+?)```/) || raw.match(/(\\{[\\s\\S]+\\})/);\n  parsed = JSON.parse(match ? match[1] : raw);\n} catch (e) {\n  parsed = { plan: [], summary: 'Не удалось распарсить ответ AI', error: String(e) };\n}\nreturn [{ json: parsed }];"
+      },
+      "id": "parse-ai",
+      "name": "Parse AI JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "leads",
+        "columns": "email,city,days,composition,transport,budget,topic,notes,plan_json,created_at",
+        "additionalFields": {}
+      },
+      "id": "save-lead",
+      "name": "Save lead",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [1340, 300],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($('Parse AI JSON').first().json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond",
+      "name": "Respond to client",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1560, 300]
+    }
+  ],
+  "connections": {
+    "Webhook (form submit)": {
+      "main": [
+        [
+          {
+            "node": "places",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "places": {
+      "main": [
+        [
+          {
+            "node": "Build prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build prompt": {
+      "main": [
+        [
+          {
+            "node": "GigaChat (генерация маршрута)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GigaChat (генерация маршрута)": {
+      "main": [
+        [
+          {
+            "node": "Parse AI JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI JSON": {
+      "main": [
+        [
+          {
+            "node": "Save lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save lead": {
+      "main": [
+        [
+          {
+            "node": "Respond to client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "crimea",
+      "id": "crimea"
+    }
+  ]
+}
