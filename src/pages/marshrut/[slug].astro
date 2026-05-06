@@ -1,7 +1,10 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Picture from "../../components/Picture.astro";
 import PlannerForm from "../../components/PlannerForm.astro";
+import RouteCard from "../../components/RouteCard.astro";
 import routes from "../../data/routes.json";
+import photos from "../../data/photos.json";
 import { getRouteContent } from "../../content/routes-content";
 import { url } from "../../utils/url";
 
@@ -14,6 +17,20 @@ export function getStaticPaths() {
 
 const { route } = Astro.props;
 const content = getRouteContent(route.slug);
+
+interface PhotoMeta {
+  slug: string;
+  author: string;
+  author_url: string;
+  license: string;
+  license_url: string;
+  page: string;
+}
+const photoMeta = (photos as PhotoMeta[]).find((p) => p.slug === route.image);
+
+const ogImageUrl = route.image
+  ? new URL(url(`img/${route.image}-1600.webp`).replace(/^\//, ""), Astro.site).toString()
+  : undefined;
 
 const jsonLd = [
   {
@@ -52,61 +69,118 @@ const jsonLd = [
 <BaseLayout
   title={route.h1}
   description={route.metaDescription}
+  ogImage={ogImageUrl}
   jsonLd={jsonLd}
 >
+  <!-- Hero -->
+  <section class="detail-hero">
+    {route.image && (
+      <Picture
+        slug={route.image}
+        alt={route.title}
+        sizes="100vw"
+        aspect={null}
+        loading="eager"
+      />
+    )}
+    <div class="veil" />
+    <div class="hero-inner">
+      <span class="eyebrow">Маршрут · {route.city} · {route.days} дней</span>
+      <h1>{route.h1}</h1>
+      <p class="lede">{content.intro}</p>
+    </div>
+    {photoMeta && (
+      <div class="photo-credit">
+        Фото: <a href={photoMeta.author_url} target="_blank" rel="noopener">{photoMeta.author}</a> · <a href={photoMeta.license_url} target="_blank" rel="noopener">{photoMeta.license}</a>
+      </div>
+    )}
+  </section>
+
   <div class="container">
     <p class="breadcrumbs">
-      <a href={url()}>Главная</a> /
-      <a href={url("marshrut/")}>Маршруты</a> /
-      {route.title}
+      <a href={url()}>Главная</a><span class="sep">/</span>
+      <a href={url("marshrut/")}>Маршруты</a><span class="sep">/</span>
+      <span>{route.title}</span>
     </p>
+  </div>
 
-    <h1>{route.h1}</h1>
+  <div class="route-layout">
+    <!-- Sticky TOC -->
+    <aside class="toc" aria-label="Оглавление">
+      <h4>Дни</h4>
+      <ol>
+        {content.days.map((d) => (
+          <li>
+            <a href={`#day-${d.day}`}>
+              <span class="toc-num">{d.day.toString().padStart(2, "0")}</span>
+              <span>{d.title}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </aside>
 
-    <p class="muted" style="font-size:1.05rem">
-      {content.intro}
-    </p>
+    <!-- Main content -->
+    <article>
+      <dl class="facts">
+        <div>
+          <dt>Длительность</dt>
+          <dd>{route.days} дней</dd>
+        </div>
+        {route.totalKm > 0 && (
+          <div>
+            <dt>Общий пробег</dt>
+            <dd>~{route.totalKm} км</dd>
+          </div>
+        )}
+        <div>
+          <dt>Лучшее время</dt>
+          <dd>{content.bestSeason}</dd>
+        </div>
+        <div>
+          <dt>Бюджет</dt>
+          <dd>{content.budget}</dd>
+        </div>
+      </dl>
 
-    <dl class="fact-list">
-      <dt>Длительность</dt>
-      <dd>{route.days} дней</dd>
-      {route.totalKm > 0 && (
-        <>
-          <dt>Общий пробег</dt>
-          <dd>~{route.totalKm} км</dd>
-        </>
-      )}
-      <dt>Лучшее время</dt>
-      <dd>{content.bestSeason}</dd>
-      <dt>Бюджет ориентировочно</dt>
-      <dd>{content.budget}</dd>
-    </dl>
+      <h2 style="font-style: italic;">План по дням</h2>
 
-    <h2>План по дням</h2>
-    {content.days.map((d) => (
-      <div class="day-block">
-        <h3>День {d.day}. {d.title}</h3>
-        <p style="margin-bottom:0.5rem"><strong>Краткое:</strong> {d.summary}</p>
-        <ul>
-          {d.points.map((p) => <li>{p}</li>)}
-        </ul>
+      {content.days.map((d) => (
+        <section class="day-block" id={`day-${d.day}`}>
+          <div class="day-num">{d.day.toString().padStart(2, "0")}</div>
+          <div>
+            <h3>{d.title}</h3>
+            <p class="summary">{d.summary}</p>
+            <ul>
+              {d.points.map((p) => <li>{p}</li>)}
+            </ul>
+          </div>
+        </section>
+      ))}
+
+      <div class="disclaimer">
+        Это шаблонный план. Цены, расписание и время работы объектов уточняйте на
+        официальных сайтах перед поездкой — данные актуальны на 2026 год, но могут
+        измениться. Нужен персональный план под конкретные даты и интересы — заполните
+        форму ниже, AI пересоберёт маршрут.
       </div>
-    ))}
+    </article>
+  </div>
 
-    <div class="disclaimer">
-      Это шаблонный план. Цены, расписание и время работы объектов уточняйте на
-      официальных сайтах перед поездкой — данные актуальны на 2026 год, но могут
-      измениться. Хочешь персональный план под конкретные даты и интересы — заполни
-      форму ниже, AI пересоберёт маршрут.
-    </div>
+  <!-- Planner form -->
+  <section class="form-section">
+    <PlannerForm defaultDays={route.days} variant="inline" />
+  </section>
 
-    <PlannerForm
-      defaultDays={route.days}
-      variant="inline"
-    />
+  <!-- FAQ -->
+  <div class="container">
+    <header class="section-rule">
+      <div class="num">FAQ</div>
+      <div class="name">Часто задаваемые вопросы</div>
+      <div class="meta">{content.faq.length}</div>
+    </header>
 
-    <h2>Часто задаваемые вопросы</h2>
-    <div>
+    <div class="faq" style="padding: var(--s-5) 0 var(--s-7);">
       {content.faq.map((q) => (
         <details class="faq-item">
           <summary>{q.q}</summary>
@@ -114,21 +188,33 @@ const jsonLd = [
         </details>
       ))}
     </div>
+  </div>
 
-    <h2>Похожие маршруты</h2>
-    <div class="grid">
-      {routes
-        .filter((r) => r.slug !== route.slug)
-        .slice(0, 3)
-        .map((r) => (
-          <a href={url(`marshrut/${r.slug}/`)} class="card" style="display:block; color: var(--color-text); text-decoration:none;">
-            <div style="font-size:0.85rem; color: var(--color-text-muted); margin-bottom:0.4rem">
-              {r.city} · {r.days} дней
-            </div>
-            <h3 style="margin: 0 0 0.4rem 0; font-family: var(--font-sans); font-size:1.1rem; color: var(--color-text);">{r.title}</h3>
-            <p class="muted" style="margin-bottom:0">{r.description}</p>
-          </a>
-        ))}
-    </div>
+  <!-- Related -->
+  <div class="container">
+    <header class="section-rule">
+      <div class="num">→</div>
+      <div class="name">Другие маршруты</div>
+      <div class="meta">из этого выпуска</div>
+    </header>
+
+    <section class="section">
+      <div class="card-grid">
+        {routes
+          .filter((r) => r.slug !== route.slug)
+          .slice(0, 3)
+          .map((r) => (
+            <RouteCard
+              href={url(`marshrut/${r.slug}/`)}
+              title={r.title}
+              description={r.description}
+              days={r.days}
+              city={r.city}
+              tags={r.tags}
+              image={r.image}
+            />
+          ))}
+      </div>
+    </section>
   </div>
 </BaseLayout>

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Picture from "../components/Picture.astro";
 import PlannerForm from "../components/PlannerForm.astro";
 import RouteCard from "../components/RouteCard.astro";
 import PlaceCard from "../components/PlaceCard.astro";
@@ -8,12 +9,12 @@ import places from "../data/places.json";
 import { url } from "../utils/url";
 
 const description =
-  "AI-планировщик отпуска в Крыму и подробный гид по достопримечательностям. Готовые маршруты на 3, 7, 10, 14 дней с адаптацией под ваши даты, бюджет и интересы.";
+  "Издание о Крыме: маршруты, места, истории — и AI, который собирает ваш план поездки. 3, 7, 10, 14 дней под ваши даты, бюджет и интересы.";
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Крым: маршруты и AI-гид",
+  name: "Крым · издание о полуострове",
   url: Astro.site?.toString(),
   potentialAction: {
     "@type": "SearchAction",
@@ -24,25 +25,46 @@ const jsonLd = {
 ---
 
 <BaseLayout
-  title="AI-планировщик отпуска в Крыму и гид по достопримечательностям"
+  title="Крым · маршруты, места, AI-планировщик"
   description={description}
   jsonLd={jsonLd}
 >
-  <section class="hero">
-    <div class="container">
-      <h1>Крым: маршруты и AI-гид</h1>
-      <p>
-        Готовые маршруты по Крыму на 3, 7, 10 и 14 дней. AI пересоберёт план под ваши даты,
-        бюджет, состав и интересы — и пришлёт PDF на email.
+  <!-- ============ HERO ============ -->
+  <section class="hero-editorial">
+    <Picture
+      slug="hero-coast"
+      alt="Ялта с канатной дороги, Южный берег Крыма"
+      sizes="100vw"
+      aspect={null}
+      loading="eager"
+    />
+    <div class="veil" />
+    <div class="hero-inner">
+      <span class="eyebrow">Издание №01 · Сезон 2026</span>
+      <h1>Крым,<br />собранный<br />заново.</h1>
+      <p class="lede">
+        Маршруты, которые работают. Места, которые помнят. И AI-редакция, которая
+        соберёт ваш план поездки за 10 секунд — под даты, состав и бюджет.
       </p>
-      <a href="#planner" class="btn btn-accent">Собрать свой маршрут</a>
+      <div>
+        <a href="#planner" class="btn btn-cream">Собрать маршрут</a>
+      </div>
+    </div>
+    <div class="photo-credit">
+      Фото: <a href="https://commons.wikimedia.org/wiki/User:A.Savin" target="_blank" rel="noopener">A.Savin</a> · CC BY-SA 3.0
     </div>
   </section>
 
+  <!-- ============ ROUTES ============ -->
   <div class="container">
+    <header class="section-rule">
+      <div class="num">01</div>
+      <div class="name">Маршруты</div>
+      <div class="meta">{routes.length} готовых · 12 городов</div>
+    </header>
+
     <section class="section">
-      <h2 class="section-title">Готовые маршруты</h2>
-      <div class="grid">
+      <div class="card-grid">
         {routes.map((r) => (
           <RouteCard
             href={url(`marshrut/${r.slug}/`)}
@@ -51,17 +73,26 @@ const jsonLd = {
             days={r.days}
             city={r.city}
             tags={r.tags}
+            image={r.image}
           />
         ))}
       </div>
-      <p style="text-align:center; margin-top:1.5rem">
-        <a href={url("marshrut/")}>Все маршруты →</a>
+      <p class="text-center" style="margin-top: var(--s-7)">
+        <a href={url("marshrut/")} class="btn btn-outline">Все маршруты</a>
       </p>
     </section>
+  </div>
+
+  <!-- ============ PLACES ============ -->
+  <div class="container">
+    <header class="section-rule">
+      <div class="num">02</div>
+      <div class="name">Места</div>
+      <div class="meta">{places.length} достопримечательностей</div>
+    </header>
 
     <section class="section">
-      <h2 class="section-title">Главные достопримечательности</h2>
-      <div class="grid">
+      <div class="card-grid">
         {places.map((p) => (
           <PlaceCard
             href={url(`mesta/${p.slug}/`)}
@@ -69,36 +100,65 @@ const jsonLd = {
             description={p.shortDescription}
             city={p.city}
             category={p.category}
+            image={p.image}
           />
         ))}
       </div>
-      <p style="text-align:center; margin-top:1.5rem">
-        <a href={url("mesta/")}>Все места →</a>
+      <p class="text-center" style="margin-top: var(--s-7)">
+        <a href={url("mesta/")} class="btn btn-outline">Все места</a>
       </p>
     </section>
+  </div>
+
+  <!-- ============ PULL QUOTE ============ -->
+  <div class="container">
+    <p class="pull">
+      «Крым — это не одно путешествие, а двенадцать, наложенных друг на друга».
+    </p>
+  </div>
+
+  <!-- ============ PLANNER FORM ============ -->
+  <div class="container">
+    <header class="section-rule" id="planner">
+      <div class="num">03</div>
+      <div class="name">AI-планировщик</div>
+      <div class="meta">~10 секунд</div>
+    </header>
+  </div>
+
+  <section class="form-section">
+    <PlannerForm />
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <div class="container">
+    <header class="section-rule">
+      <div class="num">04</div>
+      <div class="name">Как это работает</div>
+      <div class="meta">три шага</div>
+    </header>
 
     <section class="section">
-      <PlannerForm variant="hero" />
-    </section>
-
-    <section class="section">
-      <h2 class="section-title">Как это работает</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>1. Выбираете формат</h3>
+      <div class="card-grid-2" style="grid-template-columns: repeat(3, 1fr);">
+        <div>
+          <div class="serif-italic" style="font-size: 3.4rem; color: var(--c-burgundy); line-height:1; margin-bottom: var(--s-4);">i.</div>
+          <h3 style="font-style: italic;">Выбираете формат</h3>
           <p class="muted">
-            Готовый маршрут или формируете свой через AI: даты, бюджет, состав, интересы.
+            Готовый маршрут из редакции — или формируете свой через AI: даты, бюджет,
+            состав, главный интерес.
           </p>
         </div>
-        <div class="card">
-          <h3>2. AI собирает план</h3>
+        <div>
+          <div class="serif-italic" style="font-size: 3.4rem; color: var(--c-burgundy); line-height:1; margin-bottom: var(--s-4);">ii.</div>
+          <h3 style="font-style: italic;">AI собирает план</h3>
           <p class="muted">
-            За ~10 секунд получаете план по дням с тайм-слотами и адресами. Все места
-            проверены, координаты валидны.
+            ~10 секунд — и у вас план по дням с тайм-слотами, адресами и координатами.
+            Места проверены вручную и через 2GIS.
           </p>
         </div>
-        <div class="card">
-          <h3>3. Получаете PDF</h3>
+        <div>
+          <div class="serif-italic" style="font-size: 3.4rem; color: var(--c-burgundy); line-height:1; margin-bottom: var(--s-4);">iii.</div>
+          <h3 style="font-style: italic;">Получаете PDF</h3>
           <p class="muted">
             На email приходит файл с маршрутом и ссылкой на Яндекс.Карты — открывается
             на телефоне в один клик.
@@ -108,3 +168,13 @@ const jsonLd = {
     </section>
   </div>
 </BaseLayout>
+
+<style>
+  /* Restack the 3-step on tablet/mobile */
+  @media (max-width: 800px) {
+    .card-grid-2[style*="3, 1fr"] { grid-template-columns: 1fr 1fr !important; gap: var(--s-6) !important; }
+  }
+  @media (max-width: 540px) {
+    .card-grid-2[style*="3, 1fr"] { grid-template-columns: 1fr !important; }
+  }
+</style>

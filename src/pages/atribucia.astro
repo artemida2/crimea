@@ -1,0 +1,70 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import photos from "../data/photos.json";
+import { url } from "../utils/url";
+
+interface PhotoMeta {
+  slug: string;
+  title: string;
+  author: string;
+  author_url: string;
+  license: string;
+  license_url: string;
+  page: string;
+}
+
+const items = photos as PhotoMeta[];
+---
+
+<BaseLayout
+  title="Авторы фотографий — Крым · издание о полуострове"
+  description="Все фотографии на сайте взяты из Wikimedia Commons. На этой странице — полный список с указанием авторов и лицензий."
+>
+  <div class="container">
+    <p class="breadcrumbs">
+      <a href={url()}>Главная</a><span class="sep">/</span>Авторы фотографий
+    </p>
+  </div>
+
+  <header class="container container-narrow" style="padding-top: var(--s-7); padding-bottom: var(--s-5); text-align:center;">
+    <span class="eyebrow">Колофон</span>
+    <h1 style="font-style: italic;">Авторы фотографий</h1>
+    <p class="muted" style="font-family: var(--f-serif); font-size:1.2rem; line-height:1.5; margin-top: var(--s-3);">
+      Все снимки на сайте взяты из Wikimedia Commons и используются по лицензиям
+      Creative Commons. Спасибо авторам за то, что делятся работами для всех.
+    </p>
+  </header>
+
+  <article class="prose" style="padding-bottom: var(--s-9);">
+    <table style="width:100%; border-collapse: collapse; margin-top: var(--s-5);">
+      <thead>
+        <tr>
+          <th style="text-align:left; padding: var(--s-3) 0; border-bottom: 1px solid var(--c-line); font-size:0.74rem; letter-spacing:0.16em; text-transform:uppercase; color: var(--c-text-muted); font-weight:500;">Снимок</th>
+          <th style="text-align:left; padding: var(--s-3) 0; border-bottom: 1px solid var(--c-line); font-size:0.74rem; letter-spacing:0.16em; text-transform:uppercase; color: var(--c-text-muted); font-weight:500;">Автор</th>
+          <th style="text-align:left; padding: var(--s-3) 0; border-bottom: 1px solid var(--c-line); font-size:0.74rem; letter-spacing:0.16em; text-transform:uppercase; color: var(--c-text-muted); font-weight:500;">Лицензия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {items.map((p) => (
+          <tr>
+            <td style="padding: var(--s-4) var(--s-3) var(--s-4) 0; border-bottom: 1px dotted var(--c-line); vertical-align: top;">
+              <a href={p.page} target="_blank" rel="noopener" style="font-family: var(--f-serif); font-size:1.15rem; font-style:italic;">{p.title}</a>
+            </td>
+            <td style="padding: var(--s-4) var(--s-3) var(--s-4) 0; border-bottom: 1px dotted var(--c-line); vertical-align: top;">
+              <a href={p.author_url} target="_blank" rel="noopener">{p.author}</a>
+            </td>
+            <td style="padding: var(--s-4) 0; border-bottom: 1px dotted var(--c-line); vertical-align: top;">
+              <a href={p.license_url} target="_blank" rel="noopener">{p.license}</a>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    <p class="muted" style="font-size:0.92rem; margin-top: var(--s-7);">
+      Если вы автор и хотите внести правку в подпись — напишите в редакцию.
+      Все ссылки ведут на оригинальные страницы Wikimedia Commons и профили
+      авторов.
+    </p>
+  </article>
+</BaseLayout>

@@ -1,19 +1,39 @@
 ---
+import Picture from "./Picture.astro";
+
 interface Props {
   href: string;
   title: string;
   description: string;
   city: string;
   category?: string;
+  image?: string;
+  sizes?: string;
 }
 
-const { href, title, description, city, category } = Astro.props;
+const {
+  href,
+  title,
+  description,
+  city,
+  category,
+  image,
+  sizes = "(min-width: 900px) 33vw, 100vw",
+} = Astro.props;
 ---
 
-<a href={href} class="card" style="display:block; color: var(--color-text); text-decoration:none;">
-  <div style="font-size:0.85rem; color: var(--color-text-muted); margin-bottom:0.4rem">
+<a href={href} class="editorial-card">
+  {image && (
+    <Picture
+      slug={image}
+      alt={title}
+      sizes={sizes}
+      aspect="4/5"
+    />
+  )}
+  <div class="meta-line">
     {city}{category ? ` · ${category}` : ""}
   </div>
-  <h3 style="margin: 0 0 0.4rem 0; font-family: var(--font-sans); font-size:1.15rem; color: var(--color-text);">{title}</h3>
-  <p class="muted" style="margin-bottom:0">{description}</p>
+  <h3>{title}</h3>
+  <p class="descr">{description}</p>
 </a>

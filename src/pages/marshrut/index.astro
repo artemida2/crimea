@@ -6,22 +6,28 @@ import { url } from "../../utils/url";
 ---
 
 <BaseLayout
-  title="Готовые маршруты по Крыму — на машине, без машины, с детьми"
+  title="Маршруты по Крыму — Крым · издание о полуострове"
   description="Все готовые маршруты по Крыму: 3, 5, 7, 10, 14 дней. Кольцевые автомобильные, без машины на общественном транспорте, с детьми, гастро и винные туры. Карты, тайминг, цены 2026."
 >
   <div class="container">
     <p class="breadcrumbs">
-      <a href={url()}>Главная</a> / Маршруты
+      <a href={url()}>Главная</a><span class="sep">/</span>Маршруты
     </p>
-    <h1>Готовые маршруты по Крыму</h1>
-    <p class="muted">
-      Каждый маршрут — это шаблонный план дня по дням с тайм-слотами, адресами и
-      картой. Если шаблон не подходит — внизу страницы маршрута есть форма
-      «Адаптировать под себя» — AI пересоберёт план под ваши даты и интересы.
-    </p>
+  </div>
 
+  <header class="container container-narrow" style="padding-top: var(--s-7); padding-bottom: var(--s-5); text-align:center;">
+    <span class="eyebrow">Раздел №01</span>
+    <h1 style="font-style: italic;">Маршруты</h1>
+    <p class="muted" style="font-family: var(--f-serif); font-size:1.25rem; line-height:1.5; margin-top: var(--s-3);">
+      Готовые шаблоны по дням — с тайм-слотами, адресами и картой. Не подойдёт?
+      Внизу страницы маршрута есть форма «Адаптировать под себя» — AI пересоберёт
+      план под ваши даты и интересы.
+    </p>
+  </header>
+
+  <div class="container">
     <section class="section">
-      <div class="grid">
+      <div class="card-grid">
         {routes.map((r) => (
           <RouteCard
             href={url(`marshrut/${r.slug}/`)}
@@ -30,6 +36,7 @@ import { url } from "../../utils/url";
             days={r.days}
             city={r.city}
             tags={r.tags}
+            image={r.image}
           />
         ))}
       </div>

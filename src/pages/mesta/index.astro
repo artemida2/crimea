@@ -6,22 +6,27 @@ import { url } from "../../utils/url";
 ---
 
 <BaseLayout
-  title="Достопримечательности Крыма: подробный AI-гид"
+  title="Места Крыма — Крым · издание о полуострове"
   description="Подробные описания достопримечательностей Крыма: история, как добраться, цены 2026, время работы, фото и что посмотреть рядом. Ласточкино гнездо, Чуфут-Кале, Балаклава и другие."
 >
   <div class="container">
     <p class="breadcrumbs">
-      <a href={url()}>Главная</a> / Места
+      <a href={url()}>Главная</a><span class="sep">/</span>Места
     </p>
-    <h1>Достопримечательности Крыма</h1>
-    <p class="muted">
-      Каждый объект — отдельная страница с историей, картой, тарифами 2026 и
-      советами «как добраться». В каждой странице — AI-помощник, который ответит
-      на конкретные вопросы по объекту.
-    </p>
+  </div>
 
+  <header class="container container-narrow" style="padding-top: var(--s-7); padding-bottom: var(--s-5); text-align:center;">
+    <span class="eyebrow">Раздел №02</span>
+    <h1 style="font-style: italic;">Места</h1>
+    <p class="muted" style="font-family: var(--f-serif); font-size:1.25rem; line-height:1.5; margin-top: var(--s-3);">
+      Каждый объект — отдельный материал с историей, картой, тарифами 2026 и
+      советами «как добраться». В будущем — AI-помощник внутри каждой страницы.
+    </p>
+  </header>
+
+  <div class="container">
     <section class="section">
-      <div class="grid">
+      <div class="card-grid">
         {places.map((p) => (
           <PlaceCard
             href={url(`mesta/${p.slug}/`)}
@@ -29,6 +34,7 @@ import { url } from "../../utils/url";
             description={p.shortDescription}
             city={p.city}
             category={p.category}
+            image={p.image}
           />
         ))}
       </div>
