@@ -31,6 +31,8 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          PUBLIC_N8N_WEBHOOK: ${{ vars.PUBLIC_N8N_WEBHOOK }}
         run: npm run build
 
       - name: Upload artifact

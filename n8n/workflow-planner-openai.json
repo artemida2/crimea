@@ -1,0 +1,210 @@
+{
+  "name": "Crimea Planner — OpenAI + HTML Email",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "crimea-planner",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": false,
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-1",
+      "name": "Webhook (form submit)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "crimea-planner-webhook",
+      "notes": "POST {city, days, composition, transport, budget, topic, notes, email}\nallowedOrigins=* нужен потому что фронт на github.io, а n8n на другом домене."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Валидация и нормализация полей формы\nconst input = $input.first().json;\nconst body = input.body || input;\n\nconst {\n  city = 'krym',\n  days = 7,\n  composition = 'couple',\n  transport = 'car',\n  budget = 5000,\n  topic = 'obzor',\n  notes = '',\n  email = ''\n} = body;\n\nif (!email || !String(email).includes('@')) {\n  throw new Error('Невалидный email: ' + email);\n}\n\nconst nDays = Math.max(1, Math.min(21, Number(days) || 7));\n\nconst cityNames = {\n  krym: 'Весь Крым',\n  yalta: 'Ялта и Южный берег Крыма',\n  sevastopol: 'Севастополь',\n  bahchisaray: 'Бахчисарай',\n  feodosiya: 'Феодосия и Коктебель',\n  evpatoriya: 'Евпатория и западный Крым'\n};\nconst compNames = {\n  couple: 'пара',\n  'family-kids': 'семья с детьми',\n  friends: 'друзья',\n  solo: 'один',\n  parents: 'с родителями'\n};\nconst transportNames = {\n  car: 'на автомобиле',\n  public: 'общественный транспорт (троллейбус №52, маршрутки, автобусы)',\n  taxi: 'такси и трансферы',\n  mixed: 'комбинированно (поезд/самолёт + такси)'\n};\nconst topicNames = {\n  obzor: 'обзорный — главные места',\n  'more-plyazh': 'море и пляжи',\n  gory: 'горы и треккинг',\n  istoriya: 'история и архитектура',\n  gastro: 'гастро и виноделие',\n  's-detmi': 'с детьми',\n  aktiv: 'активный отдых'\n};\n\nconst budgetNum = Number(budget);\nconst budgetText = budgetNum >= 999999\n  ? 'без ограничений'\n  : `до ${budgetNum.toLocaleString('ru-RU')} ₽ на чел/день`;\n\nreturn [{\n  json: {\n    city, days: nDays, composition, transport, budget: budgetNum,\n    topic, notes: String(notes).slice(0, 500), email,\n    cityName: cityNames[city] || city,\n    compName: compNames[composition] || composition,\n    transportName: transportNames[transport] || transport,\n    topicName: topicNames[topic] || topic,\n    budgetText\n  }\n}];"
+      },
+      "id": "validate-1",
+      "name": "Validate & Normalize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-4o-mini\",\n  \"response_format\": {\"type\": \"json_object\"},\n  \"temperature\": 0.6,\n  \"max_tokens\": 2500,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Ты — редактор путеводителя по Крыму с многолетним опытом. Составляешь практичные маршруты с конкретными местами, тайм-слотами, реальными адресами. НИКОГДА не выдумываешь объекты, цены и расписания — если не уверен, опускаешь деталь. Стиль: лаконичный, на русском, с гастрономическими и логистическими подсказками. ВСЕГДА отвечаешь СТРОГО валидным JSON-объектом по схеме:\\n{\\n  \\\"title\\\": \\\"короткий заголовок маршрута\\\",\\n  \\\"summary\\\": \\\"параграф с общим описанием маршрута (2-3 предложения)\\\",\\n  \\\"total_km\\\": число (приблизительный пробег, 0 если без авто),\\n  \\\"days\\\": [\\n    {\\\"day\\\": 1, \\\"title\\\": \\\"Заголовок дня (откуда → куда)\\\", \\\"items\\\": [\\\"09:00 — действие/место с пояснением\\\", \\\"12:00 — ...\\\"]}\\n  ],\\n  \\\"tips\\\": [\\\"совет 1\\\", \\\"совет 2\\\"],\\n  \\\"budget_estimate\\\": \\\"строка с прикидкой бюджета на всю поездку\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": $json.userPrompt\n    }\n  ]\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "openai-1",
+      "name": "OpenAI: Generate Itinerary",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "REPLACE_WITH_YOUR_OPENAI_CRED_ID",
+          "name": "OpenAI account"
+        }
+      },
+      "notes": "Использует predefinedCredentialType: openAiApi.\nЗаведи credentials типа 'OpenAI' в n8n с твоим API key."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "userPrompt",
+              "value": "=Составь маршрут по Крыму на {{ $json.days }} дней.\n\n**Параметры**:\n- Регион: {{ $json.cityName }}\n- Длительность: {{ $json.days }} дней\n- Состав: {{ $json.compName }}\n- Транспорт: {{ $json.transportName }}\n- Бюджет: {{ $json.budgetText }}\n- Главный интерес: {{ $json.topicName }}\n- Особые пожелания: {{ $json.notes || 'нет' }}\n\n**Требования**:\n1. Каждый день — это {{ $json.composition === 'family-kids' ? '3-4' : '4-6' }} точек с тайм-слотами (09:00, 12:00, и т.д.)\n2. Учитывай переезды и пробки в сезон (особенно ЮБК)\n3. Включи минимум 2 совета по гастрономии (где обедать, какие блюда местные)\n4. Если транспорт = общественный — используй троллейбус №52 Симферополь—Ялта, маршрутки\n5. Все объекты должны реально существовать в Крыму. Если не уверен — пропусти.\n6. Финальный day обычно — возврат в Симферополь (откуда вылет/выезд)\n\nВерни СТРОГО JSON по схеме (без markdown-обёртки, без комментариев).",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "build-prompt-1",
+      "name": "Build User Prompt",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Парсим ответ OpenAI и рендерим красивый HTML email\nconst openaiRaw = $input.first().json;\nconst content = openaiRaw.choices?.[0]?.message?.content || '{}';\n\nlet plan;\ntry {\n  plan = JSON.parse(content);\n} catch (e) {\n  // Иногда модель оборачивает в ```json — пробуем вытащить\n  const m = content.match(/\\{[\\s\\S]+\\}/);\n  plan = m ? JSON.parse(m[0]) : { title: 'Ошибка', summary: 'Не удалось распарсить ответ AI', days: [], tips: [], budget_estimate: '' };\n}\n\nconst meta = $('Validate & Normalize').first().json;\n\nconst esc = (s) => String(s ?? '').replace(/[&<>\"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;' }[c]));\n\nconst dayBlocks = (plan.days || []).map((d) => `\n  <tr><td style=\"padding: 24px 0 8px; border-top: 1px solid #e6e2d8;\">\n    <span style=\"display:inline-block; font-family: Georgia, serif; font-size: 14px; color: #7A1F2B; letter-spacing: 0.1em; font-weight: 600;\">ДЕНЬ ${esc(d.day)}</span>\n    <h3 style=\"margin: 4px 0 16px; font-family: Georgia, serif; font-size: 22px; font-style: italic; font-weight: 400; color: #0E1B3A; line-height: 1.25;\">${esc(d.title)}</h3>\n    <ul style=\"margin: 0; padding: 0 0 0 4px; list-style: none; color: #2a2a2a; font-size: 15px; line-height: 1.6;\">\n      ${(d.items || []).map((p) => `<li style=\\\"padding: 6px 0 6px 18px; position: relative;\\\"><span style=\\\"position:absolute; left:0; color:#7A1F2B;\\\">·</span>${esc(p)}</li>`).join('')}\n    </ul>\n  </td></tr>`).join('');\n\nconst tipsBlock = (plan.tips || []).length\n  ? `<tr><td style=\"padding: 24px 0; border-top: 1px solid #e6e2d8;\">\n      <span style=\"display:inline-block; font-family: Georgia, serif; font-size: 12px; color: #7A1F2B; letter-spacing: 0.16em; text-transform:uppercase; font-weight:600;\">Советы</span>\n      <ul style=\"margin: 12px 0 0 0; padding-left: 20px; color: #2a2a2a; font-size: 15px; line-height: 1.6;\">\n        ${plan.tips.map((t) => `<li style=\\\"padding: 4px 0;\\\">${esc(t)}</li>`).join('')}\n      </ul>\n    </td></tr>` : '';\n\nconst html = `<!doctype html>\n<html lang=\"ru\">\n<head><meta charset=\"utf-8\"><title>${esc(plan.title || 'Маршрут по Крыму')}</title></head>\n<body style=\"margin:0; padding: 32px 16px; background: #FAF6EE; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1a1a1a;\">\n  <table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width: 640px; margin: 0 auto; background: #fff; border: 1px solid #e6e2d8;\">\n    <tr><td style=\"padding: 32px 32px 16px; text-align: center; border-bottom: 1px solid #e6e2d8;\">\n      <span style=\"font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #6b6b6b;\">Крым · издание о полуострове</span>\n      <h1 style=\"margin: 16px 0 8px; font-family: Georgia, serif; font-style: italic; font-weight: 400; font-size: 32px; line-height: 1.15; color: #0E1B3A;\">${esc(plan.title || 'Ваш маршрут')}</h1>\n      <p style=\"margin: 8px 0 0; color: #6b6b6b; font-size: 13px;\">${esc(meta.cityName)} · ${esc(meta.days)} дн. · ${esc(meta.compName)} · ${esc(meta.transportName)}</p>\n    </td></tr>\n    <tr><td style=\"padding: 24px 32px;\">\n      <p style=\"margin: 0; font-size: 16px; line-height: 1.6; color: #2a2a2a;\">${esc(plan.summary || '')}</p>\n      ${plan.total_km ? `<p style=\\\"margin: 12px 0 0; color: #6b6b6b; font-size: 13px;\\\">Общий пробег: ~${esc(plan.total_km)} км</p>` : ''}\n    </td></tr>\n    <tr><td style=\"padding: 0 32px;\">\n      <table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" style=\"width:100%;\">\n        ${dayBlocks}\n        ${tipsBlock}\n        ${plan.budget_estimate ? `<tr><td style=\\\"padding: 24px 0; border-top: 1px solid #e6e2d8;\\\"><span style=\\\"font-family: Georgia, serif; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #7A1F2B; font-weight: 600;\\\">Бюджет</span><p style=\\\"margin: 8px 0 0; font-size: 15px; color: #2a2a2a; line-height: 1.5;\\\">${esc(plan.budget_estimate)}</p></td></tr>` : ''}\n      </table>\n    </td></tr>\n    <tr><td style=\"padding: 24px 32px 32px; background: #FAF6EE; text-align: center; font-size: 12px; color: #6b6b6b;\">\n      Это базовая версия маршрута. Цены и расписание уточняйте на официальных сайтах объектов.\n      <br><br>\n      <a href=\"https://artemida2.github.io/crimea/\" style=\"color: #7A1F2B; text-decoration: none;\">artemida2.github.io/crimea</a>\n    </td></tr>\n  </table>\n</body></html>`;\n\nreturn [{\n  json: {\n    html,\n    subject: `Ваш маршрут: ${plan.title || meta.cityName + ', ' + meta.days + ' дней'}`,\n    plan,\n    meta\n  }\n}];"
+      },
+      "id": "render-html-1",
+      "name": "Render HTML email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "no-reply@your-domain.example",
+        "toEmail": "={{ $('Validate & Normalize').first().json.email }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "html",
+        "html": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "send-email-1",
+      "name": "Send Email (SMTP)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1340, 300],
+      "credentials": {
+        "smtp": {
+          "id": "REPLACE_WITH_YOUR_SMTP_CRED_ID",
+          "name": "SMTP account"
+        }
+      },
+      "notes": "SMTP credentials: для Gmail используй App Password (не основной пароль).\nhost: smtp.gmail.com, port: 465, ssl: true.\nfromEmail должен совпадать с залогиненным SMTP-аккаунтом."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, message: 'План отправлен на ' + $('Validate & Normalize').first().json.email + '. Проверьте папку «Спам».', title: $('Render HTML email').first().json.plan.title }) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond-1",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1560, 300]
+    }
+  ],
+  "connections": {
+    "Webhook (form submit)": {
+      "main": [
+        [
+          {
+            "node": "Validate & Normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Normalize": {
+      "main": [
+        [
+          {
+            "node": "Build User Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build User Prompt": {
+      "main": [
+        [
+          {
+            "node": "OpenAI: Generate Itinerary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI: Generate Itinerary": {
+      "main": [
+        [
+          {
+            "node": "Render HTML email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Render HTML email": {
+      "main": [
+        [
+          {
+            "node": "Send Email (SMTP)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email (SMTP)": {
+      "main": [
+        [
+          {
+            "node": "Respond OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "crimea"
+    }
+  ]
+}
