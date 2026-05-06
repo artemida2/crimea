@@ -2,8 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import RouteCard from "../../components/RouteCard.astro";
 import routes from "../../data/routes.json";
-
-const base = import.meta.env.BASE_URL;
+import { url } from "../../utils/url";
 ---
 
 <BaseLayout
@@ -12,7 +11,7 @@ const base = import.meta.env.BASE_URL;
 >
   <div class="container">
     <p class="breadcrumbs">
-      <a href={base + "/"}>Главная</a> / Маршруты
+      <a href={url()}>Главная</a> / Маршруты
     </p>
     <h1>Готовые маршруты по Крыму</h1>
     <p class="muted">
@@ -25,7 +24,7 @@ const base = import.meta.env.BASE_URL;
       <div class="grid">
         {routes.map((r) => (
           <RouteCard
-            href={`${base}/marshrut/${r.slug}/`}
+            href={url(`marshrut/${r.slug}/`)}
             title={r.title}
             description={r.description}
             days={r.days}

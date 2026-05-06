@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import places from "../../data/places.json";
 import { getPlaceContent } from "../../content/places-content";
+import { url } from "../../utils/url";
 
 export function getStaticPaths() {
   return places.map((place) => ({
@@ -12,7 +13,6 @@ export function getStaticPaths() {
 
 const { place } = Astro.props;
 const content = getPlaceContent(place.slug);
-const base = import.meta.env.BASE_URL;
 
 const nearby = (place.nearby ?? [])
   .map((slug) => places.find((p) => p.slug === slug))
@@ -38,7 +38,7 @@ const jsonLd = [
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Главная", item: Astro.site?.toString() },
-      { "@type": "ListItem", position: 2, name: "Места", item: `${Astro.site}${base.slice(1)}/mesta/` },
+      { "@type": "ListItem", position: 2, name: "Места", item: new URL(url("mesta/"), Astro.site).toString() },
       { "@type": "ListItem", position: 3, name: place.title },
     ],
   },
@@ -52,8 +52,8 @@ const jsonLd = [
 >
   <div class="container">
     <p class="breadcrumbs">
-      <a href={base + "/"}>Главная</a> /
-      <a href={`${base}/mesta/`}>Места</a> /
+      <a href={url()}>Главная</a> /
+      <a href={url("mesta/")}>Места</a> /
       {place.title}
     </p>
 
@@ -81,7 +81,7 @@ const jsonLd = [
     {nearby.length > 0 && (
       <div class="grid">
         {nearby.map((n) => (
-          <a href={`${base}/mesta/${n.slug}/`} class="card" style="display:block; color: var(--color-text); text-decoration:none;">
+          <a href={url(`mesta/${n.slug}/`)} class="card" style="display:block; color: var(--color-text); text-decoration:none;">
             <div style="font-size:0.85rem; color: var(--color-text-muted); margin-bottom:0.4rem">
               {n.city}
             </div>

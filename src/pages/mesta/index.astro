@@ -2,8 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PlaceCard from "../../components/PlaceCard.astro";
 import places from "../../data/places.json";
-
-const base = import.meta.env.BASE_URL;
+import { url } from "../../utils/url";
 ---
 
 <BaseLayout
@@ -12,7 +11,7 @@ const base = import.meta.env.BASE_URL;
 >
   <div class="container">
     <p class="breadcrumbs">
-      <a href={base + "/"}>Главная</a> / Места
+      <a href={url()}>Главная</a> / Места
     </p>
     <h1>Достопримечательности Крыма</h1>
     <p class="muted">
@@ -25,7 +24,7 @@ const base = import.meta.env.BASE_URL;
       <div class="grid">
         {places.map((p) => (
           <PlaceCard
-            href={`${base}/mesta/${p.slug}/`}
+            href={url(`mesta/${p.slug}/`)}
             title={p.title}
             description={p.shortDescription}
             city={p.city}

@@ -5,8 +5,8 @@ import RouteCard from "../components/RouteCard.astro";
 import PlaceCard from "../components/PlaceCard.astro";
 import routes from "../data/routes.json";
 import places from "../data/places.json";
+import { url } from "../utils/url";
 
-const base = import.meta.env.BASE_URL;
 const description =
   "AI-планировщик отпуска в Крыму и подробный гид по достопримечательностям. Готовые маршруты на 3, 7, 10, 14 дней с адаптацией под ваши даты, бюджет и интересы.";
 
@@ -17,7 +17,7 @@ const jsonLd = {
   url: Astro.site?.toString(),
   potentialAction: {
     "@type": "SearchAction",
-    target: `${base}/?q={search_term_string}`,
+    target: `${url()}?q={search_term_string}`,
     "query-input": "required name=search_term_string",
   },
 };
@@ -45,7 +45,7 @@ const jsonLd = {
       <div class="grid">
         {routes.map((r) => (
           <RouteCard
-            href={`${base}/marshrut/${r.slug}/`}
+            href={url(`marshrut/${r.slug}/`)}
             title={r.title}
             description={r.description}
             days={r.days}
@@ -55,7 +55,7 @@ const jsonLd = {
         ))}
       </div>
       <p style="text-align:center; margin-top:1.5rem">
-        <a href={`${base}/marshrut/`}>Все маршруты →</a>
+        <a href={url("marshrut/")}>Все маршруты →</a>
       </p>
     </section>
 
@@ -64,7 +64,7 @@ const jsonLd = {
       <div class="grid">
         {places.map((p) => (
           <PlaceCard
-            href={`${base}/mesta/${p.slug}/`}
+            href={url(`mesta/${p.slug}/`)}
             title={p.title}
             description={p.shortDescription}
             city={p.city}
@@ -73,7 +73,7 @@ const jsonLd = {
         ))}
       </div>
       <p style="text-align:center; margin-top:1.5rem">
-        <a href={`${base}/mesta/`}>Все места →</a>
+        <a href={url("mesta/")}>Все места →</a>
       </p>
     </section>
 
