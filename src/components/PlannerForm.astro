@@ -13,6 +13,10 @@ const {
   defaultTopic = "obzor",
   variant = "hero",
 } = Astro.props;
+
+// Webhook URL берётся из env (PUBLIC_N8N_WEBHOOK) на этапе билда.
+// Если переменной нет, форма работает в demo-режиме и просто показывает payload.
+const N8N_WEBHOOK = import.meta.env.PUBLIC_N8N_WEBHOOK ?? "";
 ---
 
 <div class="form-card">
@@ -113,13 +117,9 @@ const {
   </p>
 </div>
 
-<script>
-  const form = document.getElementById("planner-form") as HTMLFormElement | null;
-  const result = document.getElementById("planner-result") as HTMLDivElement | null;
-
-  // Webhook от n8n. Замените на свой URL после деплоя n8n воркфлоу.
-  // Пример: "https://n8n.example.com/webhook/crimea-planner"
-  const N8N_WEBHOOK = "";
+<script define:vars={{ N8N_WEBHOOK }}>
+  const form = document.getElementById("planner-form");
+  const result = document.getElementById("planner-result");
 
   if (form && result) {
     form.addEventListener("submit", async (e) => {
@@ -148,7 +148,7 @@ const {
         });
         if (!res.ok) throw new Error("HTTP " + res.status);
         const out = await res.json();
-        result.textContent = (out as { plan?: string }).plan ?? JSON.stringify(out, null, 2);
+        result.textContent = out.message ?? out.plan ?? JSON.stringify(out, null, 2);
       } catch (err) {
         result.textContent =
           "Ошибка отправки. Попробуйте через минуту или напишите нам.\n" + String(err);
