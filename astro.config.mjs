@@ -4,8 +4,8 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://artemida2.github.io',
-  base: '/crimea',
+  site: 'https://welcomecrimea.ru',
+  base: '/',
   trailingSlash: 'always',
   integrations: [sitemap()],
   build: {
