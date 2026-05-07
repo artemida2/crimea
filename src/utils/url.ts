@@ -1,4 +1,4 @@
-// BASE_URL в Astro приходит с trailing slash: '/crimea/'.
+// BASE_URL в Astro приходит с trailing slash (для custom-domain — '/').
 // Эта функция строит чистый URL без двойных слэшей.
 export function url(path: string = ""): string {
   const base = import.meta.env.BASE_URL.replace(/\/+$/, "");
