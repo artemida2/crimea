@@ -5,6 +5,8 @@ interface Props {
   defaultTopic?: string;
   /** controls heading copy: "hero" for landing, "inline" for inline-on-route */
   variant?: "hero" | "inline";
+  /** preselected tier; default 'free' */
+  defaultTier?: "free" | "premium";
 }
 
 const {
@@ -12,6 +14,7 @@ const {
   defaultDays = 7,
   defaultTopic = "obzor",
   variant = "hero",
+  defaultTier = "free",
 } = Astro.props;
 
 // Webhook URL берётся из env (PUBLIC_N8N_WEBHOOK) на этапе билда.
@@ -29,9 +32,47 @@ const N8N_WEBHOOK = import.meta.env.PUBLIC_N8N_WEBHOOK ?? "";
       : "Под ваши даты, бюджет и интересы"}
   </h2>
   <p class="lede">
-    Ответьте на семь вопросов — AI пересоберёт план под ваш состав и бюджет,
-    пришлёт PDF с картой Яндекс.Карт на email.
+    Выберите тариф и ответьте на несколько вопросов — AI пересоберёт план под вас
+    и пришлёт письмо на email. Премиум — пока бесплатно, в бета-периоде.
   </p>
+
+  <div class="tier-picker" role="radiogroup" aria-label="Тариф">
+    <label class={`tier-card ${defaultTier === "free" ? "is-active" : ""}`} data-tier="free">
+      <input type="radio" name="tier" value="free" checked={defaultTier === "free"} />
+      <div class="tier-card__head">
+        <span class="tier-card__name">Базовый</span>
+        <span class="tier-card__price">Бесплатно</span>
+      </div>
+      <p class="tier-card__sub">Быстрый план — для разведки и идей.</p>
+      <ul class="tier-card__features">
+        <li>Маршрут на email за 10–15 секунд</li>
+        <li>4–6 точек на день с тайм-слотами</li>
+        <li>Бюджет и советы по гастрономии</li>
+      </ul>
+    </label>
+
+    <label class={`tier-card tier-card--premium ${defaultTier === "premium" ? "is-active" : ""}`} data-tier="premium">
+      <input type="radio" name="tier" value="premium" checked={defaultTier === "premium"} />
+      <div class="tier-card__head">
+        <span class="tier-card__name">
+          Премиум
+          <span class="tier-card__badge">Бесплатно в бета-периоде</span>
+        </span>
+        <span class="tier-card__price">
+          <s>299&nbsp;₽</s>
+          <strong>0&nbsp;₽</strong>
+        </span>
+      </div>
+      <p class="tier-card__sub">Подробный план под ваш стиль и даты.</p>
+      <ul class="tier-card__features">
+        <li>6–8 точек в день с адресами и временем в пути</li>
+        <li>Подборка ресторанов и кафе по дням</li>
+        <li>План Б на дождливый день</li>
+        <li>Чек-лист «что взять в дорогу»</li>
+        <li>Учёт даты, точки прилёта, аллергий</li>
+      </ul>
+    </label>
+  </div>
 
   <form id="planner-form" class="planner-form" novalidate>
     <div class="field">
@@ -97,35 +138,111 @@ const N8N_WEBHOOK = import.meta.env.PUBLIC_N8N_WEBHOOK ?? "";
 
     <div class="field full">
       <label for="notes">Особые пожелания (необязательно)</label>
-      <textarea id="notes" name="notes" rows="2" placeholder="Едем с собакой, без длинных переездов, аллергия на рыбу…"></textarea>
+      <textarea id="notes" name="notes" rows="2" placeholder="Едем с собакой, без длинных переездов, хотим винодельни…"></textarea>
     </div>
 
+    <fieldset class="premium-fields" hidden>
+      <legend>Премиум-детали</legend>
+
+      <div class="field">
+        <label for="comfort">Уровень проживания</label>
+        <select id="comfort" name="comfort">
+          <option value="">Не важно</option>
+          <option value="hostel">Хостел / гестхаус</option>
+          <option value="econom">Эконом 3*</option>
+          <option value="comfort">Комфорт 4*</option>
+          <option value="premium">Премиум 5*+ / бутик</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="arrivalPoint">Точка прибытия</label>
+        <select id="arrivalPoint" name="arrivalPoint">
+          <option value="">Не указывать</option>
+          <option value="simferopol">Аэропорт Симферополь</option>
+          <option value="anapa">Аэропорт Анапа</option>
+          <option value="krasnodar">Аэропорт Краснодар</option>
+          <option value="own-car">На машине через Крымский мост</option>
+          <option value="train">Поезд (Симферополь / Севастополь)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="arrivalDate">Дата прибытия</label>
+        <input type="date" id="arrivalDate" name="arrivalDate" />
+      </div>
+
+      <div class="field">
+        <label for="departureDate">Дата отъезда</label>
+        <input type="date" id="departureDate" name="departureDate" />
+      </div>
+
+      <div class="field full">
+        <label for="allergies">Аллергии и ограничения (опционально)</label>
+        <textarea id="allergies" name="allergies" rows="2" placeholder="Не ем рыбу, аллергия на орехи, веган…"></textarea>
+      </div>
+    </fieldset>
+
     <div class="field full">
-      <label for="email">Email для PDF</label>
+      <label for="email">Email для маршрута</label>
       <input type="email" id="email" name="email" placeholder="you@example.com" required />
     </div>
 
     <div class="full submit-row">
-      <button type="submit" class="btn">Собрать маршрут с AI</button>
+      <button type="submit" class="btn" data-tier-label-free="Собрать маршрут с AI" data-tier-label-premium="Собрать премиум-маршрут с AI">
+        {defaultTier === "premium" ? "Собрать премиум-маршрут с AI" : "Собрать маршрут с AI"}
+      </button>
     </div>
   </form>
 
   <div id="planner-result"></div>
 
   <p class="legal">
-    Базовый маршрут — бесплатно, мгновенно. Премиум PDF с фотографиями и аудиогидом — 299&nbsp;₽ через ЮKassa.
+    Базовый и премиум тарифы сейчас бесплатны (бета-период). Платная версия за 299&nbsp;₽
+    через ЮKassa подключим, когда соберём первую сотню тестовых маршрутов.
   </p>
 </div>
 
 <script define:vars={{ N8N_WEBHOOK }}>
   const form = document.getElementById("planner-form");
   const result = document.getElementById("planner-result");
+  const tierInputs = document.querySelectorAll('input[name="tier"]');
+  const tierCards = document.querySelectorAll(".tier-card");
+  const premiumFields = document.querySelector(".premium-fields");
+  const submitBtn = document.querySelector("#planner-form button[type=submit]");
+
+  function applyTier(tier) {
+    tierCards.forEach((c) => c.classList.toggle("is-active", c.dataset.tier === tier));
+    if (premiumFields) premiumFields.hidden = tier !== "premium";
+    if (submitBtn) {
+      submitBtn.textContent =
+        tier === "premium"
+          ? submitBtn.dataset.tierLabelPremium || "Собрать премиум-маршрут с AI"
+          : submitBtn.dataset.tierLabelFree || "Собрать маршрут с AI";
+    }
+  }
+
+  tierInputs.forEach((inp) => {
+    inp.addEventListener("change", () => applyTier(inp.value));
+  });
+  // Initial state in case of pre-selected tier
+  const initialTier = document.querySelector('input[name="tier"]:checked')?.value || "free";
+  applyTier(initialTier);
 
   if (form && result) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const data = Object.fromEntries(new FormData(form).entries());
-      result.textContent = "Собираю маршрут… (обычно ~10 секунд)";
+      // Sanitise: strip premium-only fields if user is on free
+      if (data.tier !== "premium") {
+        ["comfort", "arrivalPoint", "arrivalDate", "departureDate", "allergies"].forEach(
+          (k) => delete data[k]
+        );
+      }
+      result.textContent =
+        data.tier === "premium"
+          ? "Собираю подробный премиум-маршрут… (15–25 секунд)"
+          : "Собираю маршрут… (обычно ~10 секунд)";
 
       if (!N8N_WEBHOOK) {
         result.textContent =
