@@ -18,8 +18,12 @@ Browser form (PlannerForm.astro)
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │ n8n: Crimea Planner — OpenAI + HTML Email (Free + Premium)                  │
 │                                                                              │
-│  Webhook ─▶ Validate ─▶ Fetch Attractions ─▶ Fetch Transport ─▶ Build Prompt│
-│                          (95 точек)         (68 опций)                │     │
+│  Webhook ─▶ Validate ─▶ Fetch Attractions ─▶ Fetch Transport ─▶ Fetch Food │
+│                          (95 точек)         (68 опций)         (75 мест)   │
+│                                                                       │     │
+│                                                                       ▼     │
+│                                                              Build Prompt   │
+│                                                                       │     │
 │                                                                       ▼     │
 │  Respond OK ◀── Send Email (SMTP) ◀── Render HTML email ◀── OpenAI         │
 └──────────────────────────────────────────────────────────────────────────────┘
@@ -30,11 +34,12 @@ Browser form (PlannerForm.astro)
 2. **Validate** — проверка email, нормализация: переводит коды (`yalta`, `couple`, `obzor`) в человеческие названия для промпта; нормализует tier и премиум-поля.
 3. **Fetch Attractions Catalog** — HTTP GET на `https://welcomecrimea.ru/data/attractions.json` подтягивает каталог из 95 проверенных мест Крыма (адреса, часы, цены, координаты).
 4. **Fetch Transport Catalog** — HTTP GET на `https://welcomecrimea.ru/data/transport.json` подтягивает каталог из 68 проверенных опций транспорта (поезда «Таврия», троллейбус №52А, маршрутки, такси, аренда авто, канатки, морские прогулки, Крымский мост).
-5. **Build Tier-aware Prompt** — фильтрует каталог достопримечательностей по региону (city), фильтрует транспорт по выбранному способу (car/public/taxi/mixed) и связанным городам, сортирует по приоритету (релевантные теги + «обязательно»), инжектит оба каталога в system+user prompt. Для free — компактный (4–6 точек/день); для premium — расширенный (6–8 точек/день, рестораны, план Б, чек-лист).
-6. **OpenAI** — `gpt-4o-mini` с `response_format=json_object` возвращает структурированный план. Системный промпт явно запрещает выдумывать места и способы транспорта — AI берёт только из каталогов.
-7. **Render HTML** — превращает JSON в красивое HTML-письмо в стиле сайта (serif, navy/cream/burgundy). Для premium дополнительно рендерит секции рестораны / план Б на дождь / чек-лист.
-8. **Send Email** — отправляет через SMTP.
-9. **Respond OK** — фронт получает `{ok:true, message:"План отправлен на ..."}` и показывает пользователю.
+5. **Fetch Food Catalog** — HTTP GET на `https://welcomecrimea.ru/data/food.json` подтягивает каталог из 75 проверенных ресторанов/кафе/столовых/виноделен (Чайка в Ялте, Мусафир в Бахчисарае, Кефало-Вриси в Балаклаве, Дорадо в Алуште, Караман в Евпатории, винодельни Massandra/Inkerman/Esse/Solnechnaya Dolina/Alma Valley и др.).
+6. **Build Tier-aware Prompt** — фильтрует каталог достопримечательностей по региону (city), фильтрует транспорт по выбранному способу (car/public/taxi/mixed) и связанным городам, фильтрует еду по региону и составу (для семей с детьми приоритет kid_friendly; для gastro-туров приоритет винодельням), сортирует по приоритету (релевантные теги + «обязательно»), инжектит все три каталога в system+user prompt. Для free — компактный (4–6 точек/день, ~15 ресторанов); для premium — расширенный (6–8 точек/день, ~30 ресторанов, рестораны по дням, план Б, чек-лист).
+7. **OpenAI** — `gpt-4o-mini` с `response_format=json_object` возвращает структурированный план. Системный промпт явно запрещает выдумывать места, рестораны и способы транспорта — AI берёт только из каталогов.
+8. **Render HTML** — превращает JSON в красивое HTML-письмо в стиле сайта (serif, navy/cream/burgundy). Для premium дополнительно рендерит секции рестораны / план Б на дождь / чек-лист.
+9. **Send Email** — отправляет через SMTP.
+10. **Respond OK** — фронт получает `{ok:true, message:"План отправлен на ..."}` и показывает пользователю.
 
 Время от submit до получения письма: **10–20 секунд** (premium ближе к 20). Стоимость одного маршрута: **~$0.002–0.005** (gpt-4o-mini, 4000–7000 input токенов из-за каталога + 2000–4000 output).
 
@@ -99,9 +104,9 @@ https://n8n.io/cloud/ — Starter план $20/мес, 5к executions, без з
 ## Импорт воркфлоу
 
 1. В n8n: **Workflows → Add workflow → Import from File** → выбрать `workflow-planner-openai.json`.
-2. Должно появиться **9 нод** (Webhook → Validate → Fetch Attractions Catalog → Fetch Transport Catalog → Build Prompt → OpenAI → Render → Send Email → Respond). **Не активируй** воркфлоу пока не подключишь creds.
+2. Должно появиться **10 нод** (Webhook → Validate → Fetch Attractions Catalog → Fetch Transport Catalog → Fetch Food Catalog → Build Prompt → OpenAI → Render → Send Email → Respond). **Не активируй** воркфлоу пока не подключишь creds.
 
-> **Каталоги проверенных мест и транспорта**: ноды `Fetch Attractions Catalog` и `Fetch Transport Catalog` тянут `https://welcomecrimea.ru/data/attractions.json` (95 точек) и `https://welcomecrimea.ru/data/transport.json` (68 опций) соответственно. Оба файла лежат в репо в `public/data/` и обновляются деплоем GitHub Pages автоматически. Если хочешь добавить/убрать данные — правь `src/data/*.json`, копию в `public/data/`, и закоммить — после деплоя каталоги обновятся без необходимости пересохранять workflow в n8n.
+> **Каталоги проверенных мест, транспорта и еды**: ноды `Fetch Attractions Catalog`, `Fetch Transport Catalog` и `Fetch Food Catalog` тянут `https://welcomecrimea.ru/data/attractions.json` (95 точек), `https://welcomecrimea.ru/data/transport.json` (68 опций) и `https://welcomecrimea.ru/data/food.json` (75 ресторанов/кафе/виноделен) соответственно. Все три файла лежат в репо в `public/data/` и обновляются деплоем GitHub Pages автоматически. Если хочешь добавить/убрать данные — правь `src/data/*.json`, копию в `public/data/`, и закоммить — после деплоя каталоги обновятся без необходимости пересохранять workflow в n8n.
 
 ## Подключение OpenAI
 
