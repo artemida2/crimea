@@ -1,0 +1,2058 @@
+[
+  {
+    "id": "rest-chayka-yalta",
+    "type": "restaurant",
+    "name": "Чайка (панорамный ресторан)",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "Набережная Ленина, 35/2 (Приморский парк), Ялта",
+    "coords": [
+      44.4934,
+      34.1638
+    ],
+    "hours": "12:00–00:00",
+    "cuisine": "средиземноморская, грузинская, паназиатская, европейская",
+    "avg_check": "1800–3000 ₽ на человека",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "видовой",
+      "панорамный",
+      "терраса",
+      "детское меню"
+    ],
+    "phone": "+7 978 700-21-21",
+    "website": "https://chaika-yalta.ru/",
+    "source": "https://chaika-yalta.ru/",
+    "description": "Панорамный ресторан в центре Ялты с летней террасой и обзорным видом на море и Набережную. Стиль лофт, средиземноморская и грузинская кухня, детское меню."
+  },
+  {
+    "id": "rest-capri-yalta",
+    "type": "restaurant",
+    "name": "Капри / Caprese (пиццерия-итальянская)",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Морская, 2 (угол Набережной), Ялта",
+    "coords": [
+      44.4942,
+      34.1626
+    ],
+    "hours": "10:00–23:00",
+    "cuisine": "итальянская",
+    "avg_check": "1500–2200 ₽ на двоих без алкоголя",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "итальянская",
+      "пицца",
+      "местные",
+      "демократичные цены"
+    ],
+    "source": "https://yaltaguide.ru/kafe-v-yalte",
+    "description": "Любимое заведение местных жителей. Лучшая пицца в Ялте, свежие салаты, креветки в чесночном соусе, рапаны в сливочном."
+  },
+  {
+    "id": "rest-roppongi-yalta",
+    "type": "restaurant",
+    "name": "Роппонги",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Игнатенко, 1, Ялта",
+    "coords": [
+      44.4944,
+      34.1657
+    ],
+    "hours": "11:00–00:00",
+    "cuisine": "японская, паназиатская",
+    "avg_check": "1500–2500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "суши",
+      "роллы",
+      "местные",
+      "большой выбор"
+    ],
+    "source": "https://yaltaguide.ru/kafe-v-yalte",
+    "description": "Часть локальной сети (Роппонги/Гараж/Коза Ностра). Качественная японская и паназиатская кухня, демократичные цены, любят местные."
+  },
+  {
+    "id": "stolovaya-podomashnemu-yalta",
+    "type": "stolovaya",
+    "name": "По-Домашнему (столовая)",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Свердлова, 9, Ялта (плюс несколько филиалов в центре)",
+    "coords": [
+      44.4954,
+      34.1664
+    ],
+    "hours": "08:00–22:00",
+    "cuisine": "русская домашняя",
+    "avg_check": "350–600 ₽ на человека",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "столовая",
+      "бюджет",
+      "быстро",
+      "домашняя кухня"
+    ],
+    "source": "https://yaltaguide.ru/kafe-v-yalte",
+    "description": "Самый бюджетный и быстрый вариант плотно поесть в Ялте. Без изысков, но вкусно и большой выбор. Несколько точек в центре."
+  },
+  {
+    "id": "rest-prasad-yalta",
+    "type": "cafe",
+    "name": "Прасад (вегетарианское кафе)",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Дражинского, 50, Ялта",
+    "coords": [
+      44.4994,
+      34.1893
+    ],
+    "hours": "10:00–22:00",
+    "cuisine": "индийская, вегетарианская",
+    "avg_check": "600–1200 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "вегетарианское",
+      "веганское",
+      "индийская кухня"
+    ],
+    "source": "https://yaltaguide.ru/kafe-v-yalte",
+    "description": "Одно из немногих заведений вегетарианской направленности в Ялте. Индийская и веганская кухня."
+  },
+  {
+    "id": "rest-doctor-whiskey-yalta",
+    "type": "restaurant",
+    "name": "Доктор Виски (высокая кухня)",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Морская, 5, Ялта",
+    "coords": [
+      44.4943,
+      34.1625
+    ],
+    "hours": "12:00–02:00",
+    "cuisine": "европейская, авторская",
+    "avg_check": "4000–8000 ₽ на человека",
+    "kid_friendly": false,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "fine dining",
+      "виски бар",
+      "императорские рецепты",
+      "премиум"
+    ],
+    "source": "https://yaltaguide.ru/kafe-v-yalte",
+    "description": "Высокая кухня, блюда по рецептам императорских кулинаров. Большая коллекция виски. Premium-уровень цен."
+  },
+  {
+    "id": "rest-vstrecha-yalta",
+    "type": "restaurant",
+    "name": "Встреча (грузинская кухня)",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Севастопольская, 8, Ялта",
+    "coords": [
+      44.4948,
+      34.1571
+    ],
+    "hours": "12:00–00:00",
+    "cuisine": "грузинская",
+    "avg_check": "1500–2500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "грузинская",
+      "хинкали",
+      "хачапури",
+      "терраса"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Популярный грузинский ресторан в центре Ялты с террасой. Аутентичные хинкали, хачапури по-аджарски, шашлыки на углях."
+  },
+  {
+    "id": "cheb-khan-saray-yalta",
+    "type": "cheburechnaya",
+    "name": "Хан Сарай (крымско-татарская)",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Свердлова, 1, Ялта",
+    "coords": [
+      44.4955,
+      34.167
+    ],
+    "hours": "10:00–22:00",
+    "cuisine": "крымско-татарская",
+    "avg_check": "400–800 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "чебуреки",
+      "плов",
+      "лагман",
+      "бюджет",
+      "локальная кухня"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Чебуречная и плов-кафе в центре. Янтыки, чебуреки с разнообразной начинкой, плов, шурпа. Быстро и недорого."
+  },
+  {
+    "id": "rest-altea-gurzuf",
+    "type": "restaurant",
+    "name": "Алтея (Гурзуф Ривьера)",
+    "city": "Гурзуф",
+    "region": "Южный берег",
+    "address": "Гурзуфская набережная, 1 (отель Гурзуф Ривьера)",
+    "coords": [
+      44.5466,
+      34.2823
+    ],
+    "hours": "12:00–23:00",
+    "cuisine": "средиземноморская, крымская",
+    "avg_check": "2500–4000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "видовой",
+      "морепродукты",
+      "неаполитанская пицца",
+      "дровяная печь"
+    ],
+    "website": "https://rest.gurzuf-riviera-hotel.ru/",
+    "source": "https://rest.gurzuf-riviera-hotel.ru/",
+    "description": "Ресторан на берегу моря в Гурзуфе. Средиземноморская и крымская кухня от шефа. Особая гордость — неаполитанская пицца на дровах."
+  },
+  {
+    "id": "cafe-forest-alupka",
+    "type": "cafe",
+    "name": "Кафе при гостевом доме «Форест»",
+    "city": "Алупка",
+    "region": "Южный берег",
+    "address": "ул. Калинина, 1, Алупка",
+    "coords": [
+      44.4194,
+      34.0479
+    ],
+    "hours": "08:30–20:00 (май–октябрь)",
+    "cuisine": "украинская, европейская",
+    "avg_check": "500–1200 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "завтраки",
+      "детское меню",
+      "сезонный"
+    ],
+    "phone": "+7 978 860-78-59",
+    "website": "https://www.alupka-simeiz.ru/services/cafe",
+    "source": "https://www.alupka-simeiz.ru/services/cafe",
+    "description": "Ресторан гостевого дома Форест с летней площадкой. Завтраки (блинчики, сырники, омлет, каши), украинская и европейская кухня. Работает май–октябрь.",
+    "notes": "Сезонный — закрыт в межсезонье."
+  },
+  {
+    "id": "rest-vorontsov-alupka",
+    "type": "restaurant",
+    "name": "Воронцовский (у дворца)",
+    "city": "Алупка",
+    "region": "Южный берег",
+    "address": "Дворцовое шоссе, 18, Алупка (территория парка)",
+    "coords": [
+      44.4196,
+      34.0568
+    ],
+    "hours": "10:00–22:00 (сезон)",
+    "cuisine": "крымско-татарская, европейская",
+    "avg_check": "1000–2000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "рядом с дворцом",
+      "терраса",
+      "после экскурсии"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Удобная остановка после Воронцовского дворца. Крымско-татарская и европейская кухня, терраса с видом на парк."
+  },
+  {
+    "id": "cafe-blue-bay-simeiz",
+    "type": "cafe",
+    "name": "Голубой залив (видовое кафе)",
+    "city": "Симеиз",
+    "region": "Южный берег",
+    "address": "ул. Советская, 11, Симеиз",
+    "coords": [
+      44.4015,
+      34.0011
+    ],
+    "hours": "10:00–23:00 (сезон)",
+    "cuisine": "крымская, европейская",
+    "avg_check": "1000–1800 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": false,
+    "view_sea": true,
+    "tags": [
+      "вид на море",
+      "терраса",
+      "сезонный"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Кафе с видом на Голубой залив. Терраса, рыбные блюда, крымские вина. Лучшее место для заката.",
+    "notes": "В основном работает в сезон (май–октябрь)."
+  },
+  {
+    "id": "rest-apolo-bistro-sevastopol",
+    "type": "restaurant",
+    "name": "Apolo Bistro (итальянское)",
+    "city": "Севастополь",
+    "region": "Севастополь",
+    "address": "ул. Большая Морская, 13А, Севастополь",
+    "coords": [
+      44.6133,
+      33.5246
+    ],
+    "hours": "09:00–00:00",
+    "cuisine": "итальянская",
+    "avg_check": "1800–3000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "итальянская",
+      "неаполитанская пицца",
+      "паста",
+      "крымские вина"
+    ],
+    "phone": "+7 978 446-16-00",
+    "website": "https://apolobistro.ru/",
+    "source": "https://apolobistro.ru/",
+    "description": "Итальянское бистро в центре Севастополя с видом на Большую Морскую. Неаполитанская пицца на дровах, паста, локальные продукты, большой выбор крымских вин."
+  },
+  {
+    "id": "rest-blackseasevastopol",
+    "type": "restaurant",
+    "name": "БлэкСи (BlackSea)",
+    "city": "Севастополь",
+    "region": "Севастополь",
+    "address": "Артиллерийская бухта (наб. Корнилова), Севастополь",
+    "coords": [
+      44.6151,
+      33.5198
+    ],
+    "hours": "12:00–00:00",
+    "cuisine": "европейская, средиземноморская, суши, морепродукты",
+    "avg_check": "2500–4500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "видовой",
+      "fine dining",
+      "морепродукты",
+      "Артбухта"
+    ],
+    "source": "https://restaurantguru.ru/seafood-Sevastopol-m29",
+    "description": "Один из лучших ресторанов Севастополя по рейтингам. Вид на Артиллерийскую бухту, средиземноморская кухня, морепродукты, авторские блюда."
+  },
+  {
+    "id": "rest-cheburechnaya-sevastopol",
+    "type": "cheburechnaya",
+    "name": "Чебуречная (грузинская)",
+    "city": "Севастополь",
+    "region": "Севастополь",
+    "address": "пр. Нахимова, 4, Севастополь",
+    "coords": [
+      44.6166,
+      33.5256
+    ],
+    "hours": "10:00–22:00",
+    "cuisine": "грузинская, восточная",
+    "avg_check": "600–1200 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "чебуреки",
+      "хинкали",
+      "лагман",
+      "бюджет"
+    ],
+    "source": "https://restaurantguru.ru/",
+    "description": "Топовое грузинское кафе по рейтингам Севастополя. Чебуреки, хинкали, лапша, жульен из морепродуктов."
+  },
+  {
+    "id": "rest-raki-eclair-sevastopol",
+    "type": "restaurant",
+    "name": "Раки&Эклеры",
+    "city": "Севастополь",
+    "region": "Севастополь",
+    "address": "ул. Айвазовского, 2, Севастополь",
+    "coords": [
+      44.6155,
+      33.5232
+    ],
+    "hours": "12:00–23:00",
+    "cuisine": "морепродукты, рыбная, кондитерская",
+    "avg_check": "1800–3500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "раки",
+      "морепродукты",
+      "десерты",
+      "центр"
+    ],
+    "source": "https://restaurantguru.ru/seafood-Sevastopol-m29",
+    "description": "Концептуальный рыбный ресторан в центре Севастополя. Свежие раки, морепродукты + кондитерская со своей выпечкой."
+  },
+  {
+    "id": "rest-kefalo-vrisi-balaklava",
+    "type": "restaurant",
+    "name": "Кефало-Вриси",
+    "city": "Балаклава",
+    "region": "Севастополь",
+    "address": "наб. Назукина, 9, Балаклава",
+    "coords": [
+      44.5004,
+      33.5995
+    ],
+    "hours": "10:00–23:00",
+    "cuisine": "морепродукты, греческая, рыбная",
+    "avg_check": "1500–2800 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "набережная",
+      "морепродукты",
+      "мидии",
+      "уха",
+      "вид на бухту"
+    ],
+    "source": "https://kimeria.ru/sevastopol/point/kefalo_vrisi",
+    "description": "Небольшой ресторан на Балаклавской набережной. Стеклянная веранда, мидии и устрицы, отличная уха, домашнее печенье. Большие порции."
+  },
+  {
+    "id": "rest-yamboli-balaklava",
+    "type": "restaurant",
+    "name": "Ямболи",
+    "city": "Балаклава",
+    "region": "Севастополь",
+    "address": "наб. Назукина, 13, Балаклава",
+    "coords": [
+      44.5008,
+      33.5999
+    ],
+    "hours": "11:00–23:00",
+    "cuisine": "морепродукты, европейская, средиземноморская",
+    "avg_check": "1800–3000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "рестораны с морепродуктами",
+      "бранчи",
+      "набережная"
+    ],
+    "source": "https://sevastopol.spravker.ru/rybnye-restorany/raion-balaklavskij/",
+    "description": "Ресторан с морепродуктами на Балаклавской набережной. Бранчи, средиземноморская кухня, вид на бухту."
+  },
+  {
+    "id": "cheb-davida-balaklava",
+    "type": "cheburechnaya",
+    "name": "Чебуреки Дэвида",
+    "city": "Балаклава",
+    "region": "Севастополь",
+    "address": "наб. Назукина (район пирсов), Балаклава",
+    "coords": [
+      44.5006,
+      33.5992
+    ],
+    "hours": "10:00–22:00 (сезон)",
+    "cuisine": "крымско-татарская",
+    "avg_check": "300–600 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": false,
+    "view_sea": true,
+    "tags": [
+      "чебуреки",
+      "стрит-фуд",
+      "бюджет",
+      "локальный мастер"
+    ],
+    "source": "https://kimeria.ru/sevastopol/point/kefalo_vrisi",
+    "description": "Легендарные чебуреки на Балаклавской набережной. Чебуреки с мясом и сыром «бомба» по отзывам.",
+    "notes": "В основном сезонный."
+  },
+  {
+    "id": "cafe-musafir-bahchisaray",
+    "type": "cafe",
+    "name": "Мусафир (чайхана)",
+    "city": "Бахчисарай",
+    "region": "Центральный Крым",
+    "address": "ул. Горького, 21, Бахчисарай",
+    "coords": [
+      44.7474,
+      33.8758
+    ],
+    "hours": "08:00–23:00",
+    "cuisine": "крымско-татарская, восточная",
+    "avg_check": "500–1200 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "крымско-татарская",
+      "напротив Ханского дворца",
+      "чайхана",
+      "юфак-аш",
+      "янтык",
+      "кабырга"
+    ],
+    "phone": "+7 978 740-89-30",
+    "source": "https://tavrika.su/id15471",
+    "description": "Кафе в 50 м от Ханского дворца. Уютные беседки, журчание фонтана, вид на дворец. Юфак-аш (мини-пельмени), янтык, плов, кабырга (бараньи рёбра), хошаф, шербет, кофе на песке."
+  },
+  {
+    "id": "cafe-alie-bahchisaray",
+    "type": "cafe",
+    "name": "Алие",
+    "city": "Бахчисарай",
+    "region": "Центральный Крым",
+    "address": "ул. Ленина, 117, Бахчисарай",
+    "coords": [
+      44.7482,
+      33.8704
+    ],
+    "hours": "09:00–22:00",
+    "cuisine": "крымско-татарская",
+    "avg_check": "500–1100 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "крымско-татарская",
+      "плов",
+      "лагман",
+      "чебуреки",
+      "хорошие отзывы"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Семейная крымско-татарская кухня в центре Бахчисарая. Плов, лагман, чебуреки, шурпа. Уютно, домашняя атмосфера."
+  },
+  {
+    "id": "cafe-churuk-su-bahchisaray",
+    "type": "cafe",
+    "name": "Чурук-Су",
+    "city": "Бахчисарай",
+    "region": "Центральный Крым",
+    "address": "ул. Розы Люксембург, 32, Бахчисарай",
+    "coords": [
+      44.7497,
+      33.8862
+    ],
+    "hours": "09:00–22:00",
+    "cuisine": "крымско-татарская",
+    "avg_check": "600–1200 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "крымско-татарская",
+      "у Успенского монастыря",
+      "по дороге в Чуфут-Кале"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Кафе по дороге к Свято-Успенскому монастырю и Чуфут-Кале. Удобно зайти после пещерного города. Крымско-татарская кухня."
+  },
+  {
+    "id": "cafe-shabanovi-bahchisaray",
+    "type": "cafe",
+    "name": "Шабановы (этно-кафе)",
+    "city": "Бахчисарай",
+    "region": "Центральный Крым",
+    "address": "ул. Ракитского, 25, Бахчисарай",
+    "coords": [
+      44.7489,
+      33.8721
+    ],
+    "hours": "10:00–22:00",
+    "cuisine": "крымско-татарская, татарская",
+    "avg_check": "700–1500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "этно-кафе",
+      "крымско-татарская",
+      "семейное"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Семейное этно-кафе с национальной кухней. Тыквенный пирог, шурпа, лагман, мини-пельмени юфак-аш."
+  },
+  {
+    "id": "rest-plov-center-simferopol",
+    "type": "restaurant",
+    "name": "Плов Центр",
+    "city": "Симферополь",
+    "region": "Центральный Крым",
+    "address": "ул. Козлова, 11, Симферополь (несколько филиалов)",
+    "coords": [
+      44.9527,
+      34.1024
+    ],
+    "hours": "10:00–22:00",
+    "cuisine": "восточная, узбекская",
+    "avg_check": "500–1200 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "плов",
+      "узбекская",
+      "шашлык",
+      "люля-кебаб",
+      "4 филиала"
+    ],
+    "phone": "+7 978 123-12-12",
+    "website": "https://eda-centre.ru/",
+    "source": "https://2gis.ru/simferopol/firm/70000001037295280",
+    "description": "Сеть кафе восточной кухни в Симферополе. Плов, шашлык, люля-кебаб, шаурма. 4 филиала по городу."
+  },
+  {
+    "id": "cafe-shinam-simferopol",
+    "type": "cafe",
+    "name": "Шинам (чайхана)",
+    "city": "Симферополь",
+    "region": "Центральный Крым",
+    "address": "ул. Козлова, 11Б, Симферополь",
+    "coords": [
+      44.9531,
+      34.1028
+    ],
+    "hours": "10:00–22:00",
+    "cuisine": "восточная, крымско-татарская",
+    "avg_check": "500–1000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "чайхана",
+      "детское меню",
+      "чебуреки",
+      "самса",
+      "лагман"
+    ],
+    "source": "https://2gis.ru/simferopol",
+    "description": "Чайхана в центре Симферополя. Чебуреки, самса, лагман, суп-шурпа, кофе на песке. Детское меню."
+  },
+  {
+    "id": "rest-data-simferopol",
+    "type": "restaurant",
+    "name": "Дата (Data)",
+    "city": "Симферополь",
+    "region": "Центральный Крым",
+    "address": "ул. Турецкая, 13, Симферополь",
+    "coords": [
+      44.9468,
+      34.0985
+    ],
+    "hours": "12:00–00:00",
+    "cuisine": "грузинская, европейская",
+    "avg_check": "1800–3000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "грузинская",
+      "хинкали",
+      "хачапури",
+      "вечер"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Один из лучших грузинских ресторанов Симферополя. Хинкали, хачапури, шашлыки, грузинские вина."
+  },
+  {
+    "id": "stolovaya-yaltinskaya-simferopol",
+    "type": "stolovaya",
+    "name": "Столовая Ялтинская",
+    "city": "Симферополь",
+    "region": "Центральный Крым",
+    "address": "ул. Ялтинская, 4, Симферополь",
+    "coords": [
+      44.9476,
+      34.0991
+    ],
+    "hours": "08:00–20:00",
+    "cuisine": "русская домашняя",
+    "avg_check": "300–500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "столовая",
+      "бюджет",
+      "быстро",
+      "обед"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Классическая столовая в центре Симферополя. Бюджетные комплексные обеды, домашняя кухня."
+  },
+  {
+    "id": "rest-dorado-alushta",
+    "type": "restaurant",
+    "name": "Дорадо (Dorado)",
+    "city": "Алушта",
+    "region": "Южный берег",
+    "address": "Набережная, центральная часть, Алушта",
+    "coords": [
+      44.6646,
+      34.4127
+    ],
+    "hours": "12:00–00:00",
+    "cuisine": "средиземноморская, авторская, крымская",
+    "avg_check": "2200–4000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "видовой",
+      "набережная",
+      "пицца дровяная",
+      "морепродукты",
+      "локальные продукты"
+    ],
+    "website": "https://dorado.rest/",
+    "source": "https://dorado.rest/",
+    "description": "Уникальное гастро-пространство на берегу. Шеф-повар Андрей Савосько. Пицца из пизанской печи, мясо low-and-slow на смокере, крымские продукты от фермеров. Терраса с видом на море."
+  },
+  {
+    "id": "rest-neptun-alushta",
+    "type": "restaurant",
+    "name": "Нептун",
+    "city": "Алушта",
+    "region": "Южный берег",
+    "address": "ул. Набережная, 24, Алушта",
+    "coords": [
+      44.6635,
+      34.4108
+    ],
+    "hours": "11:00–00:00",
+    "cuisine": "крымско-татарская, рыбная",
+    "avg_check": "1500–2500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "набережная",
+      "рыбная",
+      "крымско-татарская"
+    ],
+    "source": "https://alushta.spravka.ru/eda-i-napitki/restorany/s-tatarskoy-kuhney",
+    "description": "Ресторан на набережной Алушты. Крымско-татарская и рыбная кухня, шашлыки, плов, морепродукты."
+  },
+  {
+    "id": "rest-kalipso-alushta",
+    "type": "restaurant",
+    "name": "Калипсо (отель)",
+    "city": "Алушта",
+    "region": "Южный берег",
+    "address": "ул. Набережная, 29, Алушта",
+    "coords": [
+      44.6643,
+      34.4118
+    ],
+    "hours": "12:00–23:00",
+    "cuisine": "крымско-татарская, европейская",
+    "avg_check": "1500–2500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "видовой",
+      "набережная",
+      "татарская"
+    ],
+    "phone": "+7 978 853-08-08",
+    "website": "http://kalipso.crimea.ru",
+    "source": "https://alushta.spravka.ru/",
+    "description": "Ресторан при отеле Калипсо на набережной. Терраса с видом на море, татарская и европейская кухня."
+  },
+  {
+    "id": "cafe-kvartira22-alushta",
+    "type": "cafe",
+    "name": "Арт-кафе «Квартира 22»",
+    "city": "Алушта",
+    "region": "Южный берег",
+    "address": "ул. Владимира Хромых, 22, Алушта",
+    "coords": [
+      44.6786,
+      34.4129
+    ],
+    "hours": "11:00–23:00",
+    "cuisine": "европейская, авторская",
+    "avg_check": "1200–2000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "арт-кафе",
+      "авторская",
+      "уютное",
+      "местные"
+    ],
+    "source": "https://alushta.spravka.ru/",
+    "description": "Уютное арт-кафе в центре Алушты. Авторская кухня, домашние десерты, кофе. Любят местные за атмосферу."
+  },
+  {
+    "id": "rest-papay-koktebel",
+    "type": "restaurant",
+    "name": "Papay (Папай)",
+    "city": "Коктебель",
+    "region": "Восточный Крым",
+    "address": "ул. Морская, 63, Коктебель",
+    "coords": [
+      44.9596,
+      35.241
+    ],
+    "hours": "11:00–01:00",
+    "cuisine": "европейская, итальянская, японская",
+    "avg_check": "1500–2500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "видовой",
+      "набережная",
+      "банкетный зал",
+      "живая музыка"
+    ],
+    "source": "https://kimeria.ru/feodosia/catalog/food/restaurants",
+    "description": "Большой ресторан с видом на море на главной набережной Коктебеля. Европейская, итальянская и японская кухня, живая музыка, тематические вечеринки."
+  },
+  {
+    "id": "stolovaya-rybka-koktebel",
+    "type": "stolovaya",
+    "name": "Рыбка (столовая на набережной)",
+    "city": "Коктебель",
+    "region": "Восточный Крым",
+    "address": "набережная Коктебеля, центральная часть",
+    "coords": [
+      44.9598,
+      35.2412
+    ],
+    "hours": "10:00–22:00 (сезон)",
+    "cuisine": "рыбная, столовая",
+    "avg_check": "400–800 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": false,
+    "view_sea": true,
+    "tags": [
+      "столовая",
+      "рыба",
+      "недорого",
+      "набережная",
+      "веранда у моря"
+    ],
+    "source": "http://www.kimeria.ru/feodosia/point/rybka",
+    "description": "Столовая самообслуживания на набережной Коктебеля. Большой выбор рыбных блюд, рыбная солянка, веранда у моря. Дёшево и быстро.",
+    "notes": "В основном сезонный."
+  },
+  {
+    "id": "rest-santafe-koktebel",
+    "type": "restaurant",
+    "name": "Santa-Fe",
+    "city": "Коктебель",
+    "region": "Восточный Крым",
+    "address": "ул. Морская, 41, Коктебель",
+    "coords": [
+      44.9601,
+      35.2407
+    ],
+    "hours": "12:00–00:00",
+    "cuisine": "европейская, японская",
+    "avg_check": "1200–2000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "набережная",
+      "пицца",
+      "суши"
+    ],
+    "source": "https://kimeria.ru/feodosia/catalog/food/restaurants",
+    "description": "Ресторан-пиццерия на набережной Коктебеля. Европейская кухня, пицца, суши, средний чек."
+  },
+  {
+    "id": "rest-zodiac-koktebel",
+    "type": "restaurant",
+    "name": "Зодиак (Zodiac)",
+    "city": "Коктебель",
+    "region": "Восточный Крым",
+    "address": "ул. Морская, 6, Коктебель",
+    "coords": [
+      44.9603,
+      35.2406
+    ],
+    "hours": "11:00–00:00",
+    "cuisine": "европейская, крымская",
+    "avg_check": "1500–2800 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "видовой",
+      "набережная",
+      "вино"
+    ],
+    "source": "https://kimeria.ru/feodosia/catalog/food/restaurants",
+    "description": "Один из самых востребованных ресторанов Коктебеля с видом на залив. Большой выбор крымских вин, рыбные блюда."
+  },
+  {
+    "id": "rest-yberg-feodosia",
+    "type": "restaurant",
+    "name": "Yberg / Айвазовский",
+    "city": "Феодосия",
+    "region": "Восточный Крым",
+    "address": "пр. Айвазовского, 23, Феодосия",
+    "coords": [
+      45.0291,
+      35.3825
+    ],
+    "hours": "12:00–23:00",
+    "cuisine": "европейская, морепродукты",
+    "avg_check": "1800–3000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "набережная",
+      "у моря",
+      "морепродукты"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Ресторан рядом с галереей Айвазовского на проспекте. Европейская кухня, морепродукты, вид на море."
+  },
+  {
+    "id": "stolovaya-baikal-feodosia",
+    "type": "stolovaya",
+    "name": "Байкал (столовая)",
+    "city": "Феодосия",
+    "region": "Восточный Крым",
+    "address": "ул. Куйбышева, 13, Феодосия",
+    "coords": [
+      45.0306,
+      35.3911
+    ],
+    "hours": "08:00–20:00",
+    "cuisine": "русская домашняя",
+    "avg_check": "300–500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "столовая",
+      "бюджет",
+      "обед"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Бюджетная столовая в центре Феодосии. Комплексные обеды, домашняя кухня."
+  },
+  {
+    "id": "cafe-3plus2-novysvet",
+    "type": "cafe",
+    "name": "ТриПлюсДва (на крыше ГК «Новый Свет»)",
+    "city": "Новый Свет",
+    "region": "Восточный Крым",
+    "address": "ул. Льва Голицына, 7, пгт Новый Свет (территория ГК)",
+    "coords": [
+      44.8281,
+      34.9111
+    ],
+    "hours": "12:00–22:00 (сезон)",
+    "cuisine": "европейская, крымско-татарская",
+    "avg_check": "1500–2500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": false,
+    "view_sea": true,
+    "tags": [
+      "видовой",
+      "терраса",
+      "крыша",
+      "живая музыка",
+      "сезон"
+    ],
+    "phone": "+7 499 520-86-48",
+    "website": "https://gk-novy-svet.ru/food",
+    "source": "https://gk-novy-svet.ru/food",
+    "description": "Кафе с открытой площадкой и крышей в ГК Новый Свет. Европейская и крымско-татарская кухня, живая музыка с 20:00.",
+    "notes": "Сезонный."
+  },
+  {
+    "id": "bar-delmar-novysvet",
+    "type": "cafe",
+    "name": "Дель Мар (Del Mar)",
+    "city": "Новый Свет",
+    "region": "Восточный Крым",
+    "address": "ул. Льва Голицына, 7, пгт Новый Свет (на пляже)",
+    "coords": [
+      44.8285,
+      34.9105
+    ],
+    "hours": "10:00–22:00 (сезон)",
+    "cuisine": "лёгкие закуски, напитки",
+    "avg_check": "700–1500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": false,
+    "view_sea": true,
+    "tags": [
+      "пляжный бар",
+      "лежаки",
+      "коктейли",
+      "сезон"
+    ],
+    "phone": "+7 499 520-86-48",
+    "website": "https://gk-novy-svet.ru/food",
+    "source": "https://gk-novy-svet.ru/food",
+    "description": "Кафе-бар у самой кромки моря в Новом Свете. Лёгкие закуски, коктейли, лежаки. Идеально для отдыха после Тропы Голицына.",
+    "notes": "Только в сезон."
+  },
+  {
+    "id": "rest-medvezhonok-sudak",
+    "type": "restaurant",
+    "name": "Медвежонок",
+    "city": "Судак",
+    "region": "Восточный Крым",
+    "address": "ул. Кипарисовая, 4А, Судак",
+    "coords": [
+      44.8493,
+      34.9737
+    ],
+    "hours": "11:00–23:00",
+    "cuisine": "русская, европейская",
+    "avg_check": "1200–2000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "семейный",
+      "детская площадка"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Семейный ресторан в Судаке. Русская и европейская кухня, детская площадка, мангал."
+  },
+  {
+    "id": "cafe-genuezsky-sudak",
+    "type": "cafe",
+    "name": "Кафе Генуэзское (у крепости)",
+    "city": "Судак",
+    "region": "Восточный Крым",
+    "address": "ул. Генуэзская крепость, 1, Судак",
+    "coords": [
+      44.8419,
+      34.958
+    ],
+    "hours": "09:00–20:00 (сезон)",
+    "cuisine": "крымско-татарская, европейская",
+    "avg_check": "700–1500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": false,
+    "view_sea": true,
+    "tags": [
+      "у крепости",
+      "после экскурсии",
+      "сезон"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Удобная остановка после экскурсии в Генуэзскую крепость. Крымско-татарская и европейская кухня, вид на крепость.",
+    "notes": "Сезонный."
+  },
+  {
+    "id": "cafe-karaman-evpatoria",
+    "type": "cafe",
+    "name": "Караман (этно-кафе караимской кухни)",
+    "city": "Евпатория",
+    "region": "Западный Крым",
+    "address": "ул. Караимская, 68, Евпатория (напротив Кенасс)",
+    "coords": [
+      45.1976,
+      33.3786
+    ],
+    "hours": "12:00–20:00",
+    "cuisine": "караимская",
+    "avg_check": "700–1500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "караимская",
+      "этно",
+      "у кенасс",
+      "Старый город",
+      "уникальная кухня"
+    ],
+    "phone": "+7 06569 330-35",
+    "website": "https://cafekaraman.ru/",
+    "source": "https://cafekaraman.ru/",
+    "description": "Единственное аутентичное караимское кафе в Крыму. У караимских кенасс в Старом городе. Караимские пирожки кубете, чир-чир, плакчики, домашние блюда по семейным рецептам."
+  },
+  {
+    "id": "rest-marakesh-evpatoria",
+    "type": "restaurant",
+    "name": "Маракеш",
+    "city": "Евпатория",
+    "region": "Западный Крым",
+    "address": "пр. Ленина, 21, Евпатория",
+    "coords": [
+      45.198,
+      33.3702
+    ],
+    "hours": "11:00–00:00",
+    "cuisine": "восточная, крымско-татарская",
+    "avg_check": "1200–2000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "восточная",
+      "марокканская",
+      "крымско-татарская",
+      "терраса"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Стилизованный ресторан восточной кухни в центре Евпатории. Марокканские и крымско-татарские блюда, кальяны."
+  },
+  {
+    "id": "cafe-pohutoryanski-evpatoria",
+    "type": "cafe",
+    "name": "По-хуторянски",
+    "city": "Евпатория",
+    "region": "Западный Крым",
+    "address": "ул. Тучина, 5/4, Евпатория",
+    "coords": [
+      45.2015,
+      33.3737
+    ],
+    "hours": "10:00–23:00",
+    "cuisine": "украинская, русская",
+    "avg_check": "800–1500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "украинская",
+      "вареники",
+      "борщ",
+      "семейное"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Кафе украинской кухни в стиле хутора. Вареники, борщ, домашние колбаски, медовуха."
+  },
+  {
+    "id": "rest-jevjuje-evpatoria",
+    "type": "restaurant",
+    "name": "Джевизлик (видовой ресторан)",
+    "city": "Евпатория",
+    "region": "Западный Крым",
+    "address": "ул. Дувановская, 11, Евпатория (центральная набережная)",
+    "coords": [
+      45.1965,
+      33.3702
+    ],
+    "hours": "12:00–00:00",
+    "cuisine": "крымско-татарская, кавказская",
+    "avg_check": "1500–2500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "видовой",
+      "набережная",
+      "крымско-татарская"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Ресторан на центральной набережной Евпатории с террасой и видом на море. Крымско-татарские и кавказские блюда."
+  },
+  {
+    "id": "winery-alma-valley-restaurant",
+    "type": "winery_tasting",
+    "name": "Alma Valley (винодельня, ресторан, дегустации)",
+    "city": "с. Вилино",
+    "region": "Западный Крым",
+    "address": "с. Вилино, Бахчисарайский район",
+    "coords": [
+      44.8694,
+      33.6822
+    ],
+    "hours": "вт–сб, экскурсии 11:00 и 14:00",
+    "cuisine": "крымская, средиземноморская, винная",
+    "avg_check": "2500–22000 ₽ (стандарт-VIP экскурсии с дегустацией)",
+    "kid_friendly": false,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "винодельня",
+      "экскурсия",
+      "дегустация 7 вин",
+      "гравитационная",
+      "скифские артефакты"
+    ],
+    "website": "https://www.alma-valley.ru/wine-tourism.html",
+    "phone": "по записи на сайте",
+    "source": "https://www.alma-valley.ru/wine-tourism.html",
+    "description": "Современная винодельня с гравитационным производством и смотровой площадкой 12 м. Экскурсия 1.5–2 часа + дегустация 7 вин в составе сборной группы (2500 ₽/чел) или индивидуально (22 000 ₽/группа до 10).",
+    "notes": "Обязательная предварительная запись. С 01.06.2025 цены повысились."
+  },
+  {
+    "id": "winery-massandra",
+    "type": "winery_tasting",
+    "name": "Винзавод Массандра (дегустация в подвалах)",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Винодела Егорова, 9, пгт Массандра, Ялта",
+    "coords": [
+      44.5169,
+      34.1867
+    ],
+    "hours": "09:00–17:00",
+    "cuisine": "винная, дегустации",
+    "avg_check": "1200–2500 ₽ (экскурсия + дегустация)",
+    "kid_friendly": false,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "винодельня",
+      "историческая",
+      "подвалы 1898",
+      "коллекция",
+      "экскурсия"
+    ],
+    "website": "https://massandra.su/",
+    "source": "https://massandra.su/",
+    "description": "Старейшая винодельня Крыма (с 1894), основанная князем Голицыным. Экскурсия по подвалам конца XIX века + дегустация 8 вин. Энотека с винами 1940-х."
+  },
+  {
+    "id": "winery-inkerman",
+    "type": "winery_tasting",
+    "name": "Инкерманский завод марочных вин",
+    "city": "Инкерман",
+    "region": "Севастополь",
+    "address": "ул. Малиновского, 22, Инкерман",
+    "coords": [
+      44.6056,
+      33.6128
+    ],
+    "hours": "09:00–18:00, экскурсии по записи",
+    "cuisine": "винная, дегустации",
+    "avg_check": "1000–2000 ₽",
+    "kid_friendly": false,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "винодельня",
+      "подвалы в скалах",
+      "штольни",
+      "экскурсия",
+      "крымские вина"
+    ],
+    "website": "https://inkerman.ru/",
+    "source": "https://inkerman.ru/",
+    "description": "Винодельня в подземных штольнях бывшего рудника. Уникальный микроклимат +12°C круглый год. Экскурсия + дегустация 6–8 вин."
+  },
+  {
+    "id": "winery-novy-svet",
+    "type": "winery_tasting",
+    "name": "Завод шампанских вин «Новый Свет»",
+    "city": "Новый Свет",
+    "region": "Восточный Крым",
+    "address": "ул. Шаляпина, 1, пгт Новый Свет",
+    "coords": [
+      44.8278,
+      34.9128
+    ],
+    "hours": "09:00–17:00, выходной — понедельник",
+    "cuisine": "винная, шампанское, дегустации",
+    "avg_check": "1200–2500 ₽",
+    "kid_friendly": false,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "шампанское",
+      "князь Голицын",
+      "1878",
+      "историческая",
+      "тоннели"
+    ],
+    "website": "https://nsvet.com/",
+    "source": "https://nsvet.com/",
+    "description": "Историческая винодельня шампанских вин, основанная князем Голицыным в 1878 году. Экскурсия по тоннелям + дегустация классических игристых вин."
+  },
+  {
+    "id": "winery-esse-bahchisaray",
+    "type": "winery_tasting",
+    "name": "Esse Wines (Сатера, Бахчисарай)",
+    "city": "с. Тенистое",
+    "region": "Центральный Крым",
+    "address": "с. Тенистое, Бахчисарайский район",
+    "coords": [
+      44.7833,
+      33.7167
+    ],
+    "hours": "по записи",
+    "cuisine": "винная, авторская",
+    "avg_check": "2000–4000 ₽",
+    "kid_friendly": false,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "винодельня",
+      "авторские вина",
+      "Сатера",
+      "Esse",
+      "малотиражные"
+    ],
+    "source": "https://events.krymwine.ru/",
+    "description": "Винодельня Сатера. Авторские малотиражные вина Esse. Экскурсия с дегустацией по предварительной записи."
+  },
+  {
+    "id": "winery-solnechnaya-dolina",
+    "type": "winery_tasting",
+    "name": "Солнечная Долина",
+    "city": "с. Солнечная Долина",
+    "region": "Восточный Крым",
+    "address": "с. Солнечная Долина, Судакский регион",
+    "coords": [
+      44.9043,
+      35.0586
+    ],
+    "hours": "09:00–17:00, экскурсии по записи",
+    "cuisine": "винная, дегустации",
+    "avg_check": "1500–3000 ₽",
+    "kid_friendly": false,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "винодельня",
+      "автохтонные сорта",
+      "Чёрный доктор",
+      "Чёрный полковник",
+      "Кокур"
+    ],
+    "website": "https://sun-valley.ru/",
+    "source": "https://sun-valley.ru/",
+    "description": "Винодельня с автохтонными крымскими сортами. Знаменитые «Чёрный доктор», «Чёрный полковник», белый «Кокур». Экскурсия + дегустация 8 вин."
+  },
+  {
+    "id": "stolovaya-saki",
+    "type": "stolovaya",
+    "name": "Сакская столовая",
+    "city": "Саки",
+    "region": "Западный Крым",
+    "address": "ул. Ленина, 9, Саки",
+    "coords": [
+      45.1326,
+      33.5985
+    ],
+    "hours": "08:00–20:00",
+    "cuisine": "русская домашняя",
+    "avg_check": "300–500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "столовая",
+      "бюджет",
+      "санаторий"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Бюджетная столовая в центре Сак. Удобна для гостей санаториев, домашняя кухня."
+  },
+  {
+    "id": "rest-shashlikplus-keynel",
+    "type": "shashlychnaya",
+    "name": "Шашлык-Хаус «Кенель»",
+    "city": "Керчь",
+    "region": "Восточный Крым",
+    "address": "ул. Кирова, 18, Керчь",
+    "coords": [
+      45.3585,
+      36.4738
+    ],
+    "hours": "11:00–23:00",
+    "cuisine": "кавказская, грузинская",
+    "avg_check": "1000–2000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "шашлык",
+      "мангал",
+      "хинкали",
+      "семейное"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Семейный шашлычный дом в Керчи. Шашлык на углях, хинкали, кавказские заготовки."
+  },
+  {
+    "id": "cafe-osobnyak-yalta",
+    "type": "cafe",
+    "name": "Особняк (артхаус-кафе)",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Игнатенко, 1/5, Ялта",
+    "coords": [
+      44.4946,
+      34.1658
+    ],
+    "hours": "11:00–23:00",
+    "cuisine": "европейская, авторская",
+    "avg_check": "1200–2200 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "арт-кафе",
+      "уютное",
+      "местные",
+      "тихое"
+    ],
+    "source": "https://yaltaguide.ru/kafe-v-yalte",
+    "description": "Уютное артхаус-кафе в стороне от туристических троп. Авторская кухня, домашние десерты, тихая атмосфера."
+  },
+  {
+    "id": "bakery-tartufo-yalta",
+    "type": "bakery",
+    "name": "Тартуфо (пекарня-кондитерская)",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Карла Маркса, 8, Ялта",
+    "coords": [
+      44.4969,
+      34.1672
+    ],
+    "hours": "08:00–22:00",
+    "cuisine": "пекарня, кондитерская",
+    "avg_check": "300–700 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "пекарня",
+      "кофе",
+      "круассаны",
+      "торты"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Кондитерская и пекарня в центре Ялты. Свежие круассаны, торты, кофе. Удобно для завтрака."
+  },
+  {
+    "id": "seafood-bay-balaklava",
+    "type": "seafood",
+    "name": "Рыбный причал (свежая рыба от рыбаков)",
+    "city": "Балаклава",
+    "region": "Севастополь",
+    "address": "наб. Назукина, причалы 1-5, Балаклава",
+    "coords": [
+      44.5018,
+      33.5982
+    ],
+    "hours": "08:00–20:00 (сезон)",
+    "cuisine": "рыбная, морепродукты",
+    "avg_check": "800–2000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": false,
+    "view_sea": true,
+    "tags": [
+      "свежая рыба",
+      "от рыбаков",
+      "сезон",
+      "локально"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Места у причалов где можно купить или сразу приготовить свежий улов: барабульку, кефаль, ставриду, мидии. Только сезонно.",
+    "notes": "В основном лето, ассортимент зависит от улова."
+  },
+  {
+    "id": "cafe-vodopadnaya-uchan-su",
+    "type": "cafe",
+    "name": "Кафе у водопада Учан-Су",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "трасса Ялта–Бахчисарай, водопад Учан-Су",
+    "coords": [
+      44.5078,
+      34.0974
+    ],
+    "hours": "09:00–18:00 (сезон, по погоде)",
+    "cuisine": "крымско-татарская, шашлык",
+    "avg_check": "700–1500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": false,
+    "view_sea": false,
+    "tags": [
+      "природа",
+      "горы",
+      "шашлык",
+      "у водопада",
+      "после экскурсии"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Кафе и мангал у водопада Учан-Су на трассе в Ай-Петри. Шашлыки, лагман, чай в горах. Удобно после посещения водопада.",
+    "notes": "Зимой может быть закрыто из-за снега."
+  },
+  {
+    "id": "cafe-ai-petri-yaila",
+    "type": "cafe",
+    "name": "Чайхана на Ай-Петри (плато)",
+    "city": "Ай-Петри",
+    "region": "Южный берег",
+    "address": "вершина Ай-Петри, плато",
+    "coords": [
+      44.4519,
+      34.0589
+    ],
+    "hours": "10:00–17:00 (по погоде)",
+    "cuisine": "крымско-татарская, шашлык",
+    "avg_check": "500–1500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": false,
+    "view_sea": true,
+    "tags": [
+      "горы",
+      "вид",
+      "плато",
+      "шашлык",
+      "мангал",
+      "татарская"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Множество татарских чайхан на плато Ай-Петри (конец канатной дороги). Шашлык, плов, чебуреки, чай с травами. Виды на ЮБК.",
+    "notes": "Зимой большинство закрыты. Платить наличными часто."
+  },
+  {
+    "id": "rest-vino-i-syr-sevastopol",
+    "type": "restaurant",
+    "name": "Вино и Сыр (винный бар)",
+    "city": "Севастополь",
+    "region": "Севастополь",
+    "address": "ул. Ленина, 56, Севастополь",
+    "coords": [
+      44.6098,
+      33.5247
+    ],
+    "hours": "16:00–00:00",
+    "cuisine": "винный бар, сырная тарелка",
+    "avg_check": "1500–2500 ₽",
+    "kid_friendly": false,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "винный бар",
+      "крымские вина",
+      "сыры",
+      "вечер"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Винный бар в центре Севастополя. Большая карта крымских вин по бокалам, сырные и мясные тарелки, паштеты. Подходит для тихого вечера."
+  },
+  {
+    "id": "cafe-okrosh-bahchisaray",
+    "type": "cafe",
+    "name": "Кафе при Ханском дворце",
+    "city": "Бахчисарай",
+    "region": "Центральный Крым",
+    "address": "ул. Речная, 133, Бахчисарай (территория Ханского дворца)",
+    "coords": [
+      44.7474,
+      33.8762
+    ],
+    "hours": "10:00–17:00",
+    "cuisine": "крымско-татарская",
+    "avg_check": "500–1000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "территория дворца",
+      "крымско-татарская",
+      "после экскурсии"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Кафе на территории Ханского дворца. Удобно перекусить после экскурсии: чебуреки, шурпа, кофе на песке."
+  },
+  {
+    "id": "cafe-shokoladnitsa-feodosia",
+    "type": "cafe",
+    "name": "Шоколадница",
+    "city": "Феодосия",
+    "region": "Восточный Крым",
+    "address": "пр. Айвазовского, 7, Феодосия",
+    "coords": [
+      45.0317,
+      35.3839
+    ],
+    "hours": "09:00–22:00",
+    "cuisine": "европейская, кофейня",
+    "avg_check": "600–1200 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "кофейня",
+      "сетевая",
+      "детское меню"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Сетевая кофейня в центре Феодосии. Завтраки, кофе, десерты, детское меню. Удобна как универсальный вариант."
+  },
+  {
+    "id": "winery-shumrinka-balaklava",
+    "type": "winery_tasting",
+    "name": "Шумринка (Зерноград)",
+    "city": "с. Хмельницкое",
+    "region": "Севастополь",
+    "address": "с. Хмельницкое, Севастополь",
+    "coords": [
+      44.5972,
+      33.6611
+    ],
+    "hours": "по записи",
+    "cuisine": "винная, авторская",
+    "avg_check": "2000–4000 ₽",
+    "kid_friendly": false,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "винодельня",
+      "малотиражная",
+      "авторская",
+      "Севастополь"
+    ],
+    "source": "https://events.krymwine.ru/",
+    "description": "Маленькая авторская винодельня в Севастопольском регионе. Экскурсия + дегустация по предварительной записи."
+  },
+  {
+    "id": "cafe-cabantsev-balaklava",
+    "type": "cafe",
+    "name": "Кафе «У Кабанцева»",
+    "city": "Балаклава",
+    "region": "Севастополь",
+    "address": "ул. Мраморная, 2, Балаклава",
+    "coords": [
+      44.5023,
+      33.6005
+    ],
+    "hours": "11:00–23:00",
+    "cuisine": "крымско-татарская, кавказская",
+    "avg_check": "1000–2000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "шашлык",
+      "у бухты",
+      "террасы"
+    ],
+    "source": "https://kimeria.ru/sevastopol/point/kefalo_vrisi",
+    "description": "Семейный ресторан на Балаклавской набережной. Шашлык, крымско-татарская кухня, террасы с видом на бухту."
+  },
+  {
+    "id": "stolovaya-univer-sevastopol",
+    "type": "stolovaya",
+    "name": "Столовая в Универмаге",
+    "city": "Севастополь",
+    "region": "Севастополь",
+    "address": "ул. Большая Морская, 16, Севастополь",
+    "coords": [
+      44.6128,
+      33.5239
+    ],
+    "hours": "08:00–20:00",
+    "cuisine": "русская домашняя",
+    "avg_check": "300–500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "столовая",
+      "бюджет",
+      "центр",
+      "обед"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Классическая столовая в самом центре Севастополя. Комплексные обеды, выбор гарниров, домашняя кухня."
+  },
+  {
+    "id": "rest-gorky-park-feodosia",
+    "type": "restaurant",
+    "name": "Горький Парк (City)",
+    "city": "Феодосия",
+    "region": "Восточный Крым",
+    "address": "ул. Земская, 3, Феодосия",
+    "coords": [
+      45.0322,
+      35.3838
+    ],
+    "hours": "10:00–01:00",
+    "cuisine": "европейская, кавказская",
+    "avg_check": "1500–3000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "парк",
+      "терраса",
+      "живая музыка"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Ресторан в Юбилейном парке Феодосии. Большая терраса, европейская и кавказская кухня, живая музыка по выходным."
+  },
+  {
+    "id": "rest-bublick-house-evpatoria",
+    "type": "restaurant",
+    "name": "Бублик-Хаус (Bublik House)",
+    "city": "Евпатория",
+    "region": "Западный Крым",
+    "address": "ул. Дувановская, 5, Евпатория",
+    "coords": [
+      45.1969,
+      33.3707
+    ],
+    "hours": "10:00–00:00",
+    "cuisine": "европейская, авторская",
+    "avg_check": "1200–2200 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "авторская",
+      "пицца",
+      "пасты",
+      "центр"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Современный ресторан в центре Евпатории. Авторская кухня, пицца, пасты, локальные продукты."
+  },
+  {
+    "id": "rest-gnezdo-alushta",
+    "type": "restaurant",
+    "name": "Гнездо (на скале)",
+    "city": "Алушта",
+    "region": "Южный берег",
+    "address": "ул. Парковая, 5А, Алушта",
+    "coords": [
+      44.6688,
+      34.4151
+    ],
+    "hours": "12:00–23:00",
+    "cuisine": "крымская, европейская",
+    "avg_check": "1800–3000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "видовой",
+      "терраса",
+      "над городом"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Ресторан с панорамным видом на Алушту и море. Крымская и европейская кухня, большая винная карта, идеально для романтического ужина."
+  },
+  {
+    "id": "cafe-staraya-pekarnya-yalta",
+    "type": "bakery",
+    "name": "Старая Пекарня",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Пушкинская, 9, Ялта",
+    "coords": [
+      44.4965,
+      34.1665
+    ],
+    "hours": "07:00–21:00",
+    "cuisine": "пекарня, кофейня",
+    "avg_check": "300–700 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "пекарня",
+      "кофе",
+      "завтрак",
+      "выпечка"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Уютная пекарня в центре Ялты. Свежий хлеб, круассаны, штрудели, кофе. Любимое место для завтрака на ходу."
+  },
+  {
+    "id": "rest-koza-nostra-yalta",
+    "type": "restaurant",
+    "name": "Коза Ностра",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Игнатенко, 3, Ялта",
+    "coords": [
+      44.4946,
+      34.166
+    ],
+    "hours": "12:00–00:00",
+    "cuisine": "итальянская",
+    "avg_check": "1500–2500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "итальянская",
+      "паста",
+      "пицца",
+      "местная сеть"
+    ],
+    "source": "https://yaltaguide.ru/kafe-v-yalte",
+    "description": "Часть локальной сети (Роппонги/Гараж/Коза Ностра). Итальянская кухня, паста, пицца. Качество и демократичные цены."
+  },
+  {
+    "id": "rest-restoran-evpatoria-pansionat",
+    "type": "restaurant",
+    "name": "Ресторан санатория «Орен-Крым»",
+    "city": "Евпатория",
+    "region": "Западный Крым",
+    "address": "пр. Победы, 1/3, Евпатория",
+    "coords": [
+      45.2105,
+      33.4137
+    ],
+    "hours": "08:00–22:00",
+    "cuisine": "русская, европейская, диетическая",
+    "avg_check": "800–1500 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "санаторный",
+      "диетическое меню",
+      "семейный"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Ресторан санатория «Орен-Крым» в Евпатории, открыт для гостей. Диетическая и общая кухня, шведский стол, удобно для семей с детьми."
+  },
+  {
+    "id": "rest-piano-yalta",
+    "type": "restaurant",
+    "name": "Пиано (Piano)",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Морская, 9, Ялта",
+    "coords": [
+      44.4945,
+      34.1623
+    ],
+    "hours": "18:00–02:00",
+    "cuisine": "европейская, авторская",
+    "avg_check": "3000–5000 ₽",
+    "kid_friendly": false,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "романтика",
+      "fine dining",
+      "вечер",
+      "живая музыка"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Ресторан премиального уровня в центре Ялты. Романтическая атмосфера, живой пианист, авторская европейская кухня, большая винная карта."
+  },
+  {
+    "id": "cafe-uglyok-yalta",
+    "type": "shashlychnaya",
+    "name": "Уголёк (мангал)",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Васильева, 13, Ялта",
+    "coords": [
+      44.5048,
+      34.1762
+    ],
+    "hours": "11:00–23:00",
+    "cuisine": "кавказская, мангал",
+    "avg_check": "1000–2000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": false,
+    "rainy_ok": false,
+    "view_sea": false,
+    "tags": [
+      "шашлык",
+      "мангал",
+      "кавказская",
+      "сад"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Шашлычная с большим садом и мангалом в Ялте. Шашлык из баранины и свинины, люля-кебаб, хачапури, аджика."
+  },
+  {
+    "id": "rest-vityaz-ai-todor",
+    "type": "restaurant",
+    "name": "Витязь (у Ласточкина гнезда)",
+    "city": "Гаспра",
+    "region": "Южный берег",
+    "address": "Алупкинское шоссе, 9А, Гаспра (ниже Ласточкина гнезда)",
+    "coords": [
+      44.4316,
+      34.1283
+    ],
+    "hours": "10:00–22:00 (сезон)",
+    "cuisine": "крымская, европейская",
+    "avg_check": "1500–3000 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": true,
+    "tags": [
+      "видовой",
+      "у Ласточкина гнезда",
+      "набережная Аврора"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Ресторан с террасой на скале у Ласточкина гнезда. Один из лучших видов в Крыму. Крымская кухня, морепродукты."
+  },
+  {
+    "id": "rest-baron-mistral-yalta",
+    "type": "restaurant",
+    "name": "Барон Мистраль",
+    "city": "Ялта",
+    "region": "Южный берег",
+    "address": "ул. Рузвельта, 9, Ялта",
+    "coords": [
+      44.4939,
+      34.1645
+    ],
+    "hours": "12:00–00:00",
+    "cuisine": "французская, средиземноморская",
+    "avg_check": "2500–4500 ₽",
+    "kid_friendly": false,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "французская",
+      "fine dining",
+      "терраса",
+      "винная карта"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Французский ресторан в центре Ялты с большой винной картой. Конфи, паштеты, средиземноморская рыба, изысканные десерты."
+  },
+  {
+    "id": "cafe-cherri-coffee-simferopol",
+    "type": "cafe",
+    "name": "Cherry Coffee (кофейня)",
+    "city": "Симферополь",
+    "region": "Центральный Крым",
+    "address": "ул. Пушкина, 7, Симферополь",
+    "coords": [
+      44.9509,
+      34.1014
+    ],
+    "hours": "08:00–22:00",
+    "cuisine": "кофейня",
+    "avg_check": "350–800 ₽",
+    "kid_friendly": true,
+    "vegetarian_ok": true,
+    "rainy_ok": true,
+    "view_sea": false,
+    "tags": [
+      "кофейня",
+      "завтраки",
+      "сэндвичи",
+      "центр"
+    ],
+    "source": "https://yandex.ru/maps",
+    "description": "Уютная кофейня в центре Симферополя. Хорошее кофе, завтраки, сэндвичи, десерты. Удобно перед поездкой по Крыму."
+  }
+]
