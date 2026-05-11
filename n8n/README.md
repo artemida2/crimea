@@ -99,9 +99,9 @@ https://n8n.io/cloud/ — Starter план $20/мес, 5к executions, без з
 ## Импорт воркфлоу
 
 1. В n8n: **Workflows → Add workflow → Import from File** → выбрать `workflow-planner-openai.json`.
-2. Должно появиться **8 нод** (Webhook → Validate → Fetch Catalog → Build Prompt → OpenAI → Render → Send Email → Respond). **Не активируй** воркфлоу пока не подключишь creds.
+2. Должно появиться **9 нод** (Webhook → Validate → Fetch Attractions Catalog → Fetch Transport Catalog → Build Prompt → OpenAI → Render → Send Email → Respond). **Не активируй** воркфлоу пока не подключишь creds.
 
-> **Каталог проверенных мест**: нода `Fetch Attractions Catalog` тянет `https://welcomecrimea.ru/data/attractions.json` — этот файл лежит в репо в `public/data/attractions.json` и обновляется деплоем GitHub Pages автоматически. Если хочешь добавить/убрать места — правь `src/data/attractions.json`, копию в `public/data/` (или, проще, держи только в `public/data/` и убери из `src/data/`), и закоммить — после деплоя каталог обновится без необходимости пересохранять workflow в n8n.
+> **Каталоги проверенных мест и транспорта**: ноды `Fetch Attractions Catalog` и `Fetch Transport Catalog` тянут `https://welcomecrimea.ru/data/attractions.json` (95 точек) и `https://welcomecrimea.ru/data/transport.json` (68 опций) соответственно. Оба файла лежат в репо в `public/data/` и обновляются деплоем GitHub Pages автоматически. Если хочешь добавить/убрать данные — правь `src/data/*.json`, копию в `public/data/`, и закоммить — после деплоя каталоги обновятся без необходимости пересохранять workflow в n8n.
 
 ## Подключение OpenAI
 
