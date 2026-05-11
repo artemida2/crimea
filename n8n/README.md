@@ -13,27 +13,29 @@
 
 ```
 Browser form (PlannerForm.astro)
-        │  POST {city, days, composition, transport, budget, topic, notes, email}
+        │  POST {tier, city, days, composition, transport, budget, topic, notes, email, ...premium fields}
         ▼
-┌────────────────────────────────────────────────────────────────────┐
-│ n8n: Crimea Planner — OpenAI + HTML Email                         │
-│                                                                    │
-│  Webhook ─▶ Validate ─▶ Build Prompt ─▶ OpenAI (HTTP, JSON mode) ─┐│
-│                                                                  ▼ │
-│                       Respond OK ◀─ Send Email (SMTP) ◀─ Render HTML│
-└────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ n8n: Crimea Planner — OpenAI + HTML Email (Free + Premium)                  │
+│                                                                              │
+│  Webhook ─▶ Validate ─▶ Fetch Catalog ─▶ Build Tier Prompt ─▶ OpenAI ───────┐│
+│                          (HTTP GET                                           ▼│
+│                          attractions.json)                                    │
+│             Respond OK ◀── Send Email (SMTP) ◀── Render HTML email          │
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
 
 **Что происходит**:
-1. Форма на сайте делает POST на webhook URL n8n с CORS `*`.
-2. **Validate** — проверка email, нормализация: переводит коды (`yalta`, `couple`, `obzor`) в человеческие названия для промпта.
-3. **Build Prompt** — собирает user-prompt с параметрами поездки.
-4. **OpenAI** — `gpt-4o-mini` с `response_format=json_object` возвращает структурированный план.
-5. **Render HTML** — превращает JSON в красивое HTML-письмо в стиле сайта (serif, navy/cream/burgundy).
-6. **Send Email** — отправляет через SMTP.
-7. **Respond OK** — фронт получает `{ok:true, message:"План отправлен на ..."}` и показывает пользователю.
+1. Форма на сайте делает POST на webhook URL n8n с CORS `*`. Поле `tier` определяет free / premium.
+2. **Validate** — проверка email, нормализация: переводит коды (`yalta`, `couple`, `obzor`) в человеческие названия для промпта; нормализует tier и премиум-поля.
+3. **Fetch Attractions Catalog** — HTTP GET на `https://welcomecrimea.ru/data/attractions.json` подтягивает каталог из 95 проверенных мест Крыма (адреса, часы, цены, координаты).
+4. **Build Tier-aware Prompt** — фильтрует каталог по региону (city), сортирует по приоритету (релевантные теги + «обязательно»), инжектит в system+user prompt. Для free — компактный (4–6 точек/день); для premium — расширенный (6–8 точек/день, рестораны, план Б, чек-лист).
+5. **OpenAI** — `gpt-4o-mini` с `response_format=json_object` возвращает структурированный план. Системный промпт явно запрещает выдумывать места — AI берёт только из каталога.
+6. **Render HTML** — превращает JSON в красивое HTML-письмо в стиле сайта (serif, navy/cream/burgundy). Для premium дополнительно рендерит секции рестораны / план Б на дождь / чек-лист.
+7. **Send Email** — отправляет через SMTP.
+8. **Respond OK** — фронт получает `{ok:true, message:"План отправлен на ..."}` и показывает пользователю.
 
-Время от submit до получения письма: **8–15 секунд**. Стоимость одного маршрута: **~$0.001–0.003** (gpt-4o-mini, 1500–2500 токенов).
+Время от submit до получения письма: **10–20 секунд** (premium ближе к 20). Стоимость одного маршрута: **~$0.002–0.005** (gpt-4o-mini, 4000–7000 input токенов из-за каталога + 2000–4000 output).
 
 ## Зачем именно так (а не PDF)
 
@@ -96,7 +98,9 @@ https://n8n.io/cloud/ — Starter план $20/мес, 5к executions, без з
 ## Импорт воркфлоу
 
 1. В n8n: **Workflows → Add workflow → Import from File** → выбрать `workflow-planner-openai.json`.
-2. Должно появиться 7 нод. **Не активируй** воркфлоу пока не подключишь creds.
+2. Должно появиться **8 нод** (Webhook → Validate → Fetch Catalog → Build Prompt → OpenAI → Render → Send Email → Respond). **Не активируй** воркфлоу пока не подключишь creds.
+
+> **Каталог проверенных мест**: нода `Fetch Attractions Catalog` тянет `https://welcomecrimea.ru/data/attractions.json` — этот файл лежит в репо в `public/data/attractions.json` и обновляется деплоем GitHub Pages автоматически. Если хочешь добавить/убрать места — правь `src/data/attractions.json`, копию в `public/data/` (или, проще, держи только в `public/data/` и убери из `src/data/`), и закоммить — после деплоя каталог обновится без необходимости пересохранять workflow в n8n.
 
 ## Подключение OpenAI
 
@@ -136,11 +140,12 @@ https://n8n.io/cloud/ — Starter план $20/мес, 5к executions, без з
 
 1. Жми **Save** на воркфлоу, потом **Activate** (тумблер вверху справа).
 2. Кликни на ноду `Webhook (form submit)` → скопируй **Production URL** (выглядит как `https://your-n8n.example.com/webhook/crimea-planner`).
-3. Тест из терминала:
+3. Тест free-тарифа из терминала:
    ```bash
    curl -X POST https://your-n8n.example.com/webhook/crimea-planner \
      -H "Content-Type: application/json" \
      -d '{
+       "tier": "free",
        "city": "yalta",
        "days": 5,
        "composition": "couple",
@@ -151,7 +156,33 @@ https://n8n.io/cloud/ — Starter план $20/мес, 5к executions, без з
        "email": "your.email@example.com"
      }'
    ```
-4. Через 10–15 секунд должно прийти письмо. В n8n в **Executions** видно как прошёл каждый шаг.
+4. Тест premium-тарифа:
+   ```bash
+   curl -X POST https://your-n8n.example.com/webhook/crimea-planner \
+     -H "Content-Type: application/json" \
+     -d '{
+       "tier": "premium",
+       "city": "krym",
+       "days": 7,
+       "composition": "family-kids",
+       "transport": "car",
+       "budget": 8000,
+       "topic": "obzor",
+       "comfort": "comfort",
+       "arrivalPoint": "simferopol",
+       "arrivalDate": "2026-06-15",
+       "departureDate": "2026-06-22",
+       "allergies": "нет",
+       "notes": "",
+       "email": "your.email@example.com"
+     }'
+   ```
+5. Через 10–20 секунд должно прийти письмо. В n8n в **Executions** видно как прошёл каждый шаг.
+6. **Проверь**: места в письме должны быть из каталога `src/data/attractions.json` — никаких выдуманных названий. Если AI возвращает имя, которого нет в каталоге — открой ноду Render HTML email → Output → проверь содержимое `plan.days[].items`.
+
+> **Возможные ошибки**:
+> - `Fetch Attractions Catalog` → 404: домен `welcomecrimea.ru` ещё не задеплоил каталог. Подожди или поменяй URL в ноде на `https://artemida2.github.io/crimea/data/attractions.json` пока DNS не обновился.
+> - OpenAI вернул не JSON: внутри Render HTML есть fallback-парсинг — если совсем сломалось, посмотри ноду `OpenAI` → Output, оттуда `choices[0].message.content`.
 
 ## Подключение к фронту
 
