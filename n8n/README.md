@@ -6,7 +6,7 @@
 
 | Файл | Когда использовать | Стек |
 |---|---|---|
-| **`workflow-planner-openai.json`** ← база | Основной воркфлоу: генерация маршрута + отправка на email. Используется и для free, и для premium. | OpenAI gpt-5.2 · SMTP · без БД |
+| **`workflow-planner-openai.json`** ← база | Основной воркфлоу: генерация маршрута + отправка на email. Используется и для free, и для premium. | OpenAI gpt-5-nano · SMTP · без БД |
 | **`workflow-yookassa-create-payment.json`** | Принимает POST от формы с `tier=premium`, создаёт платёж в ЮKassa, возвращает `confirmation_url` на фронт. | ЮKassa API · Basic Auth |
 | **`workflow-yookassa-notification.json`** | URL `https://hooks.neirolanding.ru/webhook/yookassa-notification`. Принимает webhook от ЮKassa, перепроверяет статус через API, на `payment.succeeded` дёргает `crimea-planner`. | ЮKassa API · Basic Auth |
 | `workflow-planner.json` | Старый вариант для GigaChat + Supabase. Когда захочешь верифицированный whitelist мест и сохранять лиды в БД. | GigaChat · Supabase Postgres |
@@ -24,7 +24,7 @@ Browser form (PlannerForm.astro)
 │  Webhook ─▶ Validate ─▶ Fetch (places/transport/food) ─▶ Build Prompt       │
 │                                                                  │           │
 │                                                                  ▼           │
-│  Respond OK ◀── Send Email (SMTP) ◀── Render HTML ◀── OpenAI (gpt-5.2)       │
+│  Respond OK ◀── Send Email (SMTP) ◀── Render HTML ◀── OpenAI (gpt-5-nano)    │
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -65,12 +65,25 @@ User видит "Оплата принята"
 4. **Fetch Transport Catalog** — HTTP GET на `https://welcomecrimea.ru/data/transport.json` подтягивает каталог из 68 проверенных опций транспорта (поезда «Таврия», троллейбус №52А, маршрутки, такси, аренда авто, канатки, морские прогулки, Крымский мост).
 5. **Fetch Food Catalog** — HTTP GET на `https://welcomecrimea.ru/data/food.json` подтягивает каталог из 75 проверенных ресторанов/кафе/столовых/виноделен (Чайка в Ялте, Мусафир в Бахчисарае, Кефало-Вриси в Балаклаве, Дорадо в Алуште, Караман в Евпатории, винодельни Massandra/Inkerman/Esse/Solnechnaya Dolina/Alma Valley и др.).
 6. **Build Tier-aware Prompt** — фильтрует каталог достопримечательностей по региону (city), фильтрует транспорт по выбранному способу (car/public/taxi/mixed) и связанным городам, фильтрует еду по региону и составу (для семей с детьми приоритет kid_friendly; для gastro-туров приоритет винодельням), сортирует по приоритету (релевантные теги + «обязательно»), инжектит все три каталога в system+user prompt. Для free — компактный (4–6 точек/день, ~15 ресторанов); для premium — расширенный (6–8 точек/день, ~30 ресторанов, рестораны по дням, план Б, чек-лист).
-7. **OpenAI** — модель `gpt-5.2` с `response_format=json_object` возвращает структурированный план. Системный промпт явно запрещает выдумывать места, рестораны и способы транспорта — AI берёт только из каталогов. Температура 0.55 для большей предсказуемости. Если модель `gpt-5.2` недоступна на твоём аккаунте — поменяй в ноде на `gpt-4o-mini` (см. ниже).
+7. **OpenAI** — модель `gpt-5-nano` с `response_format=json_object` возвращает структурированный план. Системный промпт явно запрещает выдумывать места, рестораны и способы транспорта — AI берёт только из каталогов. Для gpt-5-семейства параметры обязательно: `temperature: 1` (другие значения модель отвергает) и `max_completion_tokens` вместо `max_tokens`. Если хочется быстрее/дешевле — `gpt-4o-mini` (тогда `temperature: 0.55` и `max_tokens` работают, см. ниже).
 8. **Render HTML** — превращает JSON в красивое HTML-письмо в стиле сайта (serif, navy/cream/burgundy). Для premium дополнительно рендерит секции рестораны / план Б на дождь / чек-лист.
 9. **Send Email** — отправляет через SMTP.
 10. **Respond OK** — фронт получает `{ok:true, message:"План отправлен на ..."}` и показывает пользователю.
 
-Время от submit до получения письма: **10–20 секунд** для free, **20–35 секунд** для premium (модель `gpt-5.2` думает дольше, но и план более детальный). Стоимость одного маршрута зависит от модели — см. секцию «Если будет много трафика» ниже.
+Время от submit до получения письма: **10–20 секунд** для free, **20–35 секунд** для premium (думает дольше, план более детальный). Стоимость одного маршрута зависит от модели — см. секцию «Если будет много трафика» ниже.
+
+### Известные грабли n8n: HTTP Request v4.2 + JSON-массивы (важно)
+
+`Fetch Attractions/Transport/Food Catalog` тянут `.json` файлы, в которых тело ответа — **JSON-массив**. В n8n v1.x на HTTP Request v4.2 такое тело по умолчанию **разворачивается в N отдельных n8n-items** (один item на элемент массива). Это даёт два неприятных эффекта:
+
+1. **Fan-out по цепочке**: если у Fetch-ноды нет `executeOnce: true`, она запускается **по разу на каждый входящий item**. На скриншоте n8n это видно как «6460 items» на стрелке от `Fetch Transport Catalog` — это 95 (attractions) × 68 (transport) = 6460, потому что `Fetch Transport` гонялся 95 раз.
+2. **`.first().json` ≠ массив**: в `Build Tier-aware Prompt` чтение через `$('Fetch ... Catalog').first().json` отдаёт **первый элемент массива**, а не сам массив. `Array.isArray(...)` падает на false → каталог считается пустым → AI получает «каталоги пустые» → пользователь получает на email заглушку «Невозможно сформировать маршрут».
+
+**Что сделано в текущем workflow JSON, чтобы это не воспроизводилось:**
+
+- На все три Fetch-ноды добавлен `executeOnce: true` — каждая выполняется ровно один раз независимо от того, сколько items пришло сверху.
+- `Build Tier-aware Prompt` читает через `$('Fetch ... Catalog').all()` и нормализует результат: если items=1 и `json` — массив, берём как массив; если items=N — собираем `items.map(it => it.json)`. Это покрывает оба варианта поведения n8n.
+- В коде Build стоит `console.log('catalog sizes:', ...)` — в `Executions → Build Tier-aware Prompt → Console` ты увидишь актуальные размеры. Должно быть `95 attractions, 68 transport, 75 food` (или столько, сколько сейчас в каталогах). Если видишь 0 — значит JSON-файл недоступен или сломан, а не баг workflow.
 
 ### Что нового в промпте (важно)
 
