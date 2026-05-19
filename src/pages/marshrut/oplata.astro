@@ -1,0 +1,94 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { url } from "../../utils/url";
+---
+
+<BaseLayout
+  title="Оплата принята — Крым · издание о полуострове"
+  description="Спасибо за оплату премиум-маршрута. AI собирает план под ваши параметры — письмо придёт на email в течение 15–25 секунд."
+>
+  <div class="container">
+    <p class="breadcrumbs">
+      <a href={url()}>Главная</a><span class="sep">/</span><a href={url("marshrut/")}>Маршруты</a><span class="sep">/</span>Оплата
+    </p>
+  </div>
+
+  <header
+    class="container container-narrow"
+    style="padding-top: var(--s-7); padding-bottom: var(--s-5); text-align:center;"
+  >
+    <span class="eyebrow" id="status-eyebrow">Спасибо за заказ</span>
+    <h1 style="font-style: italic;" id="status-title">Оплата принята</h1>
+    <p
+      class="muted"
+      style="font-family: var(--f-serif); font-size:1.2rem; line-height:1.5; margin-top: var(--s-3);"
+      id="status-message"
+    >
+      AI собирает ваш премиум-маршрут. Письмо с подробным планом — точки по часам,
+      адреса, рестораны, чек-лист — придёт на ваш email обычно в течение
+      <strong>15–25 секунд</strong>. Если письма нет через две минуты —
+      проверьте папку «Спам».
+    </p>
+    <p
+      class="muted"
+      style="font-size:0.95rem; margin-top: var(--s-4);"
+      id="status-email-line"
+      hidden
+    >
+      Маршрут идёт на: <strong id="status-email"></strong>
+    </p>
+    <p
+      class="muted"
+      style="font-size:0.85rem; margin-top: var(--s-4); font-family: var(--f-sans);"
+      id="status-payment-line"
+      hidden
+    >
+      ID платежа: <code id="status-payment-id"></code>
+    </p>
+  </header>
+
+  <div
+    class="container container-narrow"
+    style="padding-bottom: var(--s-9); text-align:center;"
+  >
+    <a class="btn" href={url("marshrut/")} style="margin-right: var(--s-3);">
+      Посмотреть готовые маршруты
+    </a>
+    <a class="btn btn--ghost" href={url("mesta/")}>Хаб достопримечательностей</a>
+  </div>
+
+  <script is:inline>
+    (function () {
+      // Если фронт сохранил email и payment_id перед редиректом — показываем их.
+      try {
+        const raw = localStorage.getItem("crimea_pending_payment");
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (!data || typeof data !== "object") return;
+        // Просрочено (старше 30 минут) — игнорируем
+        if (data.ts && Date.now() - data.ts > 30 * 60 * 1000) {
+          localStorage.removeItem("crimea_pending_payment");
+          return;
+        }
+        if (data.email) {
+          const el = document.getElementById("status-email");
+          const line = document.getElementById("status-email-line");
+          if (el && line) {
+            el.textContent = data.email;
+            line.hidden = false;
+          }
+        }
+        if (data.payment_id) {
+          const el = document.getElementById("status-payment-id");
+          const line = document.getElementById("status-payment-line");
+          if (el && line) {
+            el.textContent = data.payment_id;
+            line.hidden = false;
+          }
+        }
+        // Однократный показ
+        localStorage.removeItem("crimea_pending_payment");
+      } catch (_) { /* localStorage может быть выключен */ }
+    })();
+  </script>
+</BaseLayout>

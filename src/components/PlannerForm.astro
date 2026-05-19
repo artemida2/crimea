@@ -17,9 +17,14 @@ const {
   defaultTier = "free",
 } = Astro.props;
 
-// Webhook URL берётся из env (PUBLIC_N8N_WEBHOOK) на этапе билда.
-// Если переменной нет, форма работает в demo-режиме и просто показывает payload.
+// Webhook URL'ы берутся из env на этапе билда.
+// PUBLIC_N8N_WEBHOOK — free-маршруты (шлём сразу в planner).
+// PUBLIC_N8N_PAYMENT_WEBHOOK — premium: создаём платёж в ЮKassa, после успешной оплаты
+//   ЮKassa бьёт server-to-server в notification-webhook, который и запускает planner.
+// Если переменные не заданы — форма работает в demo-режиме и просто показывает payload.
 const N8N_WEBHOOK = import.meta.env.PUBLIC_N8N_WEBHOOK ?? "";
+const N8N_PAYMENT_WEBHOOK = import.meta.env.PUBLIC_N8N_PAYMENT_WEBHOOK ?? "";
+const PREMIUM_PRICE_RUB = 299;
 ---
 
 <div class="form-card">
@@ -33,7 +38,8 @@ const N8N_WEBHOOK = import.meta.env.PUBLIC_N8N_WEBHOOK ?? "";
   </h2>
   <p class="lede">
     Выберите тариф и ответьте на несколько вопросов — AI пересоберёт план под вас
-    и пришлёт письмо на email. Премиум — пока бесплатно, в бета-периоде.
+    и пришлёт письмо на email. Премиум — {PREMIUM_PRICE_RUB}&nbsp;₽ через ЮKassa,
+    приходит после успешной оплаты.
   </p>
 
   <div class="tier-picker" role="radiogroup" aria-label="Тариф">
@@ -54,14 +60,8 @@ const N8N_WEBHOOK = import.meta.env.PUBLIC_N8N_WEBHOOK ?? "";
     <label class={`tier-card tier-card--premium ${defaultTier === "premium" ? "is-active" : ""}`} data-tier="premium">
       <input type="radio" name="tier" value="premium" checked={defaultTier === "premium"} />
       <div class="tier-card__head">
-        <span class="tier-card__name">
-          Премиум
-          <span class="tier-card__badge">Бесплатно в бета-периоде</span>
-        </span>
-        <span class="tier-card__price">
-          <s>299&nbsp;₽</s>
-          <strong>0&nbsp;₽</strong>
-        </span>
+        <span class="tier-card__name">Премиум</span>
+        <span class="tier-card__price"><strong>{PREMIUM_PRICE_RUB}&nbsp;₽</strong></span>
       </div>
       <p class="tier-card__sub">Подробный план под ваш стиль и даты.</p>
       <ul class="tier-card__features">
@@ -198,12 +198,13 @@ const N8N_WEBHOOK = import.meta.env.PUBLIC_N8N_WEBHOOK ?? "";
   <div id="planner-result"></div>
 
   <p class="legal">
-    Базовый и премиум тарифы сейчас бесплатны (бета-период). Платная версия за 299&nbsp;₽
-    через ЮKassa подключим, когда соберём первую сотню тестовых маршрутов.
+    Базовый тариф бесплатный. Премиум — {PREMIUM_PRICE_RUB}&nbsp;₽, оплата картой через
+    <a href="https://yookassa.ru/" target="_blank" rel="noopener">ЮKassa</a>
+    (карта Мир, СБП, СберPay). Маршрут приходит на e-mail после успешной оплаты.
   </p>
 </div>
 
-<script define:vars={{ N8N_WEBHOOK }}>
+<script define:vars={{ N8N_WEBHOOK, N8N_PAYMENT_WEBHOOK, PREMIUM_PRICE_RUB }}>
   const form = document.getElementById("planner-form");
   const result = document.getElementById("planner-result");
   const tierInputs = document.querySelectorAll('input[name="tier"]');
@@ -229,6 +230,95 @@ const N8N_WEBHOOK = import.meta.env.PUBLIC_N8N_WEBHOOK ?? "";
   const initialTier = document.querySelector('input[name="tier"]:checked')?.value || "free";
   applyTier(initialTier);
 
+  function makeIdempotenceKey() {
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+      return window.crypto.randomUUID();
+    }
+    // RFC4122-ish fallback для старых браузеров
+    return "yk-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+  }
+
+  async function submitFree(data) {
+    result.textContent = "Собираю маршрут… (обычно ~10 секунд)";
+    if (!N8N_WEBHOOK) {
+      result.textContent =
+        "Webhook планировщика ещё не подключён — это MVP-форма. Параметры запроса:\n" +
+        JSON.stringify(data, null, 2);
+      return;
+    }
+    try {
+      const res = await fetch(N8N_WEBHOOK, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...data,
+          source: "site",
+          url: window.location.href,
+          ts: new Date().toISOString(),
+        }),
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const out = await res.json();
+      result.textContent = out.message ?? out.plan ?? JSON.stringify(out, null, 2);
+    } catch (err) {
+      result.textContent =
+        "Ошибка отправки. Попробуйте через минуту или напишите нам.\n" + String(err);
+    }
+  }
+
+  async function submitPremium(data) {
+    result.textContent = `Открываю безопасную оплату ${PREMIUM_PRICE_RUB} ₽ через ЮKassa…`;
+    if (!N8N_PAYMENT_WEBHOOK) {
+      result.textContent =
+        "Webhook оплаты ещё не подключён — это MVP-форма. Параметры запроса:\n" +
+        JSON.stringify(data, null, 2);
+      return;
+    }
+    const idempotenceKey = makeIdempotenceKey();
+    try {
+      const res = await fetch(N8N_PAYMENT_WEBHOOK, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tier: "premium",
+          email: data.email,
+          idempotenceKey,
+          plannerPayload: {
+            ...data,
+            source: "site",
+            url: window.location.href,
+            ts: new Date().toISOString(),
+          },
+          returnUrl: window.location.origin + "/marshrut/oplata/",
+        }),
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const out = await res.json();
+      if (out && out.ok && out.confirmation_url) {
+        // Сохраняем email и payment_id чтобы success-страница могла показать "маршрут идёт на ..."
+        try {
+          localStorage.setItem(
+            "crimea_pending_payment",
+            JSON.stringify({
+              email: data.email,
+              payment_id: out.payment_id || "",
+              ts: Date.now(),
+            })
+          );
+        } catch (_) { /* localStorage может быть выключен — это не критично */ }
+        result.textContent = "Перенаправляю на безопасную страницу ЮKassa…";
+        window.location.assign(out.confirmation_url);
+        return;
+      }
+      result.textContent =
+        "Не удалось получить ссылку на оплату. Попробуйте через минуту или напишите нам.\n" +
+        JSON.stringify(out, null, 2);
+    } catch (err) {
+      result.textContent =
+        "Ошибка инициализации оплаты. Попробуйте через минуту или напишите нам.\n" + String(err);
+    }
+  }
+
   if (form && result) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -239,36 +329,10 @@ const N8N_WEBHOOK = import.meta.env.PUBLIC_N8N_WEBHOOK ?? "";
           (k) => delete data[k]
         );
       }
-      result.textContent =
-        data.tier === "premium"
-          ? "Собираю подробный премиум-маршрут… (15–25 секунд)"
-          : "Собираю маршрут… (обычно ~10 секунд)";
-
-      if (!N8N_WEBHOOK) {
-        result.textContent =
-          "Webhook ещё не подключён — это MVP-форма. Когда n8n будет развёрнут, ваш маршрут появится здесь.\n\n" +
-          "Параметры запроса:\n" +
-          JSON.stringify(data, null, 2);
-        return;
-      }
-
-      try {
-        const res = await fetch(N8N_WEBHOOK, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...data,
-            source: "site",
-            url: window.location.href,
-            ts: new Date().toISOString(),
-          }),
-        });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const out = await res.json();
-        result.textContent = out.message ?? out.plan ?? JSON.stringify(out, null, 2);
-      } catch (err) {
-        result.textContent =
-          "Ошибка отправки. Попробуйте через минуту или напишите нам.\n" + String(err);
+      if (data.tier === "premium") {
+        await submitPremium(data);
+      } else {
+        await submitFree(data);
       }
     });
   }

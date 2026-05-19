@@ -33,6 +33,7 @@ jobs:
       - name: Build
         env:
           PUBLIC_N8N_WEBHOOK: ${{ vars.PUBLIC_N8N_WEBHOOK }}
+          PUBLIC_N8N_PAYMENT_WEBHOOK: ${{ vars.PUBLIC_N8N_PAYMENT_WEBHOOK }}
         run: npm run build
 
       - name: Upload artifact

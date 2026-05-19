@@ -1,0 +1,156 @@
+{
+  "name": "Crimea — YooKassa Create Payment",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "yookassa-create-payment",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": false,
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-create-1",
+      "name": "Webhook (start payment)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ],
+      "webhookId": "yookassa-create-payment-webhook",
+      "notes": "POST {tier, idempotenceKey, email, plannerPayload?, returnUrl?}.\nФронт вызывает эту ручку для премиум-тарифа; в ответ получает {confirmation_url, payment_id} и редиректит юзера на ЮKassa.\nCORS=* нужен потому что фронт на welcomecrimea.ru, а n8n на другом домене."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Валидация и подготовка payload для ЮKassa.\n// На MVP премиум-маршрут — фиксированная цена 299 RUB.\n// Сумма захардкожена на сервере, чтобы фронт не мог её подменить.\nconst input = $input.first().json;\nconst body = input.body || input;\nconst headers = input.headers || {};\n\nconst {\n  tier = 'premium',\n  email = '',\n  idempotenceKey = '',\n  plannerPayload = null,\n  returnUrl = ''\n} = body;\n\nif (!email || !String(email).includes('@')) {\n  throw new Error('YooKassa create-payment: невалидный email: ' + email);\n}\nif (tier !== 'premium') {\n  throw new Error('YooKassa create-payment: оплата доступна только для premium, получено tier=' + tier);\n}\nif (!plannerPayload || typeof plannerPayload !== 'object') {\n  throw new Error('YooKassa create-payment: не передан plannerPayload с данными формы');\n}\n\n// Idempotence-Key обязателен по ЮKassa-API. Если фронт не прислал — генерим сами.\nconst idempotence = idempotenceKey && String(idempotenceKey).length >= 8\n  ? String(idempotenceKey)\n  : crypto.randomUUID();\n\n// metadata: до 16 ключей, до 512 символов на значение. Кладём payload как строку.\n// На MVP помещаемся: ~300–400 символов.\nconst plannerPayloadStr = JSON.stringify({ ...plannerPayload, tier: 'premium', email: String(email).trim().toLowerCase() });\nif (plannerPayloadStr.length > 510) {\n  throw new Error('YooKassa create-payment: plannerPayload слишком длинный (' + plannerPayloadStr.length + ' символов), сократите notes/allergies');\n}\n\nconst safeReturnUrl = returnUrl && String(returnUrl).startsWith('https://welcomecrimea.ru/')\n  ? String(returnUrl)\n  : 'https://welcomecrimea.ru/marshrut/oplata/';\n\nconst amountValue = '299.00';\n\nconst yookassaPayload = {\n  amount: { value: amountValue, currency: 'RUB' },\n  capture: true,\n  confirmation: {\n    type: 'redirect',\n    return_url: safeReturnUrl\n  },\n  description: 'AI-маршрут по Крыму, премиум (welcomecrimea.ru)',\n  receipt: {\n    customer: { email: String(email).trim().toLowerCase() },\n    items: [\n      {\n        description: 'AI-маршрут по Крыму (премиум)',\n        quantity: '1.00',\n        amount: { value: amountValue, currency: 'RUB' },\n        vat_code: 1,\n        payment_subject: 'service',\n        payment_mode: 'full_payment'\n      }\n    ]\n  },\n  metadata: {\n    plannerPayload: plannerPayloadStr,\n    email: String(email).trim().toLowerCase(),\n    source: 'welcomecrimea.ru'\n  }\n};\n\nreturn [{\n  json: {\n    idempotenceKey: idempotence,\n    email: String(email).trim().toLowerCase(),\n    yookassaPayload\n  }\n}];"
+      },
+      "id": "validate-create-1",
+      "name": "Validate & Build payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.yookassa.ru/v3/payments",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Idempotence-Key",
+              "value": "={{ $json.idempotenceKey }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.yookassaPayload) }}",
+        "options": {
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "create-payment-1",
+      "name": "YooKassa: Create payment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        300
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "REPLACE_WITH_YOUR_YOOKASSA_BASIC_AUTH_CRED_ID",
+          "name": "YooKassa Basic Auth"
+        }
+      },
+      "notes": "Basic Auth credential: User = SHOP_ID, Password = SECRET_KEY из ЛК ЮKassa (Интеграция → Ключи API).\nИспользует Idempotence-Key из предыдущей ноды (защита от двойного списания при retry)."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, payment_id: $json.id, status: $json.status, confirmation_url: ($json.confirmation && $json.confirmation.confirmation_url) || null, amount: $json.amount }) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond-create-1",
+      "name": "Respond with confirmation URL",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook (start payment)": {
+      "main": [
+        [
+          {
+            "node": "Validate & Build payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Build payload": {
+      "main": [
+        [
+          {
+            "node": "YooKassa: Create payment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YooKassa: Create payment": {
+      "main": [
+        [
+          {
+            "node": "Respond with confirmation URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "crimea"
+    },
+    {
+      "name": "yookassa"
+    }
+  ]
+}
