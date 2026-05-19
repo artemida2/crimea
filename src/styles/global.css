@@ -805,8 +805,7 @@ p { margin: 0 0 var(--s-4) 0; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--s-5);
-  margin: 0 auto var(--s-7);
-  max-width: var(--w-content);
+  margin: 0 0 var(--s-3);
 }
 
 @media (max-width: 700px) {
