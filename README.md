@@ -52,20 +52,23 @@ GitHub Actions при пуше в `main` собирает Astro и деплои�
 
 Production URL: https://welcomecrimea.ru/
 
-## n8n: бэк для AI-формы
+## n8n: бэк для AI-формы и ЮKassa
 
 См. [n8n/README.md](./n8n/README.md) — там пошаговая инструкция по:
-- развёртыванию n8n (Railway / Oracle Free / Cloud)
-- импорту workflow
-- подключению Supabase и GigaChat
+- развёртыванию n8n (Railway / Oracle Free / Cloud / self-hosted)
+- импорту трёх workflow: `crimea-planner` (генерация маршрута), `yookassa-create-payment` (создание платежа), `yookassa-notification` (приём webhook-уведомлений)
+- подключению OpenAI/SMTP
 - защите от AI-галлюцинаций
+- настройке ЮKassa (Shop ID + Secret Key, IP whitelist, 54-ФЗ чек)
 
-После того как n8n развёрнут, скопируй webhook URL в `src/components/PlannerForm.astro`:
-```ts
-const N8N_WEBHOOK = "https://your-n8n.example.com/webhook/crimea-planner";
+После того как n8n развёрнут, задай в GitHub Actions Variables две переменные:
+
+```
+PUBLIC_N8N_WEBHOOK         = https://<ваш-n8n-домен>/webhook/crimea-planner
+PUBLIC_N8N_PAYMENT_WEBHOOK = https://<ваш-n8n-домен>/webhook/yookassa-create-payment
 ```
 
-До этого форма работает в demo-режиме — выводит параметры без реального вызова AI.
+До этого форма работает в demo-режиме — выводит параметры без реального вызова AI и ЮKassa.
 
 ## Структура контента
 
@@ -136,7 +139,7 @@ src/
 - [ ] Хаб-страницы по 12 городам
 - [ ] PDF-экспорт маршрута
 - [ ] Аудиогиды через Yandex SpeechKit
-- [ ] ЮKassa интеграция
+- [x] ЮKassa интеграция (premium 299&nbsp;₽, redirect-оплата + webhook-уведомления, см. [n8n/README.md](./n8n/README.md))
 - [ ] Партнёрки: Tripster, Sutochno
 
 ## Лицензия

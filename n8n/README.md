@@ -1,32 +1,61 @@
-# n8n воркфлоу для AI-планировщика
+# n8n воркфлоу для AI-планировщика и ЮKassa
 
 ## TL;DR
 
-В этой папке два воркфлоу:
+В этой папке четыре воркфлоу:
 
 | Файл | Когда использовать | Стек |
 |---|---|---|
-| **`workflow-planner-openai.json`** ← рекомендуется для старта | У тебя есть **только OpenAI API ключ**. Без БД. Маршрут уходит письмом. | OpenAI gpt-4o-mini · SMTP · без БД |
-| `workflow-planner.json` | Старый вариант для GigaChat + Supabase. Когда вырастешь и захочешь верифицированный whitelist мест и сохранять лиды в БД. | GigaChat · Supabase Postgres |
+| **`workflow-planner-openai.json`** ← база | Основной воркфлоу: генерация маршрута + отправка на email. Используется и для free, и для premium. | OpenAI gpt-5.2 · SMTP · без БД |
+| **`workflow-yookassa-create-payment.json`** | Принимает POST от формы с `tier=premium`, создаёт платёж в ЮKassa, возвращает `confirmation_url` на фронт. | ЮKassa API · Basic Auth |
+| **`workflow-yookassa-notification.json`** | URL `https://hooks.neirolanding.ru/webhook/yookassa-notification`. Принимает webhook от ЮKassa, перепроверяет статус через API, на `payment.succeeded` дёргает `crimea-planner`. | ЮKassa API · Basic Auth |
+| `workflow-planner.json` | Старый вариант для GigaChat + Supabase. Когда захочешь верифицированный whitelist мест и сохранять лиды в БД. | GigaChat · Supabase Postgres |
 
-## Архитектура (OpenAI вариант)
+## Архитектура
+
+### Free маршрут (прямой путь)
 
 ```
 Browser form (PlannerForm.astro)
-        │  POST {tier, city, days, composition, transport, budget, topic, notes, email, ...premium fields}
+        │  POST {tier:free, city, days, ...} → PUBLIC_N8N_WEBHOOK
         ▼
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│ n8n: Crimea Planner — OpenAI + HTML Email (Free + Premium)                  │
-│                                                                              │
-│  Webhook ─▶ Validate ─▶ Fetch Attractions ─▶ Fetch Transport ─▶ Fetch Food │
-│                          (95 точек)         (68 опций)         (75 мест)   │
-│                                                                       │     │
-│                                                                       ▼     │
-│                                                              Build Prompt   │
-│                                                                       │     │
-│                                                                       ▼     │
-│  Respond OK ◀── Send Email (SMTP) ◀── Render HTML email ◀── OpenAI         │
+│ workflow-planner-openai.json                                                 │
+│  Webhook ─▶ Validate ─▶ Fetch (places/transport/food) ─▶ Build Prompt       │
+│                                                                  │           │
+│                                                                  ▼           │
+│  Respond OK ◀── Send Email (SMTP) ◀── Render HTML ◀── OpenAI (gpt-5.2)       │
 └──────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Premium маршрут (через оплату)
+
+```
+Browser form
+  │ POST {tier:premium, plannerPayload, email, idempotenceKey} → PUBLIC_N8N_PAYMENT_WEBHOOK
+  ▼
+┌ workflow-yookassa-create-payment.json ───────────────────────────────────────┐
+│  Webhook → Validate & Build payload → YooKassa POST /v3/payments → Respond  │
+└──────────────────────────────────────────────────────────────────────────────┘
+  │ {confirmation_url, payment_id}
+  ▼
+Browser → location.assign(confirmation_url) → ЮKassa checkout → оплата картой
+         │ redirect: /marshrut/oplata/
+         ▼
+User видит "Оплата принята"
+
+ЮKassa «параллельно» → webhook:
+  ЮKassa POST event.payment.succeeded → https://hooks.neirolanding.ru/webhook/yookassa-notification
+  ▼
+┌ workflow-yookassa-notification.json ─────────────────────────────────────────┐
+│  Webhook → Parse event/IP → GET /v3/payments/{id} (перепроверка) → Respond 200│
+│                                                                     │        │
+│                                                                     ▼        │
+│                                       Reconcile & Decide → Trigger planner   │
+└──────────────────────────────────────────────────────────────────────────────┘
+  │ POST /webhook/crimea-planner (тот же planner-workflow)
+  ▼
+тот же первый воркфлоу приходит письмом на email
 ```
 
 **Что происходит**:
@@ -36,12 +65,25 @@ Browser form (PlannerForm.astro)
 4. **Fetch Transport Catalog** — HTTP GET на `https://welcomecrimea.ru/data/transport.json` подтягивает каталог из 68 проверенных опций транспорта (поезда «Таврия», троллейбус №52А, маршрутки, такси, аренда авто, канатки, морские прогулки, Крымский мост).
 5. **Fetch Food Catalog** — HTTP GET на `https://welcomecrimea.ru/data/food.json` подтягивает каталог из 75 проверенных ресторанов/кафе/столовых/виноделен (Чайка в Ялте, Мусафир в Бахчисарае, Кефало-Вриси в Балаклаве, Дорадо в Алуште, Караман в Евпатории, винодельни Massandra/Inkerman/Esse/Solnechnaya Dolina/Alma Valley и др.).
 6. **Build Tier-aware Prompt** — фильтрует каталог достопримечательностей по региону (city), фильтрует транспорт по выбранному способу (car/public/taxi/mixed) и связанным городам, фильтрует еду по региону и составу (для семей с детьми приоритет kid_friendly; для gastro-туров приоритет винодельням), сортирует по приоритету (релевантные теги + «обязательно»), инжектит все три каталога в system+user prompt. Для free — компактный (4–6 точек/день, ~15 ресторанов); для premium — расширенный (6–8 точек/день, ~30 ресторанов, рестораны по дням, план Б, чек-лист).
-7. **OpenAI** — `gpt-4o-mini` с `response_format=json_object` возвращает структурированный план. Системный промпт явно запрещает выдумывать места, рестораны и способы транспорта — AI берёт только из каталогов.
+7. **OpenAI** — модель `gpt-5.2` с `response_format=json_object` возвращает структурированный план. Системный промпт явно запрещает выдумывать места, рестораны и способы транспорта — AI берёт только из каталогов. Температура 0.55 для большей предсказуемости. Если модель `gpt-5.2` недоступна на твоём аккаунте — поменяй в ноде на `gpt-4o-mini` (см. ниже).
 8. **Render HTML** — превращает JSON в красивое HTML-письмо в стиле сайта (serif, navy/cream/burgundy). Для premium дополнительно рендерит секции рестораны / план Б на дождь / чек-лист.
 9. **Send Email** — отправляет через SMTP.
 10. **Respond OK** — фронт получает `{ok:true, message:"План отправлен на ..."}` и показывает пользователю.
 
-Время от submit до получения письма: **10–20 секунд** (premium ближе к 20). Стоимость одного маршрута: **~$0.002–0.005** (gpt-4o-mini, 4000–7000 input токенов из-за каталога + 2000–4000 output).
+Время от submit до получения письма: **10–20 секунд** для free, **20–35 секунд** для premium (модель `gpt-5.2` думает дольше, но и план более детальный). Стоимость одного маршрута зависит от модели — см. секцию «Если будет много трафика» ниже.
+
+### Что нового в промпте (важно)
+
+Системный промпт теперь явно требует **полезный практический контент**, а не «капитан-очевидность»:
+- `local_tip` для каждой точки — что местные знают, а туристы нет (например, «парковка с обратной стороны Воронцовского бесплатно», «троллейбус №52 — сам по себе достопримечательность»).
+- `peak_window` — когда там толпы и как их избежать.
+- `what_to_order` для каждого ресторана — конкретное блюдо, не «попробуйте местную кухню».
+- `avoid_today` — 1–2 предупреждения чего НЕ делать в этот день.
+- `morning_strategy` — почему именно эта последовательность утром.
+- `cost_breakdown_rub` — реальные числа: входы + еда + транспорт = итого.
+- `day_checklist` — чек-лист под конкретный день (для premium).
+
+Эти поля рендерятся в HTML-письме отдельными секциями. Если ты переключаешь модель на более слабую (например, `gpt-4o-mini` ради экономии), некоторые из этих полей могут заполняться не всегда — это нормально, рендер устойчив к отсутствию полей.
 
 ## Зачем именно так (а не PDF)
 
@@ -234,9 +276,95 @@ PUBLIC_N8N_WEBHOOK=https://your-n8n.example.com/webhook/crimea-planner
 
 Готово — письмо приходит с PDF-приложением.
 
+## Подключение ЮKassa
+
+### 1. Аккаунт и ключи
+
+1. Зарегистрируй ЮKassa-аккаунт на [yookassa.ru](https://yookassa.ru/) (для ИП/ООО нужен ОГРН/ИНН).
+2. В личном кабинете: **Интеграция → Ключи API** → выпиши `Shop ID` (число) и `Secret Key` (строка `live_...`).
+3. Для тестов включи **тестовый магазин** — там выдадут отдельные `Shop ID` и `test_...` ключ, они не списывают реальные деньги.
+
+### 2. Credential в n8n
+
+Credentials → New → **HTTP Basic Auth** → назови `YooKassa Basic Auth`:
+- `User`: твой `Shop ID` (цифры)
+- `Password`: твой `Secret Key`
+
+Этот credential используют **оба** YooKassa-воркфлоу (и create-payment, и notification — для перепроверки статуса).
+
+### 3. Импорт воркфлоу
+
+1. Import → `workflow-yookassa-create-payment.json`. В ноде **YooKassa: Create payment** подключи credential `YooKassa Basic Auth`.
+2. Import → `workflow-yookassa-notification.json`. В ноде **YooKassa: Verify payment** подключи тот же credential.
+3. Активируй оба воркфлоу (toggle Active).
+
+### 4. URL'ы
+
+После импорта вебхуки будут доступны по:
+
+```
+https://<твой-n8n-домен>/webhook/yookassa-create-payment   ← в PUBLIC_N8N_PAYMENT_WEBHOOK
+https://<твой-n8n-домен>/webhook/yookassa-notification     ← в ЛК ЮKassa
+```
+
+На проде эта репа использует:
+```
+PUBLIC_N8N_PAYMENT_WEBHOOK = https://hooks.neirolanding.ru/webhook/yookassa-create-payment
+ЮKassa notification URL   = https://hooks.neirolanding.ru/webhook/yookassa-notification
+```
+
+### 5. Регистрация notification URL в ЛК ЮKassa
+
+ЛК ЮKassa → **Интеграция → HTTP-уведомления** → Добавить URL:
+- URL: `https://hooks.neirolanding.ru/webhook/yookassa-notification`
+- Отметь события: `payment.succeeded`, `payment.canceled`, `refund.succeeded`.
+
+ЮKassa начнёт бить POST'ами на этот URL по каждому из событий. Ожидает ответ `200 OK` внутри 30 секунд, иначе ретраит по экспоненте до 24 часов.
+
+### 6. IP-whitelist (опционально, но желательно на проде)
+
+В `workflow-yookassa-notification.json` в ноде **Parse event & IP** есть `const STRICT_IP_CHECK = false;`. На первый запуск оставь false: если reverse-proxy (Caddy/Nginx/Cloudflare) не прокидывает `X-Forwarded-For`, проверка будет ложно резать события. Когда увидишь в логах реальный IP ЮKassa и убедишься, что он попадает в whitelist (`185.71.76.0/27`, `185.71.77.0/27`, `77.75.153.0/25`, `77.75.154.128/25`, `77.75.156.11`, `77.75.156.35`, `2a02:5180::/32`) — поставь `true`.
+
+Для n8n за reverse-proxy выстави переменную: `N8N_PROXY_HOPS=1` — иначе n8n будет видеть IP прокси, а не ЮKassa.
+
+### 7. 54-ФЗ чек
+
+Для ООО/ИП ЮKassa требует фискальный чек при каждом платеже (отправляет в ОФД). В `workflow-yookassa-create-payment.json` блок `receipt` заполняется автоматически:
+
+```json
+"receipt": {
+  "customer": { "email": "<email из формы>" },
+  "items": [{
+    "description": "AI-маршрут по Крыму (премиум)",
+    "quantity": "1.00",
+    "amount": { "value": "299.00", "currency": "RUB" },
+    "vat_code": 1,
+    "payment_subject": "service",
+    "payment_mode": "full_payment"
+  }]
+}
+```
+
+`vat_code: 1` = без НДС (УСН). Для ОСНО с НДС 20% поставь `4`. Полный список — [docs ЮKassa](https://yookassa.ru/developers/api#create_payment_receipt_items_vat_code). Если поправляешь — меняй в ноде **Validate & Build payload**.
+
+### 8. Тест конца-в-конец
+
+1. На сайте отправь форму с `tier=premium`. Должно средиректить на ЮKassa-checkout.
+2. На тестовом магазине ЮKassa введи номер карты `5555 5555 5555 4444`, любые CVV/MM/YY. Оплата пройдёт успешно.
+3. ЮKassa редиректит на `/marshrut/oplata/`, параллельно бьёт webhook.
+4. В n8n: посмотри executions у **Crimea — YooKassa Notification Handler** — должен быть успех, следом в **Crimea Planner — OpenAI + HTML Email** — вызов и отправка письма.
+5. Проверь email — должен прийти премиум-маршрут.
+
+### 9. Отладка
+
+- Если `create-payment` возвращает ошибку — проверь в `Validate & Build payload` длину `plannerPayloadStr` (лимит ЮKassa metadata — 512 символов на значение). Сократи `notes`/`allergies` в форме.
+- Если webhook приходит, но planner не вызывается — проверь URL в ноде **Trigger planner workflow**: он должен быть `https://hooks.neirolanding.ru/webhook/crimea-planner` (или твой production-домен).
+- Если ЮKassa пишет «webhook не доступен» — проверь, что воркфлоу **Активен** (не draft), и что n8n отвечает 200 (в логах не должно быть HTTP 500).
+- Если письмо не приходит — проверь `Send Email (SMTP)` как описано в «Email SMTP» выше.
+
 ## Если будет много трафика
 
-OpenAI gpt-4o-mini стоит ~$0.15 за 1M input + $0.60 за 1M output. Один маршрут ≈ 1500 input + 2000 output токенов = **~$0.0015 за маршрут**. На 1000 маршрутов в месяц — $1.5.
+OpenAI gpt-5.2 — цены смотри в [прайсе OpenAI](https://openai.com/api/pricing/). На один маршрут уходит ~6000–7000 input + 3000–5000 output токенов (из-за каталога). Если gpt-5.2 слишком дорог — поменяй в ноде **OpenAI: Generate Itinerary** `"model": "gpt-5.2"` на `"gpt-4o-mini"` (в разы дешевле) или `"gpt-4.1"`.
 
 Защити webhook от спама:
 - Добавь капчу (Cloudflare Turnstile, бесплатно).

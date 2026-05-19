@@ -1,0 +1,204 @@
+{
+  "name": "Crimea — YooKassa Notification Handler",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "yookassa-notification",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": false
+        }
+      },
+      "id": "webhook-notify-1",
+      "name": "Webhook (yookassa notification)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ],
+      "webhookId": "yookassa-notification-webhook",
+      "notes": "Production URL: https://hooks.neirolanding.ru/webhook/yookassa-notification\nЭтот URL надо зарегистрировать в ЛК ЮKassa → Интеграция → HTTP-уведомления → события payment.succeeded, payment.canceled, refund.succeeded.\nСервер ЮKassa бьёт сюда server-to-server, CORS не нужен."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Парсинг события + (опционально) проверка исходящего IP против белого списка ЮKassa.\n//\n// ЮKassa-белый список (на ноябрь 2024):\n//   185.71.76.0/27, 185.71.77.0/27,\n//   77.75.153.0/25, 77.75.154.128/25,\n//   77.75.156.11, 77.75.156.35,\n//   2a02:5180::/32\n//\n// STRICT_IP_CHECK=true заворачивает запросы с не-whitelist IP.\n// На первом запуске оставь false: пока не настроишь reverse proxy + N8N_PROXY_HOPS,\n// n8n будет видеть IP прокси, а не ЮKassa.\nconst STRICT_IP_CHECK = false;\n\nconst input = $input.first().json;\nconst body = input.body || input;\nconst headers = input.headers || {};\n\nfunction ipToLong(ip) {\n  return ip.split('.').reduce((acc, oct) => (acc << 8) + Number(oct), 0) >>> 0;\n}\nfunction inCidr(ip, cidr) {\n  if (!ip || ip.includes(':')) return false;\n  const [range, bits] = cidr.split('/');\n  const mask = bits === '32' ? 0xFFFFFFFF : (~0 << (32 - Number(bits))) >>> 0;\n  return (ipToLong(ip) & mask) === (ipToLong(range) & mask);\n}\n\nconst WHITELIST_V4 = [\n  '185.71.76.0/27',\n  '185.71.77.0/27',\n  '77.75.153.0/25',\n  '77.75.154.128/25',\n  '77.75.156.11/32',\n  '77.75.156.35/32'\n];\n\nconst rawXff = headers['x-forwarded-for'] || headers['X-Forwarded-For'] || '';\nconst rawRealIp = headers['x-real-ip'] || headers['X-Real-IP'] || '';\nconst clientIp = (String(rawXff).split(',')[0] || String(rawRealIp) || '').trim();\nconst ipOk = clientIp && WHITELIST_V4.some((cidr) => inCidr(clientIp, cidr));\n\nif (STRICT_IP_CHECK && !ipOk) {\n  throw new Error('YooKassa notify: IP вне белого списка ЮKassa: ' + (clientIp || '(пустой)'));\n}\n\nconst eventType = String(body.event || '');\nconst obj = body.object || {};\nconst paymentId = String(obj.id || '');\nif (!paymentId) {\n  throw new Error('YooKassa notify: в body.object.id пусто, нечего проверять');\n}\nif (!eventType.startsWith('payment.') && !eventType.startsWith('refund.')) {\n  throw new Error('YooKassa notify: неизвестный event=' + eventType);\n}\n\nreturn [{\n  json: {\n    clientIp,\n    ipOk,\n    eventType,\n    paymentId,\n    bodyStatus: String(obj.status || ''),\n    bodyMetadata: obj.metadata || {}\n  }\n}];"
+      },
+      "id": "validate-notify-1",
+      "name": "Parse event & IP",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.yookassa.ru/v3/payments/{{ $json.paymentId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {
+          "timeout": 10000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "verify-payment-1",
+      "name": "YooKassa: Verify payment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        300
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "REPLACE_WITH_YOUR_YOOKASSA_BASIC_AUTH_CRED_ID",
+          "name": "YooKassa Basic Auth"
+        }
+      },
+      "notes": "Защита от подделки: всегда перепроверяем статус через API ЮKassa, не доверяем телу webhook."
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "ok",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "respond-notify-1",
+      "name": "Respond 200 to YooKassa",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        880,
+        300
+      ],
+      "notes": "Отвечаем 200 ДО запуска тяжёлого planner-флоу. ЮKassa ждёт ответ < 30с; planner — 15–25с.\nПосле этой ноды execution продолжается асинхронно: Reconcile → Trigger planner."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Решаем что делать дальше:\n//  - payment.succeeded + status === 'succeeded' → парсим metadata.plannerPayload и шлём в planner\n//  - всё остальное (canceled, refunded, pending, неуспешные) → пропускаем тихо, return [] останавливает ветку\nconst parsed = $('Parse event & IP').first().json;\nconst api = $input.first().json;\n\nconst eventType = parsed.eventType;\nconst apiStatus = String(api.status || '');\nconst metadata = api.metadata || parsed.bodyMetadata || {};\n\nif (eventType !== 'payment.succeeded' || apiStatus !== 'succeeded') {\n  console.log('YooKassa notify: пропуск event=' + eventType + ', api.status=' + apiStatus + ', payment_id=' + parsed.paymentId);\n  return [];\n}\n\nlet planner;\ntry {\n  planner = typeof metadata.plannerPayload === 'string'\n    ? JSON.parse(metadata.plannerPayload)\n    : metadata.plannerPayload;\n} catch (e) {\n  throw new Error('YooKassa notify: не смог распарсить metadata.plannerPayload: ' + String(e));\n}\nif (!planner || typeof planner !== 'object') {\n  throw new Error('YooKassa notify: metadata.plannerPayload пуст или невалиден');\n}\n\n// Финальный payload для planner-webhook: гарантируем premium-тариф\nconst plannerPayload = {\n  ...planner,\n  tier: 'premium',\n  email: String(planner.email || metadata.email || '').trim().toLowerCase(),\n  source: 'yookassa',\n  paymentId: parsed.paymentId\n};\n\nif (!plannerPayload.email || !plannerPayload.email.includes('@')) {\n  throw new Error('YooKassa notify: некорректный email в metadata, payment_id=' + parsed.paymentId);\n}\n\nreturn [{ json: { plannerPayload, paymentId: parsed.paymentId } }];"
+      },
+      "id": "reconcile-1",
+      "name": "Reconcile & Decide",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://hooks.neirolanding.ru/webhook/crimea-planner",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.plannerPayload) }}",
+        "options": {
+          "timeout": 60000,
+          "response": {
+            "response": {
+              "responseFormat": "json",
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "trigger-planner-1",
+      "name": "Trigger planner workflow",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        300
+      ],
+      "notes": "Дергаем webhook планировщика тем же payload, который пользователь заполнил в форме перед оплатой.\nЕсли n8n у тебя на другом домене — поменяй URL.\nneverError=true: даже если planner отвалится, мы не падаем (письмо «оплата прошла, маршрут не построился — мы отправим вручную» можно прислать позже)."
+    }
+  ],
+  "connections": {
+    "Webhook (yookassa notification)": {
+      "main": [
+        [
+          {
+            "node": "Parse event & IP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse event & IP": {
+      "main": [
+        [
+          {
+            "node": "YooKassa: Verify payment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YooKassa: Verify payment": {
+      "main": [
+        [
+          {
+            "node": "Respond 200 to YooKassa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond 200 to YooKassa": {
+      "main": [
+        [
+          {
+            "node": "Reconcile & Decide",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reconcile & Decide": {
+      "main": [
+        [
+          {
+            "node": "Trigger planner workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "crimea"
+    },
+    {
+      "name": "yookassa"
+    }
+  ]
+}
