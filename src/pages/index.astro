@@ -117,6 +117,26 @@ const jsonLd = {
     </p>
   </div>
 
+  <!-- ============ PASSPORT TEASER ============ -->
+  <div class="container">
+    <section class="passport-teaser">
+      <div class="passport-teaser__text">
+        <span class="eyebrow">Виральный тест · 30 секунд</span>
+        <h2>Получите свой <em>крымский паспорт</em></h2>
+        <p>
+          Пять вопросов — и у вас в руках карточка, как настоящий паспорт:
+          где были, ваш стиль путешественника, любимый пляж и звание. Скачивается
+          сразу как пост и Stories — лучшая виральная история для Instagram.
+        </p>
+        <a href={url("passport/")} class="btn">Пройти тест</a>
+      </div>
+      <div class="passport-teaser__art" aria-hidden="true">
+        <div class="passport-teaser__sticker">К</div>
+        <div class="passport-teaser__stamp">ПОСЕЩЕНО</div>
+      </div>
+    </section>
+  </div>
+
   <!-- ============ PLANNER FORM ============ -->
   <div class="container">
     <header class="section-rule" id="planner">
@@ -176,5 +196,84 @@ const jsonLd = {
   }
   @media (max-width: 540px) {
     .card-grid-2[style*="3, 1fr"] { grid-template-columns: 1fr !important; }
+  }
+
+  .passport-teaser {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: var(--s-7);
+    align-items: center;
+    margin: var(--s-7) 0;
+    padding: var(--s-7) var(--s-6);
+    border: 1px solid var(--c-line);
+    background: var(--c-bg-cream);
+    border-radius: 6px;
+  }
+  .passport-teaser__text h2 {
+    font-family: var(--f-serif);
+    font-weight: 500;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin: var(--s-3) 0 var(--s-4);
+    line-height: 1.1;
+  }
+  .passport-teaser__text h2 em {
+    font-style: italic;
+    color: var(--c-burgundy);
+  }
+  .passport-teaser__text p {
+    color: var(--c-text-muted);
+    margin: 0 0 var(--s-5);
+    line-height: 1.55;
+  }
+  .passport-teaser__art {
+    position: relative;
+    height: 200px;
+  }
+  .passport-teaser__sticker {
+    position: absolute;
+    inset: auto 0 0 0;
+    width: 180px;
+    height: 180px;
+    margin: auto;
+    background: var(--c-navy);
+    color: var(--c-cream);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: var(--f-serif);
+    font-size: 7rem;
+    font-weight: 600;
+    line-height: 1;
+    box-shadow: 0 30px 60px -30px rgba(14, 27, 58, 0.45);
+  }
+  .passport-teaser__stamp {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    transform: rotate(-12deg);
+    border: 2px dashed var(--c-burgundy);
+    color: var(--c-burgundy);
+    font-family: var(--f-sans);
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(250, 246, 238, 0.7);
+  }
+  @media (max-width: 720px) {
+    .passport-teaser {
+      grid-template-columns: 1fr;
+      gap: var(--s-5);
+      padding: var(--s-5) var(--s-4);
+    }
+    .passport-teaser__art {
+      height: 160px;
+    }
+    .passport-teaser__sticker {
+      width: 140px;
+      height: 140px;
+      font-size: 5rem;
+    }
   }
 </style>

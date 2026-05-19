@@ -1,0 +1,831 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import options from "../data/passport-options.json";
+import { url } from "../utils/url";
+
+const description =
+  "Пройдите 30-секундный тест и получите Крымский паспорт: где были, любимый пляж, ваш стиль путешественника. Скачайте карточку для Instagram.";
+
+const optionsForClient = JSON.stringify(options);
+---
+
+<BaseLayout
+  title="Крымский паспорт — мой Крым в одной карточке"
+  description={description}
+>
+  <section class="passport-hero">
+    <div class="container narrow">
+      <span class="eyebrow">Виральный тест · ~30 секунд</span>
+      <h1>Получите ваш <em>крымский&nbsp;паспорт</em></h1>
+      <p class="lede">
+        Пять вопросов, ноль регистрации, мгновенная карточка для Instagram.
+        Узнайте, на каком вы уровне «крымчанина» и какой у вас стиль
+        путешественника. Можно скачать сразу как пост и как Stories.
+      </p>
+    </div>
+  </section>
+
+  <section class="container narrow passport-section" id="passport-app">
+    <noscript>
+      <p class="legal">Для теста нужен включённый JavaScript.</p>
+    </noscript>
+
+    <!-- ───────────────────────── QUIZ STEPS ───────────────────────── -->
+
+    <div class="passport-card" id="quiz-card">
+      <div class="passport-progress" aria-hidden="true">
+        <span class="dot is-active" data-step="0"></span>
+        <span class="dot" data-step="1"></span>
+        <span class="dot" data-step="2"></span>
+        <span class="dot" data-step="3"></span>
+        <span class="dot" data-step="4"></span>
+      </div>
+
+      <!-- step 1: name + photo -->
+      <div class="quiz-step is-visible" data-step="0">
+        <h2>1. Как вас зовут?</h2>
+        <p class="lede">Можно ник, можно настоящее имя. Это попадёт прямо на паспорт.</p>
+        <label class="field-row">
+          <span>Имя или ник</span>
+          <input type="text" id="q-name" maxlength="28" placeholder="Анна или @kotik93" autocomplete="off" />
+        </label>
+        <label class="field-row">
+          <span>Фото (опционально)</span>
+          <input type="file" id="q-photo" accept="image/*" />
+          <small>Останется только в вашем браузере — никуда не загружается.</small>
+        </label>
+        <div class="quiz-nav">
+          <span></span>
+          <button type="button" class="btn" data-action="next">Дальше</button>
+        </div>
+      </div>
+
+      <!-- step 2: cities visited -->
+      <div class="quiz-step" data-step="1">
+        <h2>2. В каких городах вы были?</h2>
+        <p class="lede">Минимум один. Каждый посещённый город — печать в паспорте.</p>
+        <div class="chip-grid" id="q-cities"></div>
+        <div class="quiz-nav">
+          <button type="button" class="btn btn-outline" data-action="back">Назад</button>
+          <button type="button" class="btn" data-action="next">Дальше</button>
+        </div>
+      </div>
+
+      <!-- step 3: favourite beach -->
+      <div class="quiz-step" data-step="2">
+        <h2>3. Любимый пляж?</h2>
+        <p class="lede">Только один. Если в списке нет — введите свой.</p>
+        <div class="chip-grid one-col" id="q-beaches"></div>
+        <label class="field-row">
+          <span>Свой вариант (опционально)</span>
+          <input type="text" id="q-beach-custom" maxlength="40" placeholder="Например, Учан-Су" autocomplete="off" />
+        </label>
+        <div class="quiz-nav">
+          <button type="button" class="btn btn-outline" data-action="back">Назад</button>
+          <button type="button" class="btn" data-action="next">Дальше</button>
+        </div>
+      </div>
+
+      <!-- step 4: top dish/wine -->
+      <div class="quiz-step" data-step="3">
+        <h2>4. Топ-блюдо или вино?</h2>
+        <p class="lede">Что вы помните ярче всего — на этом будет акцент в карточке.</p>
+        <div class="chip-grid one-col" id="q-dishes"></div>
+        <label class="field-row">
+          <span>Свой вариант (опционально)</span>
+          <input type="text" id="q-dish-custom" maxlength="40" placeholder="Например, янтык в кафе у вокзала" autocomplete="off" />
+        </label>
+        <div class="quiz-nav">
+          <button type="button" class="btn btn-outline" data-action="back">Назад</button>
+          <button type="button" class="btn" data-action="next">Дальше</button>
+        </div>
+      </div>
+
+      <!-- step 5: archetype -->
+      <div class="quiz-step" data-step="4">
+        <h2>5. Ваш стиль в Крыму?</h2>
+        <p class="lede">Один вариант. Это попадёт в подпись паспорта.</p>
+        <div class="arch-grid" id="q-arch"></div>
+        <div class="quiz-nav">
+          <button type="button" class="btn btn-outline" data-action="back">Назад</button>
+          <button type="button" class="btn" id="q-finish">Получить паспорт</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ───────────────────────── RESULT ───────────────────────── -->
+
+    <div class="passport-result" id="result-card" hidden>
+      <h2>Готово! Это ваш паспорт.</h2>
+      <p class="lede">
+        Кнопки ниже скачают PNG. Откройте Instagram, прикрепите файл — и всё.
+      </p>
+
+      <div class="passport-preview-wrap">
+        <canvas id="canvas-post" class="passport-preview" aria-label="Крымский паспорт — пост 1080×1080"></canvas>
+      </div>
+
+      <div class="passport-actions">
+        <button type="button" class="btn" data-download="post">Скачать пост (1080×1080)</button>
+        <button type="button" class="btn btn-outline" data-download="stories">Скачать Stories (1080×1920)</button>
+        <button type="button" class="btn btn-outline" id="btn-share">Поделиться</button>
+        <button type="button" class="btn btn-outline" id="btn-copy">Скопировать ссылку</button>
+      </div>
+
+      <p class="legal">
+        Хочется другой результат — <a href="#" id="btn-restart">пройти ещё раз</a>.
+        Или собрать настоящий маршрут — <a href={url("#planner")}>в AI-планировщик</a>.
+      </p>
+
+      <!-- hidden second canvas for stories rendering -->
+      <canvas id="canvas-stories" hidden></canvas>
+    </div>
+  </section>
+
+  <!-- options data for the client script -->
+  <script id="passport-options-data" type="application/json" set:html={optionsForClient} />
+
+  <script>
+    import {
+      renderPassport,
+      waitForFonts,
+      makeSerial,
+      type PassportData,
+      type Variant,
+    } from "../scripts/passport-renderer";
+
+    type Option = { code: string; name: string; city?: string };
+    type Archetype = {
+      code: string;
+      name: string;
+      emoji: string;
+      tagline: string;
+      description: string;
+    };
+    type Rank = { min: number; max: number; title: string; subtitle: string };
+    type OptionsBundle = {
+      cities: Option[];
+      beaches: Option[];
+      dishes: Option[];
+      archetypes: Archetype[];
+      ranks: Rank[];
+    };
+
+    const dataEl = document.getElementById("passport-options-data");
+    if (!dataEl) throw new Error("passport options data missing");
+    const OPTIONS: OptionsBundle = JSON.parse(dataEl.textContent || "{}");
+
+    type QuizState = {
+      step: number;
+      name: string;
+      photoDataUrl: string | null;
+      cities: string[]; // codes
+      beach: string | null; // code OR "__custom__"
+      beachCustom: string;
+      dish: string | null;
+      dishCustom: string;
+      arch: string | null; // code
+    };
+
+    const state: QuizState = {
+      step: 0,
+      name: "",
+      photoDataUrl: null,
+      cities: [],
+      beach: null,
+      beachCustom: "",
+      dish: null,
+      dishCustom: "",
+      arch: null,
+    };
+
+    const quizCard = document.getElementById("quiz-card");
+    const steps = Array.from(document.querySelectorAll(".quiz-step")) as HTMLElement[];
+    const dots = Array.from(document.querySelectorAll(".passport-progress .dot")) as HTMLElement[];
+    const resultCard = document.getElementById("result-card") as HTMLElement;
+    const canvasPost = document.getElementById("canvas-post") as HTMLCanvasElement;
+    const canvasStories = document.getElementById("canvas-stories") as HTMLCanvasElement;
+
+    function showStep(n: number) {
+      steps.forEach((el, i) => {
+        el.classList.toggle("is-visible", i === n);
+      });
+      dots.forEach((el, i) => {
+        el.classList.toggle("is-active", i <= n);
+      });
+      state.step = n;
+      window.scrollTo({ top: (quizCard?.getBoundingClientRect().top || 0) + window.scrollY - 16, behavior: "smooth" });
+    }
+
+    function validateStep(n: number): string | null {
+      if (n === 0 && !state.name.trim()) return "Введите имя или ник.";
+      if (n === 1 && state.cities.length === 0) return "Отметьте хотя бы один город.";
+      if (n === 2 && !state.beach && !state.beachCustom.trim()) return "Выберите пляж или введите свой.";
+      if (n === 3 && !state.dish && !state.dishCustom.trim()) return "Выберите блюдо/вино или введите своё.";
+      if (n === 4 && !state.arch) return "Выберите стиль путешественника.";
+      return null;
+    }
+
+    // ────── render quiz options ──────
+    function renderChipGrid(
+      containerId: string,
+      items: Option[],
+      multi: boolean,
+      onChange: (code: string, checked: boolean) => void,
+    ) {
+      const root = document.getElementById(containerId);
+      if (!root) return;
+      root.innerHTML = "";
+      items.forEach((it) => {
+        const id = `${containerId}-${it.code}`;
+        const label = document.createElement("label");
+        label.className = "chip";
+        label.htmlFor = id;
+        const sub = it.city ? `<small>${it.city}</small>` : "";
+        label.innerHTML = `
+          <input type="${multi ? "checkbox" : "radio"}" id="${id}" name="${containerId}" value="${it.code}" />
+          <span>${it.name}</span>${sub}
+        `;
+        const input = label.querySelector("input") as HTMLInputElement;
+        input.addEventListener("change", () => onChange(it.code, input.checked));
+        root.appendChild(label);
+      });
+    }
+
+    function renderArchGrid() {
+      const root = document.getElementById("q-arch");
+      if (!root) return;
+      root.innerHTML = "";
+      OPTIONS.archetypes.forEach((a) => {
+        const id = `q-arch-${a.code}`;
+        const label = document.createElement("label");
+        label.className = "arch-card";
+        label.htmlFor = id;
+        label.innerHTML = `
+          <input type="radio" id="${id}" name="q-arch" value="${a.code}" />
+          <div class="arch-emoji">${a.emoji}</div>
+          <div class="arch-name">${a.name}</div>
+          <div class="arch-desc">${a.description}</div>
+        `;
+        const input = label.querySelector("input") as HTMLInputElement;
+        input.addEventListener("change", () => {
+          state.arch = a.code;
+          document.querySelectorAll(".arch-card").forEach((c) => c.classList.remove("is-active"));
+          label.classList.add("is-active");
+        });
+        root.appendChild(label);
+      });
+    }
+
+    renderChipGrid("q-cities", OPTIONS.cities, true, (code, checked) => {
+      state.cities = checked
+        ? [...state.cities, code]
+        : state.cities.filter((c) => c !== code);
+    });
+    renderChipGrid("q-beaches", OPTIONS.beaches, false, (code) => {
+      state.beach = code;
+      state.beachCustom = "";
+      const custom = document.getElementById("q-beach-custom") as HTMLInputElement;
+      if (custom) custom.value = "";
+    });
+    renderChipGrid("q-dishes", OPTIONS.dishes, false, (code) => {
+      state.dish = code;
+      state.dishCustom = "";
+      const custom = document.getElementById("q-dish-custom") as HTMLInputElement;
+      if (custom) custom.value = "";
+    });
+    renderArchGrid();
+
+    // ────── wire inputs ──────
+    const nameInput = document.getElementById("q-name") as HTMLInputElement;
+    nameInput.addEventListener("input", () => {
+      state.name = nameInput.value;
+    });
+
+    const photoInput = document.getElementById("q-photo") as HTMLInputElement;
+    photoInput.addEventListener("change", async () => {
+      const file = photoInput.files?.[0];
+      if (!file) return;
+      // downscale large photos to keep dataUrl small (and serialisation feasible later)
+      try {
+        state.photoDataUrl = await fileToDataUrl(file, 600);
+      } catch (e) {
+        console.warn("photo read failed", e);
+      }
+    });
+
+    const beachCustom = document.getElementById("q-beach-custom") as HTMLInputElement;
+    beachCustom.addEventListener("input", () => {
+      state.beachCustom = beachCustom.value;
+      if (beachCustom.value) {
+        state.beach = null;
+        document.querySelectorAll('input[name="q-beaches"]').forEach((i) => {
+          (i as HTMLInputElement).checked = false;
+        });
+      }
+    });
+
+    const dishCustom = document.getElementById("q-dish-custom") as HTMLInputElement;
+    dishCustom.addEventListener("input", () => {
+      state.dishCustom = dishCustom.value;
+      if (dishCustom.value) {
+        state.dish = null;
+        document.querySelectorAll('input[name="q-dishes"]').forEach((i) => {
+          (i as HTMLInputElement).checked = false;
+        });
+      }
+    });
+
+    // ────── nav buttons ──────
+    document.querySelectorAll('button[data-action="next"]').forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const err = validateStep(state.step);
+        if (err) {
+          alert(err);
+          return;
+        }
+        if (state.step < steps.length - 1) showStep(state.step + 1);
+      });
+    });
+    document.querySelectorAll('button[data-action="back"]').forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (state.step > 0) showStep(state.step - 1);
+      });
+    });
+
+    document.getElementById("q-finish")?.addEventListener("click", async () => {
+      const err = validateStep(state.step);
+      if (err) {
+        alert(err);
+        return;
+      }
+      await finalize();
+    });
+
+    // ────── finalize: build passport data and render ──────
+    function rankFor(n: number): Rank {
+      return (
+        OPTIONS.ranks.find((r) => n >= r.min && n <= r.max) ??
+        OPTIONS.ranks[OPTIONS.ranks.length - 1]
+      );
+    }
+
+    function nameOf(opts: Option[], code: string | null, fallback = ""): string {
+      if (!code) return fallback;
+      const o = opts.find((x) => x.code === code);
+      return o ? o.name : fallback;
+    }
+
+    function buildPassportData(): PassportData {
+      const archetype =
+        OPTIONS.archetypes.find((a) => a.code === state.arch) ?? OPTIONS.archetypes[0];
+      const favCity =
+        state.cities.length > 0
+          ? nameOf(OPTIONS.cities, state.cities[0])
+          : "—";
+      return {
+        name: state.name.trim(),
+        cities: state.cities.map((c) => nameOf(OPTIONS.cities, c, c)),
+        favBeach: state.beachCustom.trim() || nameOf(OPTIONS.beaches, state.beach),
+        favCity,
+        favDish: state.dishCustom.trim() || nameOf(OPTIONS.dishes, state.dish),
+        archetype: {
+          name: archetype.name,
+          emoji: archetype.emoji,
+          tagline: archetype.tagline,
+        },
+        rank: rankFor(state.cities.length),
+        photoDataUrl: state.photoDataUrl,
+        issuedAt: new Date().toLocaleDateString("ru-RU"),
+        serial: makeSerial(state.name + state.cities.join("|") + state.arch),
+      };
+    }
+
+    async function finalize() {
+      quizCard?.classList.add("is-hidden");
+      const data = buildPassportData();
+      await waitForFonts();
+      await renderPassport(canvasPost, data, "post");
+      // pre-render stories too (so download is instant)
+      await renderPassport(canvasStories, data, "stories");
+      resultCard.hidden = false;
+      quizCard?.setAttribute("hidden", "");
+      // persist to hash so URL is shareable
+      try {
+        const serialisable = {
+          n: state.name,
+          c: state.cities,
+          b: state.beach,
+          bc: state.beachCustom,
+          d: state.dish,
+          dc: state.dishCustom,
+          a: state.arch,
+        };
+        const encoded = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(serialisable)))));
+        history.replaceState(null, "", `#p=${encoded}`);
+      } catch {
+        /* ignore */
+      }
+      resultCard.scrollIntoView({ behavior: "smooth" });
+    }
+
+    // ────── download/share buttons ──────
+    document.querySelectorAll("button[data-download]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const variant = (btn.getAttribute("data-download") || "post") as Variant;
+        const canvas = variant === "stories" ? canvasStories : canvasPost;
+        const url = canvas.toDataURL("image/png");
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `crimean-passport-${variant}.png`;
+        a.click();
+      });
+    });
+
+    document.getElementById("btn-share")?.addEventListener("click", async () => {
+      try {
+        const blob: Blob | null = await new Promise((resolve) =>
+          canvasPost.toBlob((b) => resolve(b), "image/png"),
+        );
+        if (!blob) return;
+        const file = new File([blob], "crimean-passport.png", { type: "image/png" });
+        // @ts-ignore Web Share API типы
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: "Мой крымский паспорт",
+            text: "Получил свой крымский паспорт. Пройди и ты — это 30 секунд.",
+            files: [file],
+            url: window.location.href,
+          });
+          return;
+        }
+        if (navigator.share) {
+          await navigator.share({
+            title: "Мой крымский паспорт",
+            text: "Получил свой крымский паспорт. Пройди и ты — это 30 секунд.",
+            url: window.location.href,
+          });
+          return;
+        }
+        alert("Веб-Share не поддерживается в этом браузере — скачайте PNG и поделитесь вручную.");
+      } catch (e) {
+        // user cancelled или браузер закрыл — это норма
+      }
+    });
+
+    document.getElementById("btn-copy")?.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        const btn = document.getElementById("btn-copy") as HTMLButtonElement;
+        const old = btn.textContent;
+        btn.textContent = "Скопировано";
+        setTimeout(() => {
+          btn.textContent = old || "Скопировать ссылку";
+        }, 2000);
+      } catch {
+        alert("Не удалось скопировать. Скопируйте URL из адресной строки.");
+      }
+    });
+
+    document.getElementById("btn-restart")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      location.hash = "";
+      location.reload();
+    });
+
+    // ────── restore from hash if present ──────
+    function restoreFromHash() {
+      const m = /#p=([^&]+)/.exec(location.hash);
+      if (!m) return;
+      try {
+        const json = JSON.parse(
+          decodeURIComponent(escape(atob(decodeURIComponent(m[1])))),
+        );
+        state.name = json.n || "";
+        state.cities = Array.isArray(json.c) ? json.c : [];
+        state.beach = json.b || null;
+        state.beachCustom = json.bc || "";
+        state.dish = json.d || null;
+        state.dishCustom = json.dc || "";
+        state.arch = json.a || null;
+        // sync UI for restart-edit case (not strictly required for v1 viewer)
+        nameInput.value = state.name;
+        document.querySelectorAll('input[name="q-cities"]').forEach((i) => {
+          const inp = i as HTMLInputElement;
+          inp.checked = state.cities.includes(inp.value);
+        });
+        if (state.beach) {
+          const r = document.getElementById(`q-beaches-${state.beach}`) as HTMLInputElement | null;
+          if (r) r.checked = true;
+        }
+        beachCustom.value = state.beachCustom;
+        if (state.dish) {
+          const r = document.getElementById(`q-dishes-${state.dish}`) as HTMLInputElement | null;
+          if (r) r.checked = true;
+        }
+        dishCustom.value = state.dishCustom;
+        if (state.arch) {
+          const r = document.getElementById(`q-arch-${state.arch}`) as HTMLInputElement | null;
+          if (r) {
+            r.checked = true;
+            r.closest(".arch-card")?.classList.add("is-active");
+          }
+        }
+        // jump straight to finalize
+        finalize();
+      } catch (e) {
+        console.warn("hash restore failed", e);
+      }
+    }
+
+    restoreFromHash();
+
+    // ────── helpers ──────
+    async function fileToDataUrl(file: File, maxSide: number): Promise<string> {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(String(r.result));
+        r.onerror = () => reject(r.error);
+        r.readAsDataURL(file);
+      });
+      // downscale via canvas
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const ar = img.width / img.height;
+          let w = img.width;
+          let h = img.height;
+          if (w > h && w > maxSide) {
+            w = maxSide;
+            h = Math.round(maxSide / ar);
+          } else if (h >= w && h > maxSide) {
+            h = maxSide;
+            w = Math.round(maxSide * ar);
+          }
+          const c = document.createElement("canvas");
+          c.width = w;
+          c.height = h;
+          const cx = c.getContext("2d");
+          if (!cx) return reject(new Error("no 2d ctx"));
+          cx.drawImage(img, 0, 0, w, h);
+          resolve(c.toDataURL("image/jpeg", 0.85));
+        };
+        img.onerror = (e) => reject(e);
+        img.src = dataUrl;
+      });
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .passport-hero {
+    background: var(--c-bg-cream);
+    padding: var(--s-8) 0 var(--s-7);
+    border-bottom: 1px solid var(--c-line);
+  }
+  .passport-hero h1 {
+    font-family: var(--f-serif);
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    line-height: 1.05;
+    margin: var(--s-4) 0;
+    font-weight: 500;
+  }
+  .passport-hero h1 em {
+    font-style: italic;
+    color: var(--c-burgundy);
+  }
+  .passport-hero .lede {
+    font-family: var(--f-serif);
+    font-size: 1.2rem;
+    line-height: 1.55;
+    max-width: 56ch;
+    color: var(--c-text);
+  }
+  .container.narrow {
+    max-width: var(--w-narrow);
+    margin: 0 auto;
+    padding: 0 var(--s-5);
+  }
+  .passport-section {
+    padding: var(--s-7) var(--s-5);
+  }
+
+  .passport-card {
+    background: #fff;
+    border: 1px solid var(--c-line);
+    box-shadow: 0 1px 0 rgba(14, 27, 58, 0.05), 0 30px 60px -30px rgba(14, 27, 58, 0.1);
+    padding: var(--s-7) var(--s-6);
+    border-radius: 6px;
+  }
+  .passport-card.is-hidden {
+    display: none;
+  }
+
+  .passport-progress {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: var(--s-6);
+  }
+  .passport-progress .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--c-line);
+    transition: background 0.2s ease;
+  }
+  .passport-progress .dot.is-active {
+    background: var(--c-burgundy);
+  }
+
+  .quiz-step {
+    display: none;
+  }
+  .quiz-step.is-visible {
+    display: block;
+  }
+  .quiz-step h2 {
+    font-family: var(--f-serif);
+    font-size: 1.8rem;
+    font-weight: 500;
+    margin: 0 0 var(--s-3);
+  }
+  .quiz-step .lede {
+    color: var(--c-text-muted);
+    margin: 0 0 var(--s-5);
+    font-size: 1rem;
+  }
+
+  .field-row {
+    display: block;
+    margin: var(--s-4) 0;
+  }
+  .field-row > span {
+    display: block;
+    font-family: var(--f-sans);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-text-muted);
+    margin-bottom: var(--s-2);
+  }
+  .field-row input[type="text"],
+  .field-row input[type="file"] {
+    display: block;
+    width: 100%;
+    font: inherit;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--c-line);
+    border-radius: 4px;
+    background: #fff;
+  }
+  .field-row input[type="text"]:focus {
+    border-color: var(--c-burgundy);
+    outline: none;
+  }
+  .field-row small {
+    display: block;
+    margin-top: var(--s-2);
+    color: var(--c-text-muted);
+    font-size: 0.85rem;
+  }
+
+  .chip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: var(--s-2);
+    margin-bottom: var(--s-5);
+  }
+  .chip-grid.one-col {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+  .chip {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--c-line);
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: var(--f-sans);
+    font-size: 0.95rem;
+  }
+  .chip:hover {
+    border-color: var(--c-navy-soft);
+  }
+  .chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .chip:has(input:checked) {
+    border-color: var(--c-burgundy);
+    background: var(--c-cream-deep);
+    color: var(--c-burgundy);
+  }
+  .chip small {
+    color: var(--c-text-muted);
+    font-size: 0.8rem;
+  }
+  .chip:has(input:checked) small {
+    color: var(--c-burgundy);
+  }
+
+  .arch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--s-3);
+    margin-bottom: var(--s-5);
+  }
+  .arch-card {
+    position: relative;
+    border: 1px solid var(--c-line);
+    border-radius: 6px;
+    padding: var(--s-5);
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.15s ease;
+  }
+  .arch-card:hover {
+    border-color: var(--c-navy-soft);
+  }
+  .arch-card input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .arch-card.is-active {
+    border-color: var(--c-burgundy);
+    background: var(--c-cream-deep);
+  }
+  .arch-emoji {
+    font-size: 2rem;
+    line-height: 1;
+    margin-bottom: var(--s-2);
+  }
+  .arch-name {
+    font-family: var(--f-serif);
+    font-size: 1.4rem;
+    font-weight: 500;
+    margin-bottom: var(--s-2);
+    color: var(--c-burgundy);
+  }
+  .arch-desc {
+    font-size: 0.9rem;
+    color: var(--c-text-muted);
+    line-height: 1.45;
+  }
+
+  .quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s-3);
+    margin-top: var(--s-5);
+  }
+  .quiz-nav > span:empty {
+    display: inline-block;
+    width: 1px;
+  }
+
+  /* ───── result ───── */
+  .passport-result h2 {
+    font-family: var(--f-serif);
+    font-size: 2.2rem;
+    font-weight: 500;
+    margin: 0 0 var(--s-3);
+  }
+  .passport-result .lede {
+    color: var(--c-text-muted);
+    margin: 0 0 var(--s-5);
+  }
+  .passport-preview-wrap {
+    position: relative;
+    margin: var(--s-5) 0;
+    text-align: center;
+  }
+  .passport-preview {
+    width: 100%;
+    max-width: 540px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    border: 1px solid var(--c-line);
+    box-shadow: 0 30px 60px -30px rgba(14, 27, 58, 0.25);
+  }
+  .passport-actions {
+    display: flex;
+    gap: var(--s-3);
+    flex-wrap: wrap;
+    margin: var(--s-5) 0 var(--s-4);
+  }
+  .passport-result .legal {
+    color: var(--c-text-muted);
+    font-size: 0.9rem;
+  }
+  .passport-result .legal a {
+    color: var(--c-burgundy);
+  }
+</style>
