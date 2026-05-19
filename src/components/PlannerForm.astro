@@ -42,7 +42,8 @@ const PREMIUM_PRICE_RUB = 299;
     приходит после успешной оплаты.
   </p>
 
-  <div class="tier-picker" role="radiogroup" aria-label="Тариф">
+  <form id="planner-form" class="planner-form" novalidate>
+      <div class="tier-picker full" role="radiogroup" aria-label="Тариф">
     <label class={`tier-card ${defaultTier === "free" ? "is-active" : ""}`} data-tier="free">
       <input type="radio" name="tier" value="free" checked={defaultTier === "free"} />
       <div class="tier-card__head">
@@ -73,8 +74,6 @@ const PREMIUM_PRICE_RUB = 299;
       </ul>
     </label>
   </div>
-
-  <form id="planner-form" class="planner-form" novalidate>
     <div class="field">
       <label for="city">Куда</label>
       <select id="city" name="city" required>
