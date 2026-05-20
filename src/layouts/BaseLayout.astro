@@ -66,7 +66,7 @@ const year = new Date().getFullYear();
         <nav class="main-nav">
           <a href={url("marshrut/")}>Маршруты</a>
           <a href={url("mesta/")}>Места</a>
-          <a href={url("passport/")}>Паспорт</a>
+          <a href={url("passport/")}>Паспорт туриста</a>
           <a href={url("#planner")}>AI-планировщик</a>
         </nav>
       </div>
@@ -90,7 +90,7 @@ const year = new Date().getFullYear();
           <ul>
             <li><a href={url("marshrut/")}>Маршруты</a></li>
             <li><a href={url("mesta/")}>Места</a></li>
-            <li><a href={url("passport/")}>Крымский паспорт</a></li>
+            <li><a href={url("passport/")}>Паспорт туриста</a></li>
             <li><a href={url("#planner")}>AI-планировщик</a></li>
           </ul>
         </div>
@@ -98,13 +98,28 @@ const year = new Date().getFullYear();
           <h4>Авторам и читателям</h4>
           <ul>
             <li><a href={url("atribucia/")}>Авторы фотографий</a></li>
-            <li><a href="mailto:hello@crimea.example">Связаться</a></li>
+            <li><a href="mailto:info@welcomecrimea.ru">Связаться</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Правовая информация</h4>
+          <ul>
+            <li><a href={url("politika-konfidencialnosti/")}>Политика конфиденциальности</a></li>
+            <li><a href={url("soglashenie/")}>Пользовательское соглашение</a></li>
+            <li><a href={url("soglasie-na-obrabotku/")}>Согласие на обработку ПДн</a></li>
           </ul>
         </div>
       </div>
       <div class="container">
         <p class="meta">
-          © {year} Крым · издание о полуострове · MVP-версия. Информация носит справочный характер. Цены, расписание и условия посещения проверяйте на официальных сайтах перед поездкой.
+          © {year} Крым · издание о полуострове. Информация на сайте носит
+          справочный характер и не является публичной офертой (ст. 437 ГК РФ),
+          если иное прямо не указано на странице услуги. Цены, расписание и
+          условия посещения уточняйте на официальных сайтах объектов перед
+          поездкой. Обработка персональных данных осуществляется в соответствии
+          с Федеральным законом № 152-ФЗ «О персональных данных» —
+          см. <a href={url("politika-konfidencialnosti/")}>Политику
+          конфиденциальности</a>.
         </p>
       </div>
     </footer>

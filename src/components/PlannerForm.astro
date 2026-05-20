@@ -1,4 +1,6 @@
 ---
+import { url } from "../utils/url";
+
 interface Props {
   defaultCity?: string;
   defaultDays?: number;
@@ -187,6 +189,18 @@ const PREMIUM_PRICE_RUB = 299;
       <input type="email" id="email" name="email" placeholder="you@example.com" required />
     </div>
 
+    <div class="field full consent-field">
+      <label class="consent-row">
+        <input type="checkbox" id="consent" name="consent" required />
+        <span>
+          Я даю <a href={url("soglasie-na-obrabotku/")} target="_blank" rel="noopener">согласие на обработку персональных данных</a>
+          (ФЗ № 152) и принимаю
+          <a href={url("politika-konfidencialnosti/")} target="_blank" rel="noopener">Политику конфиденциальности</a>
+          и <a href={url("soglashenie/")} target="_blank" rel="noopener">Пользовательское соглашение</a>.
+        </span>
+      </label>
+    </div>
+
     <div class="full submit-row">
       <button type="submit" class="btn" data-tier-label-free="Собрать маршрут с AI" data-tier-label-premium="Собрать премиум-маршрут с AI">
         {defaultTier === "premium" ? "Собрать премиум-маршрут с AI" : "Собрать маршрут с AI"}
@@ -200,6 +214,8 @@ const PREMIUM_PRICE_RUB = 299;
     Базовый тариф бесплатный. Премиум — {PREMIUM_PRICE_RUB}&nbsp;₽, оплата картой через
     <a href="https://yookassa.ru/" target="_blank" rel="noopener">ЮKassa</a>
     (карта Мир, СБП, СберPay). Маршрут приходит на e-mail после успешной оплаты.
+    Чек в электронном виде по ФЗ № 54 приходит на указанный email.
+    Автоматическое продление отсутствует — это разовый платёж.
   </p>
 </div>
 

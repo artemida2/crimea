@@ -4,23 +4,23 @@ import options from "../data/passport-options.json";
 import { url } from "../utils/url";
 
 const description =
-  "Пройдите 30-секундный тест и получите Крымский паспорт: где были, любимый пляж, ваш стиль путешественника. Скачайте карточку для Instagram.";
+  "Пройдите 30-секундный тест и получите Крымский паспорт туриста: где были, любимый пляж, ваш стиль путешественника. Скачайте карточку для соцсетей.";
 
 const optionsForClient = JSON.stringify(options);
 ---
 
 <BaseLayout
-  title="Крымский паспорт — мой Крым в одной карточке"
+  title="Крымский паспорт туриста — мой Крым в одной карточке"
   description={description}
 >
   <section class="passport-hero">
     <div class="container narrow">
       <span class="eyebrow">Виральный тест · ~30 секунд</span>
-      <h1>Получите ваш <em>крымский&nbsp;паспорт</em></h1>
+      <h1>Получите ваш <em>крымский&nbsp;паспорт туриста</em></h1>
       <p class="lede">
-        Пять вопросов, ноль регистрации, мгновенная карточка для Instagram.
+        Пять вопросов, ноль регистрации, мгновенная карточка для соцсетей.
         Узнайте, на каком вы уровне «крымчанина» и какой у вас стиль
-        путешественника. Можно скачать сразу как пост и как Stories.
+        путешественника. Можно скачать сразу как квадратный пост и как вертикальную стори.
       </p>
     </div>
   </section>
@@ -118,7 +118,7 @@ const optionsForClient = JSON.stringify(options);
     <div class="passport-result" id="result-card" hidden>
       <h2>Готово! Это ваш паспорт.</h2>
       <p class="lede">
-        Кнопки ниже скачают PNG. Откройте Instagram, прикрепите файл — и всё.
+        Кнопки ниже скачают PNG. Прикрепите файл в любой соцсети или мессенджере — и всё.
       </p>
 
       <div class="passport-preview-wrap">
@@ -127,7 +127,7 @@ const optionsForClient = JSON.stringify(options);
 
       <div class="passport-actions">
         <button type="button" class="btn" data-download="post">Скачать пост (1080×1080)</button>
-        <button type="button" class="btn btn-outline" data-download="stories">Скачать Stories (1080×1920)</button>
+        <button type="button" class="btn btn-outline" data-download="stories">Скачать вертикальный (1080×1920)</button>
         <button type="button" class="btn btn-outline" id="btn-share">Поделиться</button>
         <button type="button" class="btn btn-outline" id="btn-copy">Скопировать ссылку</button>
       </div>
