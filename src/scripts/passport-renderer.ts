@@ -2,8 +2,8 @@
  * Crimean Passport — canvas renderer.
  *
  * Two output sizes:
- *   - 1080×1080 (Instagram пост)
- *   - 1080×1920 (Instagram Stories)
+ *   - 1080×1080 (квадратный пост)
+ *   - 1080×1920 (вертикальные истории / stories)
  *
  * Палитра — из global.css:
  *   navy    #0E1B3A
