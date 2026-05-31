@@ -124,10 +124,12 @@ const jsonLd = {
           <svg viewBox="0 0 24 24" width="20" height="20"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>
         </button>
       </div>
+      <p class="route-hint" id="route-hint">Маршрут показан зелёной линией на карте, цифры — порядок посещения. Меняйте порядок стрелками.</p>
       <ol class="route-list" id="route-list"></ol>
       <p class="route-empty" id="route-empty">Пока ничего не выбрано. Откройте место на карте и нажмите «+ В маршрут».</p>
       <div class="modal-actions">
         <button class="btn btn-route" id="route-pdf" type="button">Скачать PDF</button>
+        <button class="btn btn-ghost" id="route-mapbtn" type="button">На карте</button>
         <button class="btn btn-ghost" id="route-share" type="button">Поделиться</button>
       </div>
       <p class="share-hint" id="share-hint"></p>
@@ -174,6 +176,9 @@ const jsonLd = {
             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
         }
       ).addTo(map);
+
+      // слой для линии маршрута и порядковых номеров (поверх кластера)
+      const routeLayer = L.layerGroup().addTo(map);
 
       function pinHtml(cat) {
         const c = CATS[cat];
@@ -387,6 +392,43 @@ const jsonLd = {
         const word = pluralPlaces(n);
         routeBarText.textContent = "Маршрут: " + n + " " + word + " выбрано";
         routeOpenBtn.disabled = n === 0;
+        drawRoute();
+      }
+
+      // рисуем линию маршрута и порядковые номера прямо на карте
+      function drawRoute() {
+        routeLayer.clearLayers();
+        if (route.length === 0) return;
+        const pts = route.map((id) => [byId[id].lat, byId[id].lng]);
+        if (pts.length > 1) {
+          L.polyline(pts, {
+            color: "#1D9E75",
+            weight: 4,
+            opacity: 0.9,
+            dashArray: "2 9",
+            lineCap: "round",
+            lineJoin: "round",
+          }).addTo(routeLayer);
+        }
+        route.forEach((id, i) => {
+          const p = byId[id];
+          L.marker([p.lat, p.lng], {
+            icon: L.divIcon({
+              className: "order-wrap",
+              html: '<div class="order-badge">' + (i + 1) + "</div>",
+              iconSize: [22, 22],
+              iconAnchor: [-6, 28],
+            }),
+            zIndexOffset: 1000,
+            interactive: false,
+            keyboard: false,
+          }).addTo(routeLayer);
+        });
+      }
+      function fitRoute() {
+        if (route.length < 1) return;
+        const pts = route.map((id) => [byId[id].lat, byId[id].lng]);
+        map.fitBounds(L.latLngBounds(pts), { padding: [60, 60], maxZoom: 13 });
       }
       function pluralPlaces(n) {
         const m10 = n % 10, m100 = n % 100;
@@ -417,9 +459,18 @@ const jsonLd = {
         if (e.target === modal) closeModal();
       });
 
+      const routeHint = document.getElementById("route-hint");
+      const routeMapBtn = document.getElementById("route-mapbtn");
+      routeMapBtn.addEventListener("click", () => {
+        closeModal();
+        fitRoute();
+      });
+
       function renderRouteList() {
         routeListEl.innerHTML = "";
         routeEmptyEl.style.display = route.length ? "none" : "block";
+        routeHint.style.display = route.length ? "block" : "none";
+        routeMapBtn.disabled = route.length === 0;
         route.forEach((id, idx) => {
           const p = byId[id];
           const c = CATS[p.category];
@@ -611,6 +662,22 @@ const jsonLd = {
     transition: transform 200ms ease;
   }
   .pin-wrap:hover .pin { transform: scale(1.12); }
+  .order-wrap { background: transparent; border: 0; }
+  .order-badge {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #1D9E75;
+    color: #fff;
+    font-family: var(--f-sans);
+    font-weight: 700;
+    font-size: 0.78rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+  }
   .cluster-wrap { background: transparent; }
   .cluster {
     width: 40px;
@@ -800,6 +867,7 @@ const jsonLd = {
   }
   .modal-head h2 { margin: 0; font-size: 1.5rem; }
   .modal-head .panel-close { position: static; box-shadow: none; background: #f3f4f6; }
+  .route-hint { color: #6b7280; font-size: 0.85rem; margin: 0 0 var(--s-3); }
   .route-list { list-style: none; margin: 0 0 var(--s-4); padding: 0; }
   .route-item {
     display: flex;
@@ -832,14 +900,21 @@ const jsonLd = {
   /* ----- print ----- */
   .print-route { display: none; }
   @media print {
-    body > *:not(.print-route) { display: none !important; }
+    /* прячем интерфейс через visibility, чтобы не скрыть родителей .print-route */
+    body * { visibility: hidden !important; }
+    .print-route, .print-route * { visibility: visible !important; }
     .print-route {
       display: block !important;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
       padding: 24px;
       font-family: var(--f-sans);
       color: #000;
     }
     .print-route h1 { font-family: var(--f-serif); }
+    .print-route ol { padding-left: 22px; }
     .print-route li { margin-bottom: 14px; line-height: 1.5; }
   }
 
