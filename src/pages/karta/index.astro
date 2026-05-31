@@ -1,0 +1,866 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { url } from "../../utils/url";
+import places from "../../data/map-places.json";
+
+const imageBase = url("img/");
+
+const description =
+  "Интерактивная карта Крыма: природа, история, пляжи и гастрономия на одной карте. Фильтры по категориям, поиск, описания мест и сборка собственного маршрута.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "Интерактивная карта мест Крыма",
+  numberOfItems: places.length,
+  itemListElement: places.map((p, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    item: {
+      "@type": "TouristAttraction",
+      name: p.name,
+      address: p.city,
+      geo: { "@type": "GeoCoordinates", latitude: p.lat, longitude: p.lng },
+    },
+  })),
+};
+---
+
+<BaseLayout
+  title="Карта Крыма — интерактивная карта мест"
+  description={description}
+  jsonLd={jsonLd}
+>
+  <!-- Leaflet + MarkerCluster (бесплатные CDN, без бэкенда и ключей) -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+  />
+
+  <div class="container" style="padding-top: var(--s-4);">
+    <p class="breadcrumbs">
+      <a href={url()}>Главная</a><span class="sep">/</span>Карта
+    </p>
+  </div>
+
+  <header class="karta-head container">
+    <span class="eyebrow">Интерактивная карта</span>
+    <h1 style="font-style: italic;">Места Крыма на карте</h1>
+    <p class="muted karta-sub">
+      Природа, история, пляжи и гастрономия — фильтруйте, ищите и собирайте
+      собственный маршрут. Ссылкой на маршрут можно поделиться.
+    </p>
+  </header>
+
+  <section class="karta-wrap">
+    <!-- Поиск + фильтры -->
+    <div class="map-controls">
+      <div class="search-box">
+        <svg class="search-ic" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zm5 12 4 4"/></svg>
+        <input
+          id="map-search"
+          type="search"
+          placeholder="Поиск по названию или городу…"
+          autocomplete="off"
+          aria-label="Поиск по названию или городу"
+        />
+      </div>
+      <div class="filters" id="filters" role="group" aria-label="Фильтры категорий">
+        <button class="pill" data-cat="all" type="button">Все</button>
+        <button class="pill" data-cat="nature" type="button">Природа</button>
+        <button class="pill" data-cat="history" type="button">История</button>
+        <button class="pill" data-cat="beach" type="button">Пляжи</button>
+        <button class="pill" data-cat="food" type="button">Еда</button>
+      </div>
+    </div>
+
+    <!-- Карта + оверлеи -->
+    <div class="map-shell">
+      <div id="map" role="application" aria-label="Карта мест Крыма"></div>
+
+      <!-- Боковая панель места -->
+      <aside class="place-panel" id="place-panel" aria-hidden="true">
+        <button class="panel-close" id="panel-close" type="button" aria-label="Закрыть">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+        <div class="panel-media" id="panel-media"></div>
+        <div class="panel-body">
+          <span class="badge" id="panel-badge"></span>
+          <div class="panel-title-row">
+            <h2 id="panel-name"></h2>
+            <span class="rating" id="panel-rating"></span>
+          </div>
+          <p class="panel-meta" id="panel-meta"></p>
+          <p class="panel-desc" id="panel-desc"></p>
+          <div class="panel-actions">
+            <button class="btn btn-route" id="panel-add" type="button">+ В маршрут</button>
+            <button class="btn btn-ghost" id="panel-focus" type="button">На карте</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Полоска маршрута -->
+      <div class="route-bar" id="route-bar">
+        <span class="route-bar-text" id="route-bar-text">Маршрут: 0 мест выбрано</span>
+        <button class="btn btn-route" id="route-open" type="button" disabled>
+          Посмотреть маршрут →
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Модальное окно маршрута -->
+  <div class="modal-overlay" id="route-modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-head">
+        <h2 id="modal-title">Ваш маршрут</h2>
+        <button class="panel-close" id="modal-close" type="button" aria-label="Закрыть">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <ol class="route-list" id="route-list"></ol>
+      <p class="route-empty" id="route-empty">Пока ничего не выбрано. Откройте место на карте и нажмите «+ В маршрут».</p>
+      <div class="modal-actions">
+        <button class="btn btn-route" id="route-pdf" type="button">Скачать PDF</button>
+        <button class="btn btn-ghost" id="route-share" type="button">Поделиться</button>
+      </div>
+      <p class="share-hint" id="share-hint"></p>
+    </div>
+  </div>
+
+  <!-- Печатная версия маршрута -->
+  <div class="print-route" id="print-route" aria-hidden="true"></div>
+
+  <script
+    is:inline
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script
+    is:inline
+    src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"
+  ></script>
+
+  <script is:inline define:vars={{ places, imageBase }}>
+    (function () {
+      const CATS = {
+        nature:  { color: "#1D9E75", label: "Природа", badge: "Природа",
+          icon: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/></svg>' },
+        history: { color: "#534AB7", label: "История", badge: "История",
+          icon: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 6 12 2l9 4v2H3V6zM5 9h2v8H5V9zm6 0h2v8h-2V9zm6 0h2v8h-2V9zM3 18h18v3H3v-3z"/></svg>' },
+        beach:   { color: "#BA7517", label: "Пляжи", badge: "Пляж",
+          icon: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 11c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M2 17c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/></svg>' },
+        food:    { color: "#D4537E", label: "Еда", badge: "Еда",
+          icon: '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M6 2v7a2 2 0 0 0 1.5 1.94V22h1.5V10.94A2 2 0 0 0 10.5 9V2H9v6.5H8V2H6.5v6.5h-1V2H6zm10 0c-1.66 0-3 2.46-3 5.5 0 2.3 1 3.6 2.25 3.93V22h1.5V2H16z"/></svg>' },
+      };
+      const byId = {};
+      places.forEach((p) => (byId[p.id] = p));
+
+      // ---------- map ----------
+      const map = L.map("map", { zoomControl: true, scrollWheelZoom: true })
+        .setView([44.95, 34.1], 9);
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+        {
+          maxZoom: 19,
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        }
+      ).addTo(map);
+
+      function pinHtml(cat) {
+        const c = CATS[cat];
+        return (
+          '<div class="pin" style="border-color:' + c.color + ';color:' + c.color + '">' +
+          c.icon + "</div>"
+        );
+      }
+      function makeMarker(p) {
+        const m = L.marker([p.lat, p.lng], {
+          icon: L.divIcon({
+            className: "pin-wrap",
+            html: pinHtml(p.category),
+            iconSize: [36, 36],
+            iconAnchor: [18, 18],
+            popupAnchor: [0, -18],
+          }),
+        });
+        m.placeId = p.id;
+        m.category = p.category;
+        m.on("click", () => openPanel(p.id));
+        return m;
+      }
+
+      const markers = {};
+      places.forEach((p) => (markers[p.id] = makeMarker(p)));
+
+      const cluster = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        maxClusterRadius: 50,
+        iconCreateFunction: function (c) {
+          const counts = {};
+          c.getAllChildMarkers().forEach((m) => {
+            counts[m.category] = (counts[m.category] || 0) + 1;
+          });
+          let top = "nature", max = -1;
+          Object.keys(counts).forEach((k) => {
+            if (counts[k] > max) { max = counts[k]; top = k; }
+          });
+          const color = CATS[top].color;
+          return L.divIcon({
+            className: "cluster-wrap",
+            html:
+              '<div class="cluster" style="background:' + color + '">' +
+              c.getChildCount() + "</div>",
+            iconSize: [40, 40],
+          });
+        },
+      });
+      map.addLayer(cluster);
+
+      // ---------- filters + search ----------
+      const active = new Set(["nature", "history", "beach", "food"]);
+      let query = "";
+
+      function matches(p) {
+        if (!query) return true;
+        const q = query.toLowerCase();
+        return (
+          p.name.toLowerCase().includes(q) || p.city.toLowerCase().includes(q)
+        );
+      }
+
+      function applyFilters() {
+        const visible = [];
+        places.forEach((p) => {
+          const m = markers[p.id];
+          if (active.has(p.category)) {
+            if (!cluster.hasLayer(m)) cluster.addLayer(m);
+            visible.push(m);
+            m.setOpacity(matches(p) ? 1 : 0.3);
+          } else if (cluster.hasLayer(m)) {
+            cluster.removeLayer(m);
+          }
+        });
+        // refresh cluster opacity for dimming
+        cluster.refreshClusters();
+      }
+
+      // pills
+      const filterEl = document.getElementById("filters");
+      function stylePill(btn) {
+        const cat = btn.dataset.cat;
+        let on;
+        if (cat === "all") {
+          on = active.size === 4;
+          btn.style.background = on ? "#1a1a1a" : "#fff";
+          btn.style.color = on ? "#fff" : "#6b7280";
+          btn.style.borderColor = on ? "#1a1a1a" : "#e5e7eb";
+        } else {
+          on = active.has(cat);
+          const color = CATS[cat].color;
+          btn.style.background = on ? color : "#fff";
+          btn.style.color = on ? "#fff" : "#6b7280";
+          btn.style.borderColor = on ? color : "#e5e7eb";
+        }
+        btn.classList.toggle("pill-on", on);
+      }
+      function refreshPills() {
+        filterEl.querySelectorAll(".pill").forEach(stylePill);
+      }
+      filterEl.querySelectorAll(".pill").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const cat = btn.dataset.cat;
+          if (cat === "all") {
+            ["nature", "history", "beach", "food"].forEach((c) => active.add(c));
+          } else {
+            if (active.has(cat)) active.delete(cat);
+            else active.add(cat);
+            if (active.size === 0) {
+              // не оставляем пустую карту — возвращаем эту категорию
+              active.add(cat);
+            }
+          }
+          refreshPills();
+          applyFilters();
+        });
+      });
+
+      const searchEl = document.getElementById("map-search");
+      searchEl.addEventListener("input", () => {
+        query = searchEl.value.trim();
+        applyFilters();
+      });
+
+      // ---------- side panel ----------
+      const panel = document.getElementById("place-panel");
+      let panelId = null;
+
+      function imgFor(p) {
+        if (p.image) {
+          return (
+            '<img src="' + imageBase + p.image + '-800.webp" alt="' +
+            esc(p.name) + '" loading="lazy" />'
+          );
+        }
+        const c = CATS[p.category];
+        return (
+          '<div class="media-ph" style="background:' + c.color + '">' +
+          c.icon.replace('width="16" height="16"', 'width="48" height="48"') +
+          "</div>"
+        );
+      }
+      function esc(s) {
+        return String(s).replace(/[&<>"']/g, (c) =>
+          ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
+        );
+      }
+
+      function openPanel(id) {
+        const p = byId[id];
+        if (!p) return;
+        panelId = id;
+        const c = CATS[p.category];
+        document.getElementById("panel-media").innerHTML = imgFor(p);
+        const badge = document.getElementById("panel-badge");
+        badge.textContent = c.badge;
+        badge.style.background = c.color;
+        document.getElementById("panel-name").textContent = p.name;
+        document.getElementById("panel-rating").innerHTML =
+          '<span class="star">★</span>' + p.rating.toFixed(1);
+        document.getElementById("panel-meta").textContent =
+          p.city + " · " + p.duration;
+        document.getElementById("panel-desc").textContent = p.description;
+        updateAddBtn();
+        panel.classList.add("open");
+        panel.setAttribute("aria-hidden", "false");
+      }
+      function closePanel() {
+        panel.classList.remove("open");
+        panel.setAttribute("aria-hidden", "true");
+        panelId = null;
+      }
+      document.getElementById("panel-close").addEventListener("click", closePanel);
+      document.getElementById("panel-focus").addEventListener("click", () => {
+        const p = byId[panelId];
+        if (!p) return;
+        map.flyTo([p.lat, p.lng], Math.max(map.getZoom(), 13), { duration: 0.6 });
+      });
+      document.getElementById("panel-add").addEventListener("click", () => {
+        if (!panelId) return;
+        toggleRoute(panelId);
+        updateAddBtn();
+      });
+      function updateAddBtn() {
+        const btn = document.getElementById("panel-add");
+        if (route.includes(panelId)) {
+          btn.textContent = "− Убрать из маршрута";
+          btn.classList.add("btn-ghost");
+          btn.classList.remove("btn-route");
+        } else {
+          btn.textContent = "+ В маршрут";
+          btn.classList.add("btn-route");
+          btn.classList.remove("btn-ghost");
+        }
+      }
+
+      // ---------- route ----------
+      let route = [];
+      const routeBarText = document.getElementById("route-bar-text");
+      const routeOpenBtn = document.getElementById("route-open");
+
+      function toggleRoute(id) {
+        const i = route.indexOf(id);
+        if (i === -1) route.push(id);
+        else route.splice(i, 1);
+        refreshRouteBar();
+      }
+      function refreshRouteBar() {
+        const n = route.length;
+        const word = pluralPlaces(n);
+        routeBarText.textContent = "Маршрут: " + n + " " + word + " выбрано";
+        routeOpenBtn.disabled = n === 0;
+      }
+      function pluralPlaces(n) {
+        const m10 = n % 10, m100 = n % 100;
+        if (m10 === 1 && m100 !== 11) return "место";
+        if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return "места";
+        return "мест";
+      }
+
+      // modal
+      const modal = document.getElementById("route-modal");
+      const routeListEl = document.getElementById("route-list");
+      const routeEmptyEl = document.getElementById("route-empty");
+      const shareHint = document.getElementById("share-hint");
+
+      function openModal() {
+        renderRouteList();
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+      }
+      function closeModal() {
+        modal.classList.remove("open");
+        modal.setAttribute("aria-hidden", "true");
+        shareHint.textContent = "";
+      }
+      routeOpenBtn.addEventListener("click", openModal);
+      document.getElementById("modal-close").addEventListener("click", closeModal);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      function renderRouteList() {
+        routeListEl.innerHTML = "";
+        routeEmptyEl.style.display = route.length ? "none" : "block";
+        route.forEach((id, idx) => {
+          const p = byId[id];
+          const c = CATS[p.category];
+          const li = document.createElement("li");
+          li.className = "route-item";
+          li.innerHTML =
+            '<span class="dot" style="background:' + c.color + '"></span>' +
+            '<span class="ri-body"><span class="ri-name">' + esc(p.name) +
+            '</span><span class="ri-meta">' + esc(p.city) + " · " + esc(p.duration) +
+            "</span></span>" +
+            '<span class="ri-ctl">' +
+            '<button type="button" data-act="up" aria-label="Выше"' + (idx === 0 ? " disabled" : "") + ">↑</button>" +
+            '<button type="button" data-act="down" aria-label="Ниже"' + (idx === route.length - 1 ? " disabled" : "") + ">↓</button>" +
+            '<button type="button" data-act="del" aria-label="Удалить">✕</button>' +
+            "</span>";
+          li.querySelector('[data-act="up"]').addEventListener("click", () => {
+            if (idx > 0) { [route[idx - 1], route[idx]] = [route[idx], route[idx - 1]]; renderRouteList(); refreshRouteBar(); }
+          });
+          li.querySelector('[data-act="down"]').addEventListener("click", () => {
+            if (idx < route.length - 1) { [route[idx + 1], route[idx]] = [route[idx], route[idx + 1]]; renderRouteList(); refreshRouteBar(); }
+          });
+          li.querySelector('[data-act="del"]').addEventListener("click", () => {
+            route.splice(idx, 1); renderRouteList(); refreshRouteBar(); updateAddBtn();
+          });
+          routeListEl.appendChild(li);
+        });
+      }
+
+      // PDF via print
+      document.getElementById("route-pdf").addEventListener("click", () => {
+        const box = document.getElementById("print-route");
+        let html = "<h1>Мой маршрут по Крыму</h1><ol>";
+        route.forEach((id) => {
+          const p = byId[id];
+          html +=
+            "<li><strong>" + esc(p.name) + "</strong> — " + esc(p.city) +
+            " · " + esc(p.duration) + "<br>" + esc(p.description) + "</li>";
+        });
+        html += "</ol>";
+        box.innerHTML = html;
+        window.print();
+      });
+
+      // share link ?route=
+      document.getElementById("route-share").addEventListener("click", async () => {
+        const link =
+          location.origin + location.pathname + "?route=" + route.join(",");
+        try {
+          await navigator.clipboard.writeText(link);
+          shareHint.textContent = "Ссылка скопирована в буфер обмена.";
+        } catch (e) {
+          shareHint.textContent = link;
+        }
+      });
+
+      // ---------- init from URL ----------
+      const params = new URLSearchParams(location.search);
+      const r = params.get("route");
+      if (r) {
+        r.split(",").forEach((id) => {
+          if (byId[id] && !route.includes(id)) route.push(id);
+        });
+      }
+
+      refreshPills();
+      applyFilters();
+      refreshRouteBar();
+
+      // Esc closes overlays
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          if (modal.classList.contains("open")) closeModal();
+          else if (panel.classList.contains("open")) closePanel();
+        }
+      });
+    })();
+  </script>
+</BaseLayout>
+
+<style is:global>
+  /* ширина страницы карты — на всю ширину */
+  .karta-wrap {
+    max-width: var(--w-full);
+    margin: 0 auto;
+    padding: var(--s-4) var(--s-5) var(--s-7);
+  }
+  .karta-head {
+    text-align: center;
+    padding-top: var(--s-5);
+    padding-bottom: var(--s-4);
+  }
+  .karta-sub {
+    font-family: var(--f-serif);
+    font-size: 1.2rem;
+    line-height: 1.5;
+    max-width: 60ch;
+    margin: var(--s-3) auto 0;
+  }
+
+  /* ----- controls ----- */
+  .map-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3);
+    margin-bottom: var(--s-4);
+  }
+  .search-box {
+    position: relative;
+    flex: 1 1 280px;
+    max-width: 420px;
+  }
+  .search-box .search-ic {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    pointer-events: none;
+  }
+  #map-search {
+    width: 100%;
+    font-family: var(--f-sans);
+    font-size: 0.95rem;
+    padding: 12px 14px 12px 42px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fff;
+    color: #1a1a1a;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+  }
+  #map-search:focus {
+    outline: none;
+    border-color: #1D9E75;
+    box-shadow: 0 0 0 3px rgba(29, 158, 117, 0.15);
+  }
+
+  .filters {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+  .pill {
+    flex: 0 0 auto;
+    font-family: var(--f-sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    color: #6b7280;
+    white-space: nowrap;
+    transition: background 200ms ease, color 200ms ease, border-color 200ms ease;
+  }
+
+  /* ----- map shell ----- */
+  .map-shell {
+    position: relative;
+    height: clamp(520px, 78vh, 900px);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    background: #eef0f2;
+  }
+  #map {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+  }
+
+  /* leaflet markers */
+  .pin-wrap { background: transparent; border: 0; }
+  .pin {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    transition: transform 200ms ease;
+  }
+  .pin-wrap:hover .pin { transform: scale(1.12); }
+  .cluster-wrap { background: transparent; }
+  .cluster {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: #fff;
+    font-family: var(--f-sans);
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  }
+
+  /* ----- place panel ----- */
+  .place-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 320px;
+    max-width: 86%;
+    height: 100%;
+    background: #fff;
+    z-index: 500;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.14);
+    transform: translateX(110%);
+    transition: transform 280ms ease;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .place-panel.open { transform: translateX(0); }
+  .panel-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(255, 255, 255, 0.92);
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
+    transition: background 200ms ease;
+  }
+  .panel-close:hover { background: #fff; }
+  .panel-media {
+    height: 180px;
+    flex: 0 0 180px;
+    background: #f2ebdd;
+    overflow: hidden;
+  }
+  .panel-media img { width: 100%; height: 100%; object-fit: cover; }
+  .media-ph {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .panel-body { padding: var(--s-4) var(--s-5) var(--s-5); }
+  .badge {
+    display: inline-block;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: var(--s-3);
+  }
+  .panel-title-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .panel-title-row h2 {
+    font-family: var(--f-serif);
+    font-size: 1.5rem;
+    margin: 0;
+    line-height: 1.15;
+  }
+  .rating {
+    font-family: var(--f-sans);
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    color: #1a1a1a;
+  }
+  .rating .star { color: #f5a623; margin-right: 2px; }
+  .panel-meta {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 6px 0 var(--s-4);
+  }
+  .panel-desc {
+    color: #1a1a1a;
+    font-size: 0.96rem;
+    line-height: 1.6;
+    margin-bottom: var(--s-5);
+  }
+  .panel-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .btn {
+    font-family: var(--f-sans);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 11px 16px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    transition: background 200ms ease, color 200ms ease, border-color 200ms ease, opacity 200ms ease;
+    flex: 1 1 auto;
+  }
+  .btn-route { background: #1D9E75; color: #fff; }
+  .btn-route:hover { background: #18895f; }
+  .btn-route:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-ghost {
+    background: #fff;
+    color: #1a1a1a;
+    border-color: #e5e7eb;
+  }
+  .btn-ghost:hover { border-color: #1a1a1a; }
+
+  /* ----- route bar ----- */
+  .route-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 450;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding: 12px 18px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid #eceff2;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+  }
+  .route-bar-text { font-weight: 600; font-size: 0.95rem; color: #1a1a1a; }
+  .route-bar .btn { flex: 0 0 auto; }
+
+  /* ----- modal ----- */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(14, 27, 58, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--s-4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+  .modal {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    max-height: 86vh;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
+    padding: var(--s-5);
+    transform: translateY(12px);
+    transition: transform 200ms ease;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--s-4);
+  }
+  .modal-head h2 { margin: 0; font-size: 1.5rem; }
+  .modal-head .panel-close { position: static; box-shadow: none; background: #f3f4f6; }
+  .route-list { list-style: none; margin: 0 0 var(--s-4); padding: 0; }
+  .route-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 4px;
+    border-bottom: 1px solid #f0f1f3;
+  }
+  .route-item .dot { width: 12px; height: 12px; border-radius: 50%; flex: 0 0 auto; }
+  .ri-body { display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; }
+  .ri-name { font-weight: 600; font-size: 0.95rem; }
+  .ri-meta { color: #6b7280; font-size: 0.82rem; }
+  .ri-ctl { display: flex; gap: 4px; flex: 0 0 auto; }
+  .ri-ctl button {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    color: #1a1a1a;
+    font-size: 0.9rem;
+    transition: background 200ms ease, border-color 200ms ease, opacity 200ms ease;
+  }
+  .ri-ctl button:hover:not(:disabled) { border-color: #1a1a1a; }
+  .ri-ctl button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .route-empty { color: #6b7280; font-size: 0.95rem; }
+  .modal-actions { display: flex; gap: 10px; margin-top: var(--s-3); }
+  .share-hint { color: #1D9E75; font-size: 0.85rem; margin: 10px 0 0; word-break: break-all; }
+
+  /* ----- print ----- */
+  .print-route { display: none; }
+  @media print {
+    body > *:not(.print-route) { display: none !important; }
+    .print-route {
+      display: block !important;
+      padding: 24px;
+      font-family: var(--f-sans);
+      color: #000;
+    }
+    .print-route h1 { font-family: var(--f-serif); }
+    .print-route li { margin-bottom: 14px; line-height: 1.5; }
+  }
+
+  /* ----- mobile ----- */
+  @media (max-width: 768px) {
+    .karta-wrap { padding: var(--s-3) var(--s-4) var(--s-6); }
+    .map-controls { flex-direction: column; align-items: stretch; }
+    .search-box { max-width: none; }
+    .map-shell { height: 76vh; }
+    .place-panel {
+      width: 100%;
+      max-width: 100%;
+      height: 60%;
+      top: auto;
+      bottom: 0;
+      transform: translateY(110%);
+      border-radius: 16px 16px 0 0;
+    }
+    .place-panel.open { transform: translateY(0); }
+    .route-bar { padding: 10px 14px; }
+    .route-bar-text { font-size: 0.88rem; }
+    .route-bar .btn { padding: 10px 12px; font-size: 0.85rem; }
+  }
+</style>
