@@ -21,7 +21,7 @@
     "description": "Самое глубокое ущелье полуострова, до 320 м. Ванна Молодости, реликтовый лес и тропа вдоль горной реки Аузун-Узень.",
     "rating": 4.7,
     "duration": "4–6 часов",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/%D0%97%D0%B0%D1%85%D1%96%D0%B4_%D0%BD%D0%B0%D0%B4_%D0%92%D0%9A%D0%9A.jpg/1280px-%D0%97%D0%B0%D1%85%D1%96%D0%B4_%D0%BD%D0%B0%D0%B4_%D0%92%D0%9A%D0%9A.jpg"
   },
   {
     "id": "mys-fiolent",
@@ -33,7 +33,7 @@
     "description": "Обрывистые вулканические скалы и бирюзовое море. Яшмовый пляж под Георгиевским монастырём, 800 ступеней вниз.",
     "rating": 4.8,
     "duration": "2–4 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Cape_Fiolent%2C_Crimea.jpg/1280px-Cape_Fiolent%2C_Crimea.jpg"
   },
   {
     "id": "demerdzhi",
@@ -45,7 +45,7 @@
     "description": "Массив с причудливыми скалами-фигурами и видом на Алуштинскую долину. Здесь снимали «Кавказскую пленницу».",
     "rating": 4.7,
     "duration": "4–5 часов",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/3/36/Demer_view.jpg"
   },
   {
     "id": "dolina-prividenii",
@@ -57,14 +57,14 @@
     "description": "Сотни выветренных каменных столбов на склоне Демерджи, меняющих очертания в тумане. Один из самых атмосферных треков Крыма.",
     "rating": 4.6,
     "duration": "3–4 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/0/0a/%D0%94%D0%BE%D0%BB%D0%B8%D0%BD%D0%B0_%D0%BF%D1%80%D0%B8%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B9_-_%D0%BF%D0%B5%D1%80%D0%B5%D0%B4_%D0%B7%D0%B0%D0%BA%D0%B0%D1%82%D0%BE%D0%BC_-_panoramio.jpg"
   },
   {
     "id": "vorontsovsky-palace",
     "name": "Воронцовский дворец",
     "category": "history",
     "lat": 44.4203,
-    "lng": 34.0560,
+    "lng": 34.056,
     "city": "Алупка",
     "description": "Дворец в мавританско-готическом стиле, 1848 год. Парадные интерьеры, парк и вид на Ай-Петри и море.",
     "rating": 4.8,
@@ -93,7 +93,7 @@
     "description": "Античный город, основанный греками в V в. до н. э. Руины базилик, Туманный колокол и Владимирский собор у моря.",
     "rating": 4.8,
     "duration": "2–3 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Chersonesos_ruins.jpg/1280px-Chersonesos_ruins.jpg"
   },
   {
     "id": "bakhchisaray-palace",
@@ -117,7 +117,7 @@
     "description": "Средневековая генуэзская крепость XIV–XV вв. на Крепостной горе. Башни, стены и панорама Судакской бухты.",
     "rating": 4.7,
     "duration": "2–3 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/8/8d/%D0%93%D0%B5%D0%BD%D1%83%D1%8D%D0%B7%D1%81%D0%BA%D0%B0%D1%8F_%D0%BA%D1%80%D0%B5%D0%BF%D0%BE%D1%81%D1%82%D1%8C.jpg"
   },
   {
     "id": "zolotoy-plyazh-feodosiya",
@@ -129,7 +129,7 @@
     "description": "Многокилометровая полоса мелкого золотистого песка с пологим входом в море. Один из лучших песчаных пляжей Крыма.",
     "rating": 4.5,
     "duration": "полдня",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Crimea%2C_Feodosia%2C_view_on_the_Port.JPG/1280px-Crimea%2C_Feodosia%2C_view_on_the_Port.JPG"
   },
   {
     "id": "novyy-svet",
@@ -141,7 +141,7 @@
     "description": "Три бухты с прозрачной водой — Зелёная, Синяя и Голубая. Можжевеловая роща и тропа Голицына вдоль скал.",
     "rating": 4.8,
     "duration": "полдня",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/%D0%9F%D0%B0%D0%BD%D0%BE%D1%80%D0%B0%D0%BC%D0%B0_%D0%9D%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE_%D0%A1%D0%B2%D0%B5%D1%82%D0%B0.jpg/1280px-%D0%9F%D0%B0%D0%BD%D0%BE%D1%80%D0%B0%D0%BC%D0%B0_%D0%9D%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE_%D0%A1%D0%B2%D0%B5%D1%82%D0%B0.jpg"
   },
   {
     "id": "balaklava-beach",
@@ -165,7 +165,7 @@
     "description": "Белый песок и бирюзовая вода у западной оконечности Крыма. Чаша любви, дайвинг и закаты Тарханкута.",
     "rating": 4.6,
     "duration": "полдня",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/%D0%93%D1%80%D0%BE%D1%82_%D0%BD%D0%B0_%D0%BC%D1%8B%D1%81%D0%B5_%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%BE%D0%B9_%D0%90%D1%82%D0%BB%D0%B5%D1%88.jpg/1280px-%D0%93%D1%80%D0%BE%D1%82_%D0%BD%D0%B0_%D0%BC%D1%8B%D1%81%D0%B5_%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%BE%D0%B9_%D0%90%D1%82%D0%BB%D0%B5%D1%88.jpg"
   },
   {
     "id": "evpatoriya",
@@ -177,7 +177,7 @@
     "description": "Широкие песчаные пляжи с мелководьем — идеально для отдыха с детьми. Лечебные грязи Мойнакского озера рядом.",
     "rating": 4.4,
     "duration": "полдня",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Eupatoria%2C_View_of_Yevpatoria%2C_Crimea.jpg/1280px-Eupatoria%2C_View_of_Yevpatoria%2C_Crimea.jpg"
   },
   {
     "id": "rynok-privoz-simferopol",
@@ -189,7 +189,7 @@
     "description": "Главный продуктовый рынок столицы Крыма. Местные сыры, чабрец, мёд, фрукты, специи и крымские вина на развес.",
     "rating": 4.3,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Simferopol_Montage.png"
   },
   {
     "id": "restoran-balaklava",
@@ -201,7 +201,7 @@
     "description": "Набережная Назукина — десятки заведений со свежей черноморской рыбой, мидиями и устрицами с местных ферм.",
     "rating": 4.5,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Modern_Balaklava_-_Gulf_of_Balaklava_%2816.07.2006_17-10-20%29.JPG/1280px-Modern_Balaklava_-_Gulf_of_Balaklava_%2816.07.2006_17-10-20%29.JPG"
   },
   {
     "id": "cheburechnaya-yalta",
@@ -237,19 +237,19 @@
     "description": "Летняя резиденция Николая II в стиле неоренессанс. Место Ялтинской конференции 1945 года и Солнечная тропа вдоль моря.",
     "rating": 4.8,
     "duration": "2–3 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/%D0%9B%D1%96%D0%B2%D0%B0%D0%B4%D1%96%D0%B9%D1%81%D1%8C%D0%BA%D0%B8%D0%B9_%D0%BF%D0%B0%D0%BB%D0%B0%D1%86%D0%BE%D0%B2%D0%B8%D0%B9_%D0%BA%D0%BE%D0%BC%D0%BF%D0%BB%D0%B5%D0%BA%D1%817.jpg/1280px-%D0%9B%D1%96%D0%B2%D0%B0%D0%B4%D1%96%D0%B9%D1%81%D1%8C%D0%BA%D0%B8%D0%B9_%D0%BF%D0%B0%D0%BB%D0%B0%D1%86%D0%BE%D0%B2%D0%B8%D0%B9_%D0%BA%D0%BE%D0%BC%D0%BF%D0%BB%D0%B5%D0%BA%D1%817.jpg"
   },
   {
     "id": "massandrovskiy-dvorec",
     "name": "Массандровский дворец",
     "category": "history",
     "lat": 44.5099,
-    "lng": 34.1960,
+    "lng": 34.196,
     "city": "Массандра",
     "description": "Сказочный замок Александра III в стиле французских шато Луары. Окружён террасным парком с редкими хвойными.",
     "rating": 4.7,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Massandra_Palace2.jpg/1280px-Massandra_Palace2.jpg"
   },
   {
     "id": "panorama-sevastopol",
@@ -261,7 +261,7 @@
     "description": "Грандиозное живописное полотно об обороне города 1854–1855 гг. Один из крупнейших памятников батальной живописи в мире.",
     "rating": 4.8,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/3/36/Musee_Sevastopol.jpg"
   },
   {
     "id": "grafskaya-pristan",
@@ -273,7 +273,7 @@
     "description": "Парадный причал с колоннадой 1846 года — визитная карточка Севастополя и место многих исторических событий флота.",
     "rating": 4.7,
     "duration": "30–60 мин",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/2012-09-09_%D0%A1%D0%B5%D0%B2%D0%B0%D1%81%D1%82%D0%BE%D0%BF%D0%BE%D0%BB%D1%8C._%D0%93%D1%80%D0%B0%D1%84%D1%81%D0%BA%D0%B0%D1%8F_%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%BD%D1%8C_%281%29.jpg/1280px-2012-09-09_%D0%A1%D0%B5%D0%B2%D0%B0%D1%81%D1%82%D0%BE%D0%BF%D0%BE%D0%BB%D1%8C._%D0%93%D1%80%D0%B0%D1%84%D1%81%D0%BA%D0%B0%D1%8F_%D0%BF%D1%80%D0%B8%D1%81%D1%82%D0%B0%D0%BD%D1%8C_%281%29.jpg"
   },
   {
     "id": "malahov-kurgan",
@@ -285,7 +285,7 @@
     "description": "Ключевая высота двух оборон Севастополя. Оборонительная башня, орудия, Вечный огонь и панорама города с парком.",
     "rating": 4.6,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Siege_of_Sevastopol_1855.jpg"
   },
   {
     "id": "uspenskiy-monastyr",
@@ -297,7 +297,7 @@
     "description": "Действующий монастырь, вырубленный в отвесной скале Марьям-Дере. Храмы в гротах и лестница вдоль обрыва.",
     "rating": 4.7,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/%D0%95%D1%89%D1%91_%D0%B2%D0%B8%D0%B4_%D0%BD%D0%B0_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C.jpg/1280px-%D0%95%D1%89%D1%91_%D0%B2%D0%B8%D0%B4_%D0%BD%D0%B0_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D1%8C.jpg"
   },
   {
     "id": "mitridatskaya-lestnica",
@@ -309,7 +309,7 @@
     "description": "Парадная лестница XIX века в 400+ ступеней на гору Митридат, к Обелиску Славы и руинам античного Пантикапея.",
     "rating": 4.6,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/8/80/%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%D1%8F_%D0%9C%D0%B8%D1%82%D1%80%D0%B8%D0%B4%D0%B0%D1%82%D1%81%D0%BA%D0%B0%D1%8F_%D0%BB%D0%B5%D1%81%D1%82%D0%BD%D0%B8%D1%86%D0%B0%2C_%D0%B3%D0%BE%D1%80%D0%B0_%D0%9C%D0%B8%D1%82%D1%80%D0%B8%D0%B4%D0%B0%D1%82.jpg"
   },
   {
     "id": "adzhimushkay",
@@ -321,7 +321,7 @@
     "description": "Подземный музей обороны 1942 года в каменоломнях, где держались бойцы и мирные жители. Экскурсия с фонарями.",
     "rating": 4.8,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/c/c2/Bm_krim.jpg"
   },
   {
     "id": "galereya-ayvazovskogo",
@@ -333,7 +333,7 @@
     "description": "Крупнейшее собрание работ мариниста И. Айвазовского в его родном доме у моря. «Девятый вал» и сотни морских пейзажей.",
     "rating": 4.8,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Aivazovsky_Ivan.jpg/1280px-Aivazovsky_Ivan.jpg"
   },
   {
     "id": "forosskaya-cerkov",
@@ -345,7 +345,7 @@
     "description": "Церковь Воскресения Христова 1892 года на отвесной Красной скале 412 м. Один из самых фотографируемых видов Крыма.",
     "rating": 4.8,
     "duration": "1 час",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/%D0%A6%D0%B5%D1%80%D0%BA%D0%B2%D0%B0_%D0%92%D0%BE%D1%81%D0%BA%D1%80%D0%B5%D1%81%D1%96%D0%BD%D0%BD%D1%8F_%D0%A5%D1%80%D0%B8%D1%81%D1%82%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE6.JPG/1280px-%D0%A6%D0%B5%D1%80%D0%BA%D0%B2%D0%B0_%D0%92%D0%BE%D1%81%D0%BA%D1%80%D0%B5%D1%81%D1%96%D0%BD%D0%BD%D1%8F_%D0%A5%D1%80%D0%B8%D1%81%D1%82%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE6.JPG"
   },
   {
     "id": "dvorec-gagarinoy",
@@ -357,7 +357,7 @@
     "description": "Романтический замок в стиле модерн на мысе Плака, 1907 год. Окружён старинным парком прямо у кромки моря.",
     "rating": 4.6,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/%D0%9A%D1%80%D1%8B%D0%BC%2C_%D0%9C%D0%B0%D0%BB%D1%8B%D0%B9_%D0%9C%D0%B0%D1%8F%D0%BA_-_%D0%94%D0%B2%D0%BE%D1%80%D0%B5%D1%86_%D0%9A%D1%83%D1%87%D1%83%D0%BA-%D0%9B%D0%B0%D0%BC%D0%B1%D0%B0%D1%82%D0%B0_07.jpg/1280px-%D0%9A%D1%80%D1%8B%D0%BC%2C_%D0%9C%D0%B0%D0%BB%D1%8B%D0%B9_%D0%9C%D0%B0%D1%8F%D0%BA_-_%D0%94%D0%B2%D0%BE%D1%80%D0%B5%D1%86_%D0%9A%D1%83%D1%87%D1%83%D0%BA-%D0%9B%D0%B0%D0%BC%D0%B1%D0%B0%D1%82%D0%B0_07.jpg"
   },
   {
     "id": "uchan-su",
@@ -369,7 +369,7 @@
     "description": "Самый высокий водопад Крыма — 98 м. Полноводен весной и после дождей; по пути к Ай-Петри среди соснового леса.",
     "rating": 4.5,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/6/64/%D0%A3%D1%87%D0%B0%D0%BD-%D0%A1%D1%83.jpg"
   },
   {
     "id": "dzhur-dzhur",
@@ -381,7 +381,7 @@
     "description": "Самый полноводный водопад полуострова, не пересыхает летом. Каскады и купели в буковом ущелье Хапхальского заказника.",
     "rating": 4.7,
     "duration": "2–3 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Murmuring.JPG/1280px-Murmuring.JPG"
   },
   {
     "id": "mramornaya-peshchera",
@@ -393,7 +393,7 @@
     "description": "Одна из красивейших оборудованных пещер Европы. Залы со сталактитами, подсветка и удобные дорожки на плато Чатыр-Даг.",
     "rating": 4.8,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Marmurova_pechera2.jpg"
   },
   {
     "id": "kara-dag",
@@ -405,7 +405,7 @@
     "description": "Древний вулканический массив и заповедник. Знаменитая арка Золотые Ворота в море, морские прогулки и экотропы.",
     "rating": 4.8,
     "duration": "3–4 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/KaraDag01.jpeg/1280px-KaraDag01.jpeg"
   },
   {
     "id": "nikitskiy-sad",
@@ -417,19 +417,19 @@
     "description": "Основан в 1812 году. Тысячи видов растений, кактусовая оранжерея, бал хризантем осенью и террасы с видом на море.",
     "rating": 4.7,
     "duration": "2–3 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/f/f1/%D0%91%D0%B5%D1%81%D0%B5%D0%B4%D0%BA%D0%B0_%D0%B2_%D0%BA%D0%B0%D0%BA%D1%82%D1%83%D1%81%D0%B0%D1%85.JPG"
   },
   {
     "id": "sasyk-sivash",
     "name": "Розовое озеро Сасык-Сиваш",
     "category": "nature",
-    "lat": 45.1700,
-    "lng": 33.5000,
+    "lat": 45.17,
+    "lng": 33.5,
     "city": "Евпатория",
     "description": "Солёное озеро, окрашивающееся в розовый из-за водорослей и рачков. Эффектные кадры и природная соль.",
     "rating": 4.4,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/9/92/%D0%A6%D0%B2%D0%B5%D1%82_%D1%81%D0%BE%D0%BB%D0%B8_101.jpg"
   },
   {
     "id": "gora-koshka",
@@ -441,7 +441,7 @@
     "description": "Скальный хребет над Симеизом, силуэтом похожий на присевшую кошку. Виды на скалу Дива и Южный берег.",
     "rating": 4.5,
     "duration": "2–3 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Mount_Koshka.jpg"
   },
   {
     "id": "koktebel-plyazh",
@@ -453,7 +453,7 @@
     "description": "Галечная набережная у подножия Кара-Дага. Богемная атмосфера, кафе, прогулки на катере к Золотым Воротам.",
     "rating": 4.4,
     "duration": "полдня",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/e/eb/%D0%9A%D0%BE%D0%BA%D1%82%D0%B5%D0%B1%D0%B5%D0%BB%D1%8C_%D0%9A%D0%B0%D1%80%D0%B0%D0%B4%D0%B0%D0%B3.jpg"
   },
   {
     "id": "uchkuevka",
@@ -465,7 +465,7 @@
     "description": "Широкий песчано-галечный пляж на Северной стороне Севастополя. Развитая инфраструктура и пологий вход в море.",
     "rating": 4.4,
     "duration": "полдня",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/%D0%9F%D0%B0%D1%80%D0%BA_%D0%A3%D1%87%D0%BA%D1%83%D0%B5%D0%B2%D0%BA%D0%B0%2C_%D0%B8%D1%8E%D0%BD%D1%8C_2022%2C_01.jpg/1280px-%D0%9F%D0%B0%D1%80%D0%BA_%D0%A3%D1%87%D0%BA%D1%83%D0%B5%D0%B2%D0%BA%D0%B0%2C_%D0%B8%D1%8E%D0%BD%D1%8C_2022%2C_01.jpg"
   },
   {
     "id": "zavod-novyy-svet",
@@ -477,7 +477,7 @@
     "description": "Историческая винодельня князя Голицына, родина русского шампанского. Экскурсии по тоннелям и дегустации игристого.",
     "rating": 4.7,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/%D0%9F%D0%B0%D0%BD%D0%BE%D1%80%D0%B0%D0%BC%D0%B0_%D0%9D%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE_%D0%A1%D0%B2%D0%B5%D1%82%D0%B0.jpg/1280px-%D0%9F%D0%B0%D0%BD%D0%BE%D1%80%D0%B0%D0%BC%D0%B0_%D0%9D%D0%BE%D0%B2%D0%BE%D0%B3%D0%BE_%D0%A1%D0%B2%D0%B5%D1%82%D0%B0.jpg"
   },
   {
     "id": "inkerman-vino",
@@ -489,7 +489,7 @@
     "description": "Марочные вина, выдержанные в штольнях бывшего каменоломенного завода. Экскурсии по подвалам и дегустационные залы.",
     "rating": 4.5,
     "duration": "1–2 часа",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/%D0%9A%D0%BE%D0%BC%D0%BF%D0%BE%D0%B7%D0%B8%D1%86%D0%B8%D1%8F_%D0%B2%D0%BE%D0%B7%D0%BB%D0%B5_%D0%B7%D0%B0%D0%B2%D0%BE%D0%B4%D0%B0.jpg/1280px-%D0%9A%D0%BE%D0%BC%D0%BF%D0%BE%D0%B7%D0%B8%D1%86%D0%B8%D1%8F_%D0%B2%D0%BE%D0%B7%D0%BB%D0%B5_%D0%B7%D0%B0%D0%B2%D0%BE%D0%B4%D0%B0.jpg"
   },
   {
     "id": "yaltinskiy-rynok",
@@ -501,6 +501,6 @@
     "description": "Центральный рынок Ялты: крымские фрукты, домашние сыры, варенье из инжира и лепестков роз, чай с горными травами.",
     "rating": 4.3,
     "duration": "1 час",
-    "image": null
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/%D0%AF%D0%BB%D1%82%D0%B0%2C_%D0%B2%D0%B8%D0%B4_%D0%BE%D1%82_%D0%9F%D0%BE%D0%BB%D0%B8%D0%BA%D1%83%D1%80%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%BC%D0%B5%D0%BC%D0%BE%D1%80%D0%B8%D0%B0%D0%BB%D0%B0_02.jpg/1280px-%D0%AF%D0%BB%D1%82%D0%B0%2C_%D0%B2%D0%B8%D0%B4_%D0%BE%D1%82_%D0%9F%D0%BE%D0%BB%D0%B8%D0%BA%D1%83%D1%80%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%BC%D0%B5%D0%BC%D0%BE%D1%80%D0%B8%D0%B0%D0%BB%D0%B0_02.jpg"
   }
 ]

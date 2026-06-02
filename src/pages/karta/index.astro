@@ -308,11 +308,18 @@ const jsonLd = {
       const panel = document.getElementById("place-panel");
       let panelId = null;
 
+      function srcFor(p) {
+        if (!p.image) return null;
+        return /^https?:/.test(p.image)
+          ? p.image
+          : imageBase + p.image + "-800.webp";
+      }
       function imgFor(p) {
-        if (p.image) {
+        const src = srcFor(p);
+        if (src) {
           return (
-            '<img src="' + imageBase + p.image + '-800.webp" alt="' +
-            esc(p.name) + '" loading="lazy" />'
+            '<img src="' + src + '" alt="' + esc(p.name) +
+            '" loading="lazy" referrerpolicy="no-referrer" />'
           );
         }
         const c = CATS[p.category];
@@ -499,18 +506,141 @@ const jsonLd = {
         });
       }
 
-      // PDF via print
-      document.getElementById("route-pdf").addEventListener("click", () => {
+      // ---------- статическая карта маршрута для PDF ----------
+      const TILE = 256;
+      function projectPx(lat, lng, z) {
+        const s = TILE * Math.pow(2, z);
+        const x = ((lng + 180) / 360) * s;
+        const sinL = Math.sin((lat * Math.PI) / 180);
+        const y = (0.5 - Math.log((1 + sinL) / (1 - sinL)) / (4 * Math.PI)) * s;
+        return { x, y };
+      }
+      function buildRouteMap(ids) {
+        return new Promise((resolve) => {
+          const W = 760, H = 420, pad = 54;
+          const pts = ids.map((id) => byId[id]).filter(Boolean);
+          if (!pts.length) { resolve(null); return; }
+          let z = 13;
+          if (pts.length > 1) {
+            for (z = 13; z >= 3; z--) {
+              const pr = pts.map((p) => projectPx(p.lat, p.lng, z));
+              const w = Math.max(...pr.map((q) => q.x)) - Math.min(...pr.map((q) => q.x));
+              const h = Math.max(...pr.map((q) => q.y)) - Math.min(...pr.map((q) => q.y));
+              if (w <= W - 2 * pad && h <= H - 2 * pad) break;
+            }
+          }
+          if (z < 3) z = 3;
+          const proj = pts.map((p) => projectPx(p.lat, p.lng, z));
+          const cx = (Math.min(...proj.map((q) => q.x)) + Math.max(...proj.map((q) => q.x))) / 2;
+          const cy = (Math.min(...proj.map((q) => q.y)) + Math.max(...proj.map((q) => q.y))) / 2;
+          const originX = cx - W / 2, originY = cy - H / 2;
+          const canvas = document.createElement("canvas");
+          canvas.width = W; canvas.height = H;
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#e8ecef"; ctx.fillRect(0, 0, W, H);
+          const t0x = Math.floor(originX / TILE), t1x = Math.floor((originX + W) / TILE);
+          const t0y = Math.floor(originY / TILE), t1y = Math.floor((originY + H) / TILE);
+          const maxT = Math.pow(2, z), sub = ["a", "b", "c"], tiles = [];
+          for (let tx = t0x; tx <= t1x; tx++)
+            for (let ty = t0y; ty <= t1y; ty++) {
+              if (ty < 0 || ty >= maxT) continue;
+              tiles.push({ tx, ty, wx: ((tx % maxT) + maxT) % maxT });
+            }
+          let loaded = 0, finished = false;
+          function finish() {
+            if (finished) return;
+            finished = true;
+            ctx.lineWidth = 4; ctx.strokeStyle = "#1D9E75";
+            ctx.lineCap = "round"; ctx.lineJoin = "round";
+            ctx.setLineDash([2, 9]);
+            ctx.beginPath();
+            proj.forEach((q, i) => {
+              const X = q.x - originX, Y = q.y - originY;
+              i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y);
+            });
+            if (proj.length > 1) ctx.stroke();
+            ctx.setLineDash([]);
+            proj.forEach((q, i) => {
+              const X = q.x - originX, Y = q.y - originY;
+              ctx.beginPath(); ctx.arc(X, Y, 12, 0, 2 * Math.PI);
+              ctx.fillStyle = "#1D9E75"; ctx.fill();
+              ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
+              ctx.fillStyle = "#fff";
+              ctx.font = "bold 13px Inter, Arial, sans-serif";
+              ctx.textAlign = "center"; ctx.textBaseline = "middle";
+              ctx.fillText(String(i + 1), X, Y);
+            });
+            let url = null;
+            try { url = canvas.toDataURL("image/jpeg", 0.85); } catch (e) { url = null; }
+            resolve(url);
+          }
+          if (!tiles.length) { finish(); return; }
+          tiles.forEach((t, idx) => {
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.onload = () => {
+              ctx.drawImage(img, t.tx * TILE - originX, t.ty * TILE - originY, TILE, TILE);
+              if (++loaded >= tiles.length) finish();
+            };
+            img.onerror = () => { if (++loaded >= tiles.length) finish(); };
+            img.src = "https://" + sub[idx % 3] + ".basemaps.cartocdn.com/light_all/" + z + "/" + t.wx + "/" + t.ty + ".png";
+          });
+          setTimeout(finish, 4500);
+        });
+      }
+      function waitImages(el, ms) {
+        const imgs = Array.prototype.slice.call(el.querySelectorAll("img"));
+        if (!imgs.length) return Promise.resolve();
+        return Promise.race([
+          Promise.all(imgs.map((im) =>
+            im.complete ? Promise.resolve() : new Promise((r) => { im.onload = im.onerror = r; })
+          )),
+          new Promise((r) => setTimeout(r, ms)),
+        ]);
+      }
+
+      // PDF via print — красивый макет с картой маршрута
+      document.getElementById("route-pdf").addEventListener("click", async (e) => {
+        if (!route.length) return;
+        const btn = e.currentTarget;
+        const label = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "Готовим PDF…";
         const box = document.getElementById("print-route");
-        let html = "<h1>Мой маршрут по Крыму</h1><ol>";
-        route.forEach((id) => {
+        const mapUrl = await buildRouteMap(route);
+        let html =
+          '<div class="pr-head"><div class="pr-brand">Крым · издание о полуострове</div>' +
+          "<h1>Мой маршрут по Крыму</h1>" +
+          '<div class="pr-sub">' + route.length + " " + pluralPlaces(route.length) +
+          " · welcomecrimea.ru</div></div>";
+        if (mapUrl) html += '<img class="pr-map" src="' + mapUrl + '" alt="Карта маршрута" />';
+        html += '<ol class="pr-list">';
+        route.forEach((id, i) => {
           const p = byId[id];
+          const c = CATS[p.category];
+          const src = srcFor(p);
           html +=
-            "<li><strong>" + esc(p.name) + "</strong> — " + esc(p.city) +
-            " · " + esc(p.duration) + "<br>" + esc(p.description) + "</li>";
+            '<li class="pr-item">' +
+            '<div class="pr-num" style="background:' + c.color + '">' + (i + 1) + "</div>" +
+            (src
+              ? '<img class="pr-thumb" src="' + src + '" alt="" referrerpolicy="no-referrer" />'
+              : '<div class="pr-thumb pr-thumb-ph" style="background:' + c.color + '"></div>') +
+            '<div class="pr-info">' +
+            '<span class="pr-badge" style="background:' + c.color + '">' + c.badge + "</span>" +
+            '<div class="pr-name">' + esc(p.name) +
+            ' <span class="pr-rating">★ ' + p.rating + "</span></div>" +
+            '<div class="pr-meta">' + esc(p.city) + " · " + esc(p.duration) + "</div>" +
+            '<div class="pr-desc">' + esc(p.description) + "</div>" +
+            "</div></li>";
         });
         html += "</ol>";
+        html +=
+          '<div class="pr-foot">Составлено на welcomecrimea.ru · ' +
+          new Date().toLocaleDateString("ru-RU") + "</div>";
         box.innerHTML = html;
+        await waitImages(box, 3500);
+        btn.disabled = false;
+        btn.textContent = label;
         window.print();
       });
 
@@ -900,22 +1030,56 @@ const jsonLd = {
   /* ----- print ----- */
   .print-route { display: none; }
   @media print {
+    @page { margin: 14mm; }
     /* прячем интерфейс через visibility, чтобы не скрыть родителей .print-route */
     body * { visibility: hidden !important; }
     .print-route, .print-route * { visibility: visible !important; }
+    .print-route, .print-route * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
     .print-route {
       display: block !important;
       position: absolute;
       left: 0;
       top: 0;
       width: 100%;
-      padding: 24px;
       font-family: var(--f-sans);
-      color: #000;
+      color: #1a1a1a;
     }
-    .print-route h1 { font-family: var(--f-serif); }
-    .print-route ol { padding-left: 22px; }
-    .print-route li { margin-bottom: 14px; line-height: 1.5; }
+    .pr-head { border-bottom: 3px solid #1D9E75; padding-bottom: 10px; margin-bottom: 16px; }
+    .pr-brand {
+      font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: #1D9E75; font-weight: 700;
+    }
+    .print-route h1 { font-family: var(--f-serif); font-size: 26px; margin: 4px 0 2px; }
+    .pr-sub { color: #6b7280; font-size: 13px; }
+    .pr-map {
+      width: 100%; height: auto; border-radius: 10px;
+      margin-bottom: 18px; border: 1px solid #e5e7eb;
+    }
+    .pr-list { list-style: none; padding: 0; margin: 0; }
+    .pr-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 12px 0; border-bottom: 1px solid #eee; break-inside: avoid;
+    }
+    .pr-num {
+      flex: 0 0 26px; width: 26px; height: 26px; border-radius: 50%;
+      color: #fff; font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center; margin-top: 2px;
+    }
+    .pr-thumb { flex: 0 0 96px; width: 96px; height: 72px; object-fit: cover; border-radius: 8px; }
+    .pr-thumb-ph { border-radius: 8px; }
+    .pr-info { flex: 1; min-width: 0; }
+    .pr-badge {
+      display: inline-block; color: #fff; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .pr-name { font-weight: 700; font-size: 15px; margin: 5px 0 2px; }
+    .pr-rating { color: #BA7517; font-weight: 600; font-size: 13px; white-space: nowrap; }
+    .pr-meta { color: #6b7280; font-size: 12px; margin-bottom: 4px; }
+    .pr-desc { font-size: 12.5px; line-height: 1.45; color: #333; }
+    .pr-foot { margin-top: 18px; color: #9ca3af; font-size: 11px; text-align: center; }
   }
 
   /* ----- mobile ----- */
